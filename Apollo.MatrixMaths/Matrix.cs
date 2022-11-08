@@ -67,7 +67,26 @@ namespace Apollo.MatrixMaths
             returnMat.Tanh();
             return returnMat;
         }
-    
+
+        // Derivative of tanh() 
+        // = sech^2(x) = 1 / cosh^2(x)
+        public void DTanh()
+        {
+            for (var i = 0; i < Shape.Rows; i++)
+            {
+                for (var j = 0; j < Shape.Columns; j++)
+                {
+                    _contents[i, j] = 1 / Math.Pow(Math.Cosh(_contents[i, j]), 2);
+                }
+            }
+        }
+        public static Matrix DTanh(Matrix mat)
+        {
+            var returnMat = (Matrix)mat.MemberwiseClone();
+            returnMat.DTanh();
+            return returnMat;
+        }
+
         // Apply sigmoid function to each element 
         // sigmoid(x) = 1 / 1 + e^-x
         public void Sigmoid()
@@ -84,6 +103,26 @@ namespace Apollo.MatrixMaths
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Sigmoid();
+            return returnMat;
+        }
+        
+        // Derivative of the Sigmoid Function 
+        // = e^(-x) / (1 + e^(-x))^2
+        public void DSigmoid()
+        {
+            for (var i = 0; i < Shape.Rows; i++)
+            {
+                for (var j = 0; j < Shape.Columns; j++)
+                {
+                    _contents[i, j] = Math.Exp(-_contents[i, j]) / Math.Pow(1 + Math.Exp(-_contents[i, j]), 2);
+                }
+            }
+        }
+
+        public static Matrix DSigmoid(Matrix mat)
+        {
+            var returnMat = (Matrix)mat.MemberwiseClone();
+            returnMat.DSigmoid();
             return returnMat;
         }
 
@@ -417,6 +456,17 @@ namespace Apollo.MatrixMaths
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Multiply(scalar);
+            return returnMat;
+        }
+
+        public void Clip(double min, double max)
+        {
+            IterateContent((value) => Math.Clamp(value, min, max));
+        }
+        public static Matrix Clip(Matrix mat, double min, double max)
+        {
+            var returnMat = (Matrix)mat.MemberwiseClone();
+            returnMat.Clip(min, max);
             return returnMat;
         }
 

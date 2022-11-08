@@ -1,2 +1,2 @@
 # Apollo
- A Music Generator AI
+**WORK IN PROGRESS**
