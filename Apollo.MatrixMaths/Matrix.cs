@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MatrixMaths
+namespace Apollo.MatrixMaths
 {
     // Generic Matrix 
     public class Matrix
