@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.UI", "Apollo.UI\Apollo.UI.csproj", "{7574391C-AA1B-4523-A68D-830307391FA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.NeuralNet", "Apollo.NeuralNet\Apollo.NeuralNet.csproj", "{2259279B-58C0-4044-9098-5B5B4A00D25D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MIDI", "Apollo.MIDI\Apollo.MIDI.csproj", "{CF31388B-7827-4056-9765-8E3922D9DAC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths", "Apollo.MatrixMaths\Apollo.MatrixMaths.csproj", "{7A821615-E0D3-489B-AA57-3614320C33EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7574391C-AA1B-4523-A68D-830307391FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7574391C-AA1B-4523-A68D-830307391FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7574391C-AA1B-4523-A68D-830307391FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7574391C-AA1B-4523-A68D-830307391FA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2259279B-58C0-4044-9098-5B5B4A00D25D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2259279B-58C0-4044-9098-5B5B4A00D25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2259279B-58C0-4044-9098-5B5B4A00D25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2259279B-58C0-4044-9098-5B5B4A00D25D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF31388B-7827-4056-9765-8E3922D9DAC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF31388B-7827-4056-9765-8E3922D9DAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF31388B-7827-4056-9765-8E3922D9DAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF31388B-7827-4056-9765-8E3922D9DAC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A821615-E0D3-489B-AA57-3614320C33EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A821615-E0D3-489B-AA57-3614320C33EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A821615-E0D3-489B-AA57-3614320C33EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A821615-E0D3-489B-AA57-3614320C33EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
