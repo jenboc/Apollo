@@ -9,16 +9,7 @@ public class Rnn
     private int OutputSize { get; }
     private int RecurrenceAmount { get; }
     private float LearningRate { get; }
-    
-    // Storing state of the LSTM gates at each recurrence for backprop
-    private Matrix InputGates { get; set; }
-    private Matrix OutputGates { get; set; }
-    private Matrix CellStates { get; set; }
-    private Matrix HiddenStates { get; set; }
-    
-    // Weight for the RNN itself
-    private Weight NetWeight { get; set; }
-    
+
     // LSTM Cell 
     private Lstm LstmCell { get; }
 
@@ -28,13 +19,6 @@ public class Rnn
         OutputSize = outputSize;
         RecurrenceAmount = recurrenceAmount;
         LearningRate = learningRate;
-
-        NetWeight = new Weight(OutputSize, OutputSize);
-
-        InputGates = new Matrix(RecurrenceAmount + 1, InputSize);
-        OutputGates = new Matrix(RecurrenceAmount + 1, OutputSize);
-        CellStates = new Matrix(RecurrenceAmount + 1, OutputSize);
-        HiddenStates = new Matrix(RecurrenceAmount + 1, OutputSize);
 
         LstmCell = new Lstm(InputSize, OutputSize, LearningRate);
     }

@@ -5,104 +5,70 @@ namespace Apollo.NeuralNet;
 public class Lstm
 {
     // General Parameters
-    private int InputSize { get; }
-    private int OutputSize { get; }
+    private int VocabSize { get; }
     private float LearningRate { get; }
 
-    // Gate weight matrices
-    private Weight ForgetWeight { get; set; }
-    private Weight InputWeight { get; set; }
-    private Matrix MemoryCellState { get; set; }
-    private Weight CellWeight { get; set; }
-    private Weight OutputWeight { get; set; }
+    // Gates 
+    private Gate Forget { get; }
+    private Gate Input { get; }
+    private Gate NewInfo { get; }
+    private Gate Output { get; }
     
-    
-    public Lstm(int inputSize, int outputSize, float learningRate)
+    // Cell state 
+    private Matrix CellState { get; set; }
+
+    public Lstm(int vocabSize, float learningRate)
     {
-        InputSize = inputSize;
-        OutputSize = outputSize;
+        VocabSize = vocabSize; // The amount of different characters present in the training data
         LearningRate = learningRate;
 
-        // Init weight matrices
-        MemoryCellState = new Matrix(OutputSize, OutputSize);
-        
-        ForgetWeight = new Weight(OutputSize, InputSize + OutputSize);
-        InputWeight = new Weight(OutputSize, InputSize + OutputSize);
-        CellWeight = new Weight(OutputSize, InputSize + OutputSize);
-        OutputWeight = new Weight(OutputSize, InputSize + OutputSize);
+        var gateShape = new MatShape(VocabSize, VocabSize);
+        Forget = new Gate(gateShape, gateShape);
+        Input = new Gate(gateShape, gateShape);
+        NewInfo = new Gate(gateShape, gateShape);
+        Output = new Gate(gateShape, gateShape);
+
+        CellState = new Matrix(vocabSize,  vocabSize);
     }
-
-    public Matrix[] Forward(Matrix input)
+    
+    /// <summary>
+    /// Complete one pass through of the LSTM cell, given an input  
+    /// </summary>
+    public Matrix Forward(Matrix input)
     {
-        var forgetGate = Matrix.Multiply(ForgetWeight, input);
-        forgetGate.Sigmoid();
-        MemoryCellState.Multiply(forgetGate);
+        // Calculate forget gate value 
+        Forget.CalcUnactivated(input);
+        Forget.Value.Sigmoid();
 
-        var inputGate = Matrix.Multiply(InputWeight, input);
-        inputGate.Sigmoid();
-        var cell = Matrix.Multiply(CellWeight, input);
-        cell.Tanh();
-        MemoryCellState.Add(Matrix.Multiply(inputGate, cell));
+        // Calculate input gate value
+        Input.CalcUnactivated(input);
+        Input.Value.Sigmoid();
 
-        var outputGate = Matrix.Multiply(OutputWeight, input);
-        outputGate.Sigmoid();
-        var output = Matrix.Multiply(outputGate, Matrix.Tanh(MemoryCellState));
-        
-        var returnValues = new Matrix[] { MemoryCellState, output, forgetGate, inputGate, cell, outputGate };
-        return returnValues;
+        // Calculate new info value 
+        NewInfo.CalcUnactivated(input);
+        NewInfo.Value.Tanh();
+
+        // Calculate cell state
+        CellState = Forget.Value * CellState + Input.Value * NewInfo.Value;
+
+        // Calculate output gate
+        Output.CalcUnactivated(input);
+        Output.Value.Sigmoid();
+
+        // return output 
+        return Output.Value * Matrix.Tanh(CellState);
     }
 
     public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate, 
         Matrix inputGate, Matrix cell, Matrix outputGate, Matrix dfcs, Matrix dfhs)
     {
-        error = Matrix.Clamp(error + dfhs, -6, 6);
-        
-        // Calculate outputUpdate amount 
-        var outputDerivative = Matrix.Tanh(cellState) * error;
-        var outputUpdate = Matrix.Multiply(Matrix.Transpose(outputDerivative * Matrix.DTanh(outputGate)),
-            input);
-        
-        // Calculate cellUpdate amount 
-        var cellStatePDerivative = Matrix.Clip(error * outputGate * Matrix.DTanh(outputGate) + dfcs, -6, 6);
-        var cellDerivative = cellStatePDerivative * inputGate;
-        var cellUpdate = Matrix.Multiply(Matrix.Transpose(cellDerivative * Matrix.DTanh(cell)), input);
-        
-        // Calculate inputUpdate amount 
-        var inputDerivative = cellStatePDerivative * cellStates;
-        var inputUpdate = Matrix.Multiply(Matrix.Transpose(inputDerivative * Matrix.DSigmoid(inputGate)),
-            input);
-        
-        // Calculate forgetUpdate amount 
-        var forgetDerivative = cellStatePDerivative * cellStates;
-        var forgetUpdate = Matrix.Multiply(Matrix.Transpose(forgetDerivative * Matrix.DSigmoid(forgetGate)),
-            input);
-        
-        // Calculate full cell state derivative, and full hidden state derivative 
-        var cellStateDerivative = cellStatePDerivative * forgetGate;
-
-        var sliceString = $":{OutputSize}";
-        var hiddenStateDerivative =
-            Matrix.Multiply(cellDerivative, CellWeight)[sliceString] *
-            Matrix.Multiply(outputDerivative, OutputWeight)[sliceString] *
-            Matrix.Multiply(inputDerivative, InputWeight)[sliceString] *
-            Matrix.Multiply(forgetDerivative, ForgetWeight)[sliceString];
-
-        var returnValues = new Matrix[]
-        {
-            forgetUpdate, inputUpdate, cellUpdate,
-            outputUpdate, cellStateDerivative, hiddenStateDerivative
-        };
-        return returnValues;
+        throw new NotImplementedException();
     }
 
     // Updating the LSTM cell is managed by the RNN "parent" network 
     // Adjusts variables of the cell 
     public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix cellUpdate, Matrix outputUpdate)
     {
-        // Adjust gradients 
-        ForgetWeight.Update(forgetUpdate, LearningRate);
-        InputWeight.Update(inputUpdate, LearningRate);
-        CellWeight.Update(cellUpdate, LearningRate);
-        OutputWeight.Update(outputUpdate, LearningRate);
+
     }
 }

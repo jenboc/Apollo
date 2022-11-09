@@ -44,6 +44,11 @@ namespace Apollo.MatrixMaths
             return returnMatrix;
         }
 
+        public static Matrix Random(MatShape shape)
+        {
+            return Random(shape.Rows, shape.Columns);
+        }
+
         // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
         public void IterateContent(Func<float, float> contentAction)
         {
