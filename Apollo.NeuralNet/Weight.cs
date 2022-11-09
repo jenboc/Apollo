@@ -14,12 +14,12 @@ public class Weight : Matrix
     }
     
     // Update weight + gradient using RMSProp
-    public void Update(Matrix updateAmount, double learningRate)
+    public void Update(Matrix updateAmount, float learningRate)
     {
         // Adjust Gradient
-        Gradient = 0.9 * Gradient + 0.1 * Power(updateAmount, 2); // Uses static method to create new matrix
+        Gradient = 0.9f * Gradient + 0.1f * Power(updateAmount, 2); // Uses static method to create new matrix
         
         // Adjust itself
-        Subtract(learningRate / Sqrt(Gradient + 1e-8) * updateAmount); // Uses non-static method to adjust
+        Subtract(learningRate / Sqrt(Gradient + 1e-8f) * updateAmount); // Uses non-static method to adjust
     }
 }

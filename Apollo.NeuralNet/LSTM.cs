@@ -7,7 +7,7 @@ public class Lstm
     // General Parameters
     private int InputSize { get; }
     private int OutputSize { get; }
-    private double LearningRate { get; }
+    private float LearningRate { get; }
 
     // Gate weight matrices
     private Weight ForgetWeight { get; set; }
@@ -17,7 +17,7 @@ public class Lstm
     private Weight OutputWeight { get; set; }
     
     
-    public Lstm(int inputSize, int outputSize, double learningRate)
+    public Lstm(int inputSize, int outputSize, float learningRate)
     {
         InputSize = inputSize;
         OutputSize = outputSize;

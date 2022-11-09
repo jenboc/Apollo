@@ -8,7 +8,7 @@ public class Rnn
     private int InputSize { get; }
     private int OutputSize { get; }
     private int RecurrenceAmount { get; }
-    private double LearningRate { get; }
+    private float LearningRate { get; }
     
     // Storing state of the LSTM gates at each recurrence for backprop
     private Matrix InputGates { get; set; }
@@ -22,7 +22,7 @@ public class Rnn
     // LSTM Cell 
     private Lstm LstmCell { get; }
 
-    public Rnn(int inputSize, int outputSize, int recurrenceAmount, double learningRate)
+    public Rnn(int inputSize, int outputSize, int recurrenceAmount, float learningRate)
     {
         InputSize = inputSize;
         OutputSize = outputSize;
@@ -36,7 +36,7 @@ public class Rnn
         CellStates = new Matrix(RecurrenceAmount + 1, OutputSize);
         HiddenStates = new Matrix(RecurrenceAmount + 1, OutputSize);
 
-        LstmCell = new Lstm(InputSize, OutputSize, RecurrenceAmount, LearningRate);
+        LstmCell = new Lstm(InputSize, OutputSize, LearningRate);
     }
 
     public Matrix Forward()
@@ -44,7 +44,7 @@ public class Rnn
         throw new NotImplementedException();
     }
 
-    public double Backprop()
+    public float Backprop()
     {
         throw new NotImplementedException();
     }

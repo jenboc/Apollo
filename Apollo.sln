@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MIDI", "Apollo.MIDI\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths", "Apollo.MatrixMaths\Apollo.MatrixMaths.csproj", "{7A821615-E0D3-489B-AA57-3614320C33EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths.Tests", "Apollo.MatrixMaths.Tests\Apollo.MatrixMaths.Tests.csproj", "{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{7A821615-E0D3-489B-AA57-3614320C33EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A821615-E0D3-489B-AA57-3614320C33EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A821615-E0D3-489B-AA57-3614320C33EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -5,9 +5,9 @@ namespace Apollo.MatrixMaths
     // Generic Matrix 
     public class Matrix
     {
-        protected double[,] _contents;
+        protected float[,] _contents;
 
-        public double[,] Contents { get => _contents; }
+        public float[,] Contents { get => _contents; }
 
         public MatShape Shape { get => new MatShape(_contents.GetLength(0), _contents.GetLength(1)); }
 
@@ -15,14 +15,14 @@ namespace Apollo.MatrixMaths
         // Generate matrix full of zeros/default values 
         public Matrix(int rows, int columns)
         {
-            _contents = new double[rows, columns];
+            _contents = new float[rows, columns];
         }
         public Matrix(MatShape shape) : this(shape.Rows, shape.Columns)
         { }
         
 
         // Create a matrix with already defined data 
-        public Matrix(double[,] defaultData)
+        public Matrix(float[,] defaultData)
         {
             _contents = defaultData;
         }
@@ -40,12 +40,12 @@ namespace Apollo.MatrixMaths
             Random r = (seed == -1) ? new Random() : new Random(seed);
 
             var returnMatrix = new Matrix(rows, columns);
-            returnMatrix.IterateContent((value) => r.NextDouble());
+            returnMatrix.IterateContent((value) => (float)r.NextDouble());
             return returnMatrix;
         }
 
         // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
-        public void IterateContent(Func<double, double> contentAction)
+        public void IterateContent(Func<float, float> contentAction)
         {
             for (int i = 0; i < _contents.GetLength(0); i++)
             {
@@ -59,7 +59,7 @@ namespace Apollo.MatrixMaths
         // Apply tanh() to each element
         public void Tanh()
         { 
-            IterateContent(Math.Tanh);
+            IterateContent(ActivationFuncs.Tanh);
         }
         public static Matrix Tanh(Matrix mat)
         {
@@ -72,13 +72,15 @@ namespace Apollo.MatrixMaths
         // = sech^2(x) = 1 / cosh^2(x)
         public void DTanh()
         {
-            for (var i = 0; i < Shape.Rows; i++)
-            {
-                for (var j = 0; j < Shape.Columns; j++)
-                {
-                    _contents[i, j] = 1 / Math.Pow(Math.Cosh(_contents[i, j]), 2);
-                }
-            }
+            // for (var i = 0; i < Shape.Rows; i++)
+            // {
+            //     for (var j = 0; j < Shape.Columns; j++)
+            //     {
+            //         _contents[i, j] = 1 / Math.Pow(Math.Cosh(_contents[i, j]), 2);
+            //     }
+            // }
+            
+            IterateContent(ActivationFuncs.DTanh);
         }
         public static Matrix DTanh(Matrix mat)
         {
@@ -91,13 +93,15 @@ namespace Apollo.MatrixMaths
         // sigmoid(x) = 1 / 1 + e^-x
         public void Sigmoid()
         {
-            for (int i = 0; i < Shape.Rows; i++)
-            {
-                for (int j = 0; j < Shape.Columns; j++)
-                {
-                    _contents[i, j] = 1 / (1 + Math.Exp(-_contents[i, j]));
-                }
-            }
+            // for (int i = 0; i < Shape.Rows; i++)
+            // {
+            //     for (int j = 0; j < Shape.Columns; j++)
+            //     {
+            //         _contents[i, j] = 1 / (1 + Math.Exp(-_contents[i, j]));
+            //     }
+            // }
+            
+            IterateContent(ActivationFuncs.Sigmoid);
         }
         public static Matrix Sigmoid(Matrix mat)
         {
@@ -110,13 +114,15 @@ namespace Apollo.MatrixMaths
         // = e^(-x) / (1 + e^(-x))^2
         public void DSigmoid()
         {
-            for (var i = 0; i < Shape.Rows; i++)
-            {
-                for (var j = 0; j < Shape.Columns; j++)
-                {
-                    _contents[i, j] = Math.Exp(-_contents[i, j]) / Math.Pow(1 + Math.Exp(-_contents[i, j]), 2);
-                }
-            }
+            // for (var i = 0; i < Shape.Rows; i++)
+            // {
+            //     for (var j = 0; j < Shape.Columns; j++)
+            //     {
+            //         _contents[i, j] = Math.Exp(-_contents[i, j]) / Math.Pow(1 + Math.Exp(-_contents[i, j]), 2);
+            //     }
+            // }
+            
+            IterateContent(ActivationFuncs.DSigmoid);
         }
 
         public static Matrix DSigmoid(Matrix mat)
@@ -129,7 +135,7 @@ namespace Apollo.MatrixMaths
         // Apply sqrt to each element
         public void Sqrt()
         {
-            IterateContent(Math.Sqrt);
+            IterateContent(MathF.Sqrt);
         }
         public static Matrix Sqrt(Matrix mat)
         {
@@ -141,7 +147,7 @@ namespace Apollo.MatrixMaths
         // e ^ each element
         public void Exp()
         {
-            IterateContent(Math.Exp);
+            IterateContent(MathF.Exp);
         }
         public static Matrix Exp(Matrix mat)
         {
@@ -151,11 +157,11 @@ namespace Apollo.MatrixMaths
         }
 
         // Raise each element to a power
-        public void Power(double power)
+        public void Power(float power)
         {
-            IterateContent((value) => Math.Pow(value, power));
+            IterateContent((value) => MathF.Pow(value, power));
         }
-        public static Matrix Power(Matrix mat, double power)
+        public static Matrix Power(Matrix mat, float power)
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Power(power);
@@ -174,7 +180,7 @@ namespace Apollo.MatrixMaths
             if (thisCol != otherRow)
                 throw new MatrixArithmeticException("First matrix isn't multiplicatively conformable to the other");
 
-            double[,] newContents = new double[Shape.Rows,otherMat.Shape.Columns];
+            float[,] newContents = new float[Shape.Rows,otherMat.Shape.Columns];
             
             for (int row = 0; row < newContents.GetLength(0); row++)
             {
@@ -182,7 +188,7 @@ namespace Apollo.MatrixMaths
                 {
                     // Row in A * Col in B 
                     // A has as many rows as B has columns therefore A's row has the same amount of numbers as B's column 
-                    double sum = 0;
+                    float sum = 0;
 
                     for (int i = 0; i < Shape.Columns; i++)
                     {
@@ -203,9 +209,9 @@ namespace Apollo.MatrixMaths
         }
 
         // Find the sum of every element in the matrix
-        public double Sum()
+        public float Sum()
         {
-            double sum = 0;
+            float sum = 0;
 
             for (int i = 0; i < _contents.GetLength(0); i++)
             {
@@ -224,7 +230,7 @@ namespace Apollo.MatrixMaths
             if (targetShape.Size != Shape.Size)
                 throw new InvalidShapeException("Reshaping invalid - new matrix won't be the same size");
 
-            double[,] newContents = new double[targetShape.Rows, targetShape.Columns];
+            float[,] newContents = new float[targetShape.Rows, targetShape.Columns];
 
             int newI = 0;
             int newJ = 0;
@@ -255,7 +261,7 @@ namespace Apollo.MatrixMaths
         // Change the matrix shape to (1,)
         public void Ravel()
         {
-            double[,] newContents = new double[1, Shape.Size];
+            float[,] newContents = new float[1, Shape.Size];
          
             for (int i = 0; i < Shape.Rows; i++)
             {
@@ -278,7 +284,7 @@ namespace Apollo.MatrixMaths
         // Transpose the matrix
         public void Transpose()
         {
-            double[,] newContents = new double[Shape.Columns, Shape.Rows];
+            float[,] newContents = new float[Shape.Columns, Shape.Rows];
 
             for (int i = 0; i < Shape.Rows; i++)
             {
@@ -298,7 +304,7 @@ namespace Apollo.MatrixMaths
         }
 
         // Clamp each element between 2 bounds
-        public void Clamp(double min, double max)
+        public void Clamp(float min, float max)
         {
             IterateContent((value) => Math.Clamp(value, min, max));
         }
@@ -317,13 +323,13 @@ namespace Apollo.MatrixMaths
                 throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
 
             // New shape = (same rows, sum of columns)
-            double[,] newContents = new double[Shape.Rows, Shape.Columns + otherMat.Shape.Columns];
+            float[,] newContents = new float[Shape.Rows, Shape.Columns + otherMat.Shape.Columns];
             
             for (int i = 0; i < newContents.GetLength(0); i++)
             {
                 for (int j = 0; j < newContents.GetLength(1); j++)
                 {
-                    double insertData = (j >= Shape.Columns) ? otherMat.Contents[i, j - Shape.Columns] : _contents[i,j];
+                    float insertData = (j >= Shape.Columns) ? otherMat.Contents[i, j - Shape.Columns] : _contents[i,j];
                     newContents[i, j] = insertData;
                 }
             }
@@ -345,13 +351,13 @@ namespace Apollo.MatrixMaths
                 throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
 
             // New shape = (same rows, sum of columns)
-            double[,] newContents = new double[Shape.Rows + otherMat.Shape.Rows, Shape.Columns];
+            float[,] newContents = new float[Shape.Rows + otherMat.Shape.Rows, Shape.Columns];
 
             for (int i = 0; i < newContents.GetLength(0); i++)
             {
                 for (int j = 0; j < newContents.GetLength(1); j++)
                 {
-                    double insertData = (i >= Shape.Rows) ? otherMat.Contents[i - Shape.Rows, j] : _contents[i, j];
+                    float insertData = (i >= Shape.Rows) ? otherMat.Contents[i - Shape.Rows, j] : _contents[i, j];
                     newContents[i, j] = insertData;
                 }
             }
@@ -407,7 +413,7 @@ namespace Apollo.MatrixMaths
             return returnMat;
         }
         
-        public void Subtract(double scalar)
+        public void Subtract(float scalar)
         {
             for (var i = 0; i < Shape.Rows; i++)
             {
@@ -417,14 +423,14 @@ namespace Apollo.MatrixMaths
                 }
             }
         }
-        public static Matrix Subtract(Matrix mat, double scalar)
+        public static Matrix Subtract(Matrix mat, float scalar)
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Subtract(scalar);
             return returnMat;
         }
         
-        public void Add(double scalar)
+        public void Add(float scalar)
         {
             for (var i = 0; i < Shape.Rows; i++)
             {
@@ -434,7 +440,7 @@ namespace Apollo.MatrixMaths
                 }
             }
         }
-        public static Matrix Add(Matrix mat, double scalar)
+        public static Matrix Add(Matrix mat, float scalar)
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Add(scalar);
@@ -442,7 +448,7 @@ namespace Apollo.MatrixMaths
         }
 
 
-        public void Multiply(double scalar)
+        public void Multiply(float scalar)
         {
             for (int i = 0; i < Shape.Rows; i++)
             {
@@ -452,18 +458,18 @@ namespace Apollo.MatrixMaths
                 }
             }
         }
-        public static Matrix Multiply(Matrix mat, double scalar)
+        public static Matrix Multiply(Matrix mat, float scalar)
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Multiply(scalar);
             return returnMat;
         }
 
-        public void Clip(double min, double max)
+        public void Clip(float min, float max)
         {
             IterateContent((value) => Math.Clamp(value, min, max));
         }
-        public static Matrix Clip(Matrix mat, double min, double max)
+        public static Matrix Clip(Matrix mat, float min, float max)
         {
             var returnMat = (Matrix)mat.MemberwiseClone();
             returnMat.Clip(min, max);
@@ -484,7 +490,7 @@ namespace Apollo.MatrixMaths
             return Add(a, b);
         }
 
-        public static Matrix operator +(Matrix a, double b)
+        public static Matrix operator +(Matrix a, float b)
         {
             return Add(a, b);
         }
@@ -494,7 +500,7 @@ namespace Apollo.MatrixMaths
             return Subtract(a, b);
         }
 
-        public static Matrix operator -(Matrix a, double b)
+        public static Matrix operator -(Matrix a, float b)
         {
             return Subtract(a, b);
         }
@@ -504,21 +510,21 @@ namespace Apollo.MatrixMaths
             return Multiply(a, b);
         }
 
-        public static Matrix operator *(Matrix mat, double scalar)
+        public static Matrix operator *(Matrix mat, float scalar)
         {
             return Multiply(mat, scalar);
         }
-        public static Matrix operator *(double scalar, Matrix mat)
+        public static Matrix operator *(float scalar, Matrix mat)
         {
             return Multiply(mat, scalar);
         }
 
-        public static Matrix operator /(Matrix mat, double scalar)
+        public static Matrix operator /(Matrix mat, float scalar)
         {
             return Multiply(mat, 1 / scalar);
         }
 
-        public static Matrix operator /(double scalar, Matrix mat)
+        public static Matrix operator /(float scalar, Matrix mat)
         {
             return Multiply(mat, 1 / scalar);
         }
@@ -574,7 +580,7 @@ namespace Apollo.MatrixMaths
                 if (numRows <= 0 || numCols <= 0)
                     throw new InvalidSliceException("The inputted slice resulted in a number of rows or columns <= 0");
 
-                double[,] sliceContent = new double[numRows, numCols]; 
+                float[,] sliceContent = new float[numRows, numCols]; 
 
                 // Start is inclusive, end is exclusive
                 for (int i = rowSlice[0]; i < rowSlice[1]; i++)
