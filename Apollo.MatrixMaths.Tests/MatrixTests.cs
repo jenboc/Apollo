@@ -2,24 +2,24 @@ namespace Apollo.MatrixMaths.Tests;
 
 public class MatrixTests
 {
-    float[,] defaultData = new float[,]
+    private readonly float[,] defaultData =
     {
         { 0, 1, 4 },
         { 9, 18, 99 },
         { 1000, 2500, 1990 }
     };
 
-    float[,] defaultData2 = new float[,]
+    private readonly float[,] defaultData2 =
     {
         { 24, 3, 12 },
         { 1, 0, -5 },
-        { -25, 1, 22},
+        { -25, 1, 22 }
     };
 
     [Fact]
     public void Power()
     {
-        float[,] expectedData = new float[,]
+        float[,] expectedData =
         {
             { 0, 1, 16 },
             { 81, 324, 9801 },
@@ -28,24 +28,24 @@ public class MatrixTests
 
         var actualMatrix = new Matrix(defaultData);
         actualMatrix.Power(2);
-        float[,] actualData = actualMatrix.Contents;
-                        
+        var actualData = actualMatrix.Contents;
+
         Assert.Equal(expectedData, actualData);
     }
 
     [Fact]
     public void Sqrt()
     {
-        var expectedData = new float[,]
+        var expectedData = new[,]
         {
             { 0, 1, 2 },
             { 3, 4.2426406871192848f, 9.9498743710662f },
             { 31.622776601683793f, 50, 44.609416046390926f }
         };
 
-        Matrix actualMatrix = new Matrix(defaultData);
+        var actualMatrix = new Matrix(defaultData);
         actualMatrix.Sqrt();
-        float[,] actualData = actualMatrix.Contents;
+        var actualData = actualMatrix.Contents;
 
         Assert.Equal(expectedData, actualData);
     }
@@ -53,16 +53,16 @@ public class MatrixTests
     [Fact]
     public void Exp()
     {
-        var expectedData = new float[,]
+        var expectedData = new[,]
         {
             { 1, 2.71828175f, 54.5981483f },
             { 8103.08398f, 65659968, float.PositiveInfinity },
-            { float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity}
+            { float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity }
         };
 
-        Matrix actualMatrix = new Matrix(defaultData);
+        var actualMatrix = new Matrix(defaultData);
         actualMatrix.Exp();
-        float[,] actualData = actualMatrix.Contents;
+        var actualData = actualMatrix.Contents;
 
         Assert.Equal(expectedData, actualData);
     }
@@ -70,16 +70,16 @@ public class MatrixTests
     [Fact]
     public void Tanh()
     {
-        var expectedData = new float[,]
+        var expectedData = new[,]
         {
             { 0, 0.761594176f, 0.999329329f },
             { 1, 1, 1 },
             { 1, 1, 1 }
         };
 
-        Matrix actualMatrix = new Matrix(defaultData);
+        var actualMatrix = new Matrix(defaultData);
         actualMatrix.Tanh();
-        float[,] actualData = actualMatrix.Contents;
+        var actualData = actualMatrix.Contents;
 
         Assert.Equal(expectedData, actualData);
     }
@@ -89,7 +89,7 @@ public class MatrixTests
     {
         var expectedData = new float[,]
         {
-            { -99, 4, 83},
+            { -99, 4, 83 },
             { -2241, 126, 2196 },
             { -23250, 4990, 43280 }
         };
@@ -213,9 +213,9 @@ public class MatrixTests
         Assert.Equal(expectedData, actualData);
     }
 
-     [Fact]
-     public void HorizontalStack()
-     {
+    [Fact]
+    public void HorizontalStack()
+    {
         var expectedData = new float[,]
         {
             { 0, 1, 4, 24, 3, 12 },
@@ -229,11 +229,11 @@ public class MatrixTests
         var actualData = defaultMat1.Contents;
 
         Assert.Equal(expectedData, actualData);
-     }
+    }
 
-     [Fact]
-     public void VerticalStack() 
-     {
+    [Fact]
+    public void VerticalStack()
+    {
         var expectedData = new float[,]
         {
             { 0, 1, 4 },
@@ -241,7 +241,7 @@ public class MatrixTests
             { 1000, 2500, 1990 },
             { 24, 3, 12 },
             { 1, 0, -5 },
-            { -25, 1, 22},
+            { -25, 1, 22 }
         };
 
         var defaultMat1 = new Matrix(defaultData);
@@ -252,21 +252,21 @@ public class MatrixTests
         Assert.Equal(expectedData, actualData);
     }
 
-     [Fact] 
-     public void Random()
-     {
+    [Fact]
+    public void Random()
+    {
         var seeded1 = Matrix.Random(5, 5, 2);
         var seeded2 = Matrix.Random(5, 5, 2);
 
-         var unseeded = Matrix.Random(5, 5);
+        var unseeded = Matrix.Random(5, 5);
 
-         Assert.Equal(seeded1.Contents, seeded2.Contents);
-         Assert.NotEqual(seeded1.Contents, unseeded.Contents);
+        Assert.Equal(seeded1.Contents, seeded2.Contents);
+        Assert.NotEqual(seeded1.Contents, unseeded.Contents);
     }
 
-     [Fact]
-     public void Add()
-     {
+    [Fact]
+    public void Add()
+    {
         var expectedData = new float[,]
         {
             { 24, 4, 16 },
@@ -279,12 +279,12 @@ public class MatrixTests
         mat1.Add(mat2);
         var actualData = mat1.Contents;
 
-            Assert.Equal(expectedData, actualData);
-     }
+        Assert.Equal(expectedData, actualData);
+    }
 
-     [Fact]
-     public void Subtract()
-     {
+    [Fact]
+    public void Subtract()
+    {
         var expectedData = new float[,]
         {
             { -24, -2, -8 },
@@ -298,11 +298,11 @@ public class MatrixTests
         var actualData = mat1.Contents;
 
         Assert.Equal(expectedData, actualData);
-     }
+    }
 
-     [Fact]
-     public void Slicing()
-     {
+    [Fact]
+    public void Slicing()
+    {
         var expectedData = new float[,]
         {
             { 0, 1 },
@@ -316,12 +316,12 @@ public class MatrixTests
         var actualData = slicedMat.Contents;
 
         Assert.Equal(expectedData, actualData);
-     }
+    }
 
-     [Fact]
-     public void Sigmoid()
-     {
-        var expectedData = new float[,]
+    [Fact]
+    public void Sigmoid()
+    {
+        var expectedData = new[,]
         {
             { 0.5f, 0.731058598f, 0.982013762f },
             { 1, 1, 1 },
