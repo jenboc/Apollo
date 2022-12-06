@@ -5,17 +5,17 @@ namespace Apollo.MatrixMaths;
 public class ActivationFuncs
 {
     // Values taken from the graphs 
-    private static int TanhClip = 4; // tanh(x)
+    private static readonly int TanhClip = 4; // tanh(x)
 
-    private static int SigmoidClip = 6; // 1 / (1 + e^-x)
-    
+    private static readonly int SigmoidClip = 6; // 1 / (1 + e^-x)
+
     // Clipped tanh (to avoid NaN) 
     public static float Tanh(float x)
     {
         // Values taken from the tanh graph
-        if (x > TanhClip) 
-            return 1; 
-        if (x < -TanhClip) 
+        if (x > TanhClip)
+            return 1;
+        if (x < -TanhClip)
             return -1;
 
         return (float)Math.Tanh(x);
@@ -31,7 +31,7 @@ public class ActivationFuncs
 
         return 1 / (float)Math.Pow(Math.Cosh(x), 2);
     }
-    
+
     // Clipped Sigmoid function (to avoid NaN) 
     // = 1 / (1 + e^-x)
     public static float Sigmoid(float x)
@@ -44,7 +44,7 @@ public class ActivationFuncs
 
         return 1 / (1 + (float)Math.Exp(-x));
     }
-    
+
     // Derivative of the Sigmoid function 
     // = e^(-x) / (1 + e^(-x))^2
     public static float DSigmoid(float x)

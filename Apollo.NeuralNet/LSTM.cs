@@ -4,19 +4,6 @@ namespace Apollo.NeuralNet;
 
 public class Lstm
 {
-    // General Parameters
-    private int VocabSize { get; }
-    private float LearningRate { get; }
-
-    // Gates 
-    private Gate Forget { get; }
-    private Gate Input { get; }
-    private Gate NewInfo { get; }
-    private Gate Output { get; }
-    
-    // Cell state 
-    private Matrix CellState { get; set; }
-
     public Lstm(int vocabSize, float learningRate)
     {
         VocabSize = vocabSize; // The amount of different characters present in the training data
@@ -28,11 +15,24 @@ public class Lstm
         NewInfo = new Gate(gateShape, gateShape);
         Output = new Gate(gateShape, gateShape);
 
-        CellState = new Matrix(vocabSize,  vocabSize);
+        CellState = new Matrix(vocabSize, vocabSize);
     }
-    
+
+    // General Parameters
+    private int VocabSize { get; }
+    private float LearningRate { get; }
+
+    // Gates 
+    private Gate Forget { get; }
+    private Gate Input { get; }
+    private Gate NewInfo { get; }
+    private Gate Output { get; }
+
+    // Cell state 
+    private Matrix CellState { get; set; }
+
     /// <summary>
-    /// Complete one pass through of the LSTM cell, given an input  
+    ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
     public Matrix Forward(Matrix input)
     {
@@ -59,7 +59,7 @@ public class Lstm
         return Output.Value * Matrix.Tanh(CellState);
     }
 
-    public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate, 
+    public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate,
         Matrix inputGate, Matrix cell, Matrix outputGate, Matrix dfcs, Matrix dfhs)
     {
         throw new NotImplementedException();
@@ -69,6 +69,5 @@ public class Lstm
     // Adjusts variables of the cell 
     public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix cellUpdate, Matrix outputUpdate)
     {
-
     }
 }
