@@ -11,7 +11,7 @@ public class Rnn
         RecurrenceAmount = recurrenceAmount;
         LearningRate = learningRate;
 
-        LstmCell = new Lstm(InputSize, OutputSize, LearningRate);
+        LstmCell = new Lstm(InputSize, LearningRate);
     }
 
     // General Parameters

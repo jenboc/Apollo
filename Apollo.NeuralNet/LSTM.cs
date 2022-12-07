@@ -9,7 +9,7 @@ public class Lstm
         VocabSize = vocabSize; // The amount of different characters present in the training data
         LearningRate = learningRate;
 
-        var gateShape = new MatShape(VocabSize, VocabSize);
+        var gateShape = new int[] { VocabSize, VocabSize };
         Forget = new Gate(gateShape, gateShape);
         Input = new Gate(gateShape, gateShape);
         NewInfo = new Gate(gateShape, gateShape);

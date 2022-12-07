@@ -5,15 +5,15 @@ namespace Apollo.NeuralNet;
 // Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
 public class Gate
 {
-    public Gate(MatShape inputShape, MatShape biasShape)
+    public Gate(int[] inputShape, int[] biasShape)
     {
-        Value = new Matrix(inputShape);
+        Value = new Matrix(inputShape[0], inputShape[1]);
 
-        Weight = Matrix.Random(inputShape);
-        Bias = Matrix.Random(biasShape);
+        Weight = Matrix.Random(inputShape[0], inputShape[1]);
+        Bias = Matrix.Random(biasShape[0], biasShape[1]);
 
-        WeightGradient = new Matrix(inputShape);
-        BiasGradient = new Matrix(biasShape);
+        WeightGradient = new Matrix(inputShape[0], inputShape[1]);
+        BiasGradient = new Matrix(biasShape[0], biasShape[1]);
     }
     // All gate calculations take the form of 
     // Some activation function (W_x * x + W_h * h)
