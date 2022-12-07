@@ -149,7 +149,9 @@ public class MatrixTests
     [Fact]
     public void Reshape()
     {
-        MatShape targetShape = new(9, 1);
+        int targetRows = 9;
+        int targetColumns = 1;
+
         var expectedData = new float[,]
         {
             { 0 },
@@ -164,7 +166,7 @@ public class MatrixTests
         };
 
         var defaultMat = new Matrix(defaultData);
-        defaultMat.Reshape(targetShape);
+        defaultMat.Reshape(targetRows, targetColumns);
         var actualData = defaultMat.Contents;
 
         Assert.Equal(expectedData, actualData);

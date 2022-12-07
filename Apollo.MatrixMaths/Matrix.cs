@@ -5,29 +5,36 @@ namespace Apollo.MatrixMaths;
 // Generic Matrix 
 public class Matrix
 {
-    protected float[,] _contents;
+    public float[,] Contents {get; private set;}
 
+    public int Rows
+    {
+        get 
+        {
+            return Contents.GetLength(0);
+        }
+    }
+
+    public int Columns 
+    {
+        get 
+        {
+            return Contents.GetLength(1);
+        }
+    }
 
     // Generate matrix full of zeros/default values 
     public Matrix(int rows, int columns)
     {
-        _contents = new float[rows, columns];
+        Contents = new float[rows, columns];
     }
-
-    public Matrix(MatShape shape) : this(shape.Rows, shape.Columns)
-    {
-    }
-
 
     // Create a matrix with already defined data 
     public Matrix(float[,] defaultData)
     {
-        _contents = defaultData;
+        Contents = defaultData;
     }
 
-    public float[,] Contents => _contents;
-
-    public MatShape Shape => new(_contents.GetLength(0), _contents.GetLength(1));
 
     public Matrix this[string slice]
     {
@@ -37,8 +44,8 @@ public class Matrix
             var splitSlice = slice.Split(',');
 
             // Default slices such that the difference between item 0 and item 1 is the same as the shape of the matrix 
-            int[] rowSlice = { 0, Shape.Rows };
-            int[] colSlice = { 0, Shape.Columns };
+            int[] rowSlice = { 0, Rows };
+            int[] colSlice = { 0, Columns };
 
             // Scenario A: only the row slice is provided (first character in slice is not a comma, and the length of the split slice is 1) 
             if (splitSlice[1] == "")
@@ -73,7 +80,7 @@ public class Matrix
                 for (var j = colSlice[0]; j < colSlice[1]; j++)
                 {
                     var sliceJ = j - colSlice[0];
-                    sliceContent[sliceI, sliceJ] = _contents[i, j];
+                    sliceContent[sliceI, sliceJ] = Contents[i, j];
                 }
             }
 
@@ -85,7 +92,7 @@ public class Matrix
     // Create a matrix with the same shape of another matrix 
     public static Matrix Like(Matrix matrix)
     {
-        return new Matrix(matrix.Shape);
+        return new Matrix(matrix.Rows, matrix.Columns);
     }
 
     // Creates matrix of random values (between 0 and 1 inclusive) given a shape 
@@ -98,17 +105,17 @@ public class Matrix
         return returnMatrix;
     }
 
-    public static Matrix Random(MatShape shape)
+    public static Matrix Random(int rows, int columns)
     {
-        return Random(shape.Rows, shape.Columns);
+        return Random(rows, columns);
     }
 
     // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
     public void IterateContent(Func<float, float> contentAction)
     {
-        for (var i = 0; i < _contents.GetLength(0); i++)
-        for (var j = 0; j < _contents.GetLength(1); j++)
-            _contents[i, j] = contentAction(_contents[i, j]);
+        for (var i = 0; i < Contents.GetLength(0); i++)
+        for (var j = 0; j < Contents.GetLength(1); j++)
+            Contents[i, j] = contentAction(Contents[i, j]);
     }
 
     // Apply tanh() to each element
@@ -128,11 +135,11 @@ public class Matrix
     // = sech^2(x) = 1 / cosh^2(x)
     public void DTanh()
     {
-        // for (var i = 0; i < Shape.Rows; i++)
+        // for (var i = 0; i < Rows; i++)
         // {
-        //     for (var j = 0; j < Shape.Columns; j++)
+        //     for (var j = 0; j < Columns; j++)
         //     {
-        //         _contents[i, j] = 1 / Math.Pow(Math.Cosh(_contents[i, j]), 2);
+        //         Contents[i, j] = 1 / Math.Pow(Math.Cosh(Contents[i, j]), 2);
         //     }
         // }
 
@@ -150,11 +157,11 @@ public class Matrix
     // sigmoid(x) = 1 / 1 + e^-x
     public void Sigmoid()
     {
-        // for (int i = 0; i < Shape.Rows; i++)
+        // for (int i = 0; i < Rows; i++)
         // {
-        //     for (int j = 0; j < Shape.Columns; j++)
+        //     for (int j = 0; j < Columns; j++)
         //     {
-        //         _contents[i, j] = 1 / (1 + Math.Exp(-_contents[i, j]));
+        //         Contents[i, j] = 1 / (1 + Math.Exp(-Contents[i, j]));
         //     }
         // }
 
@@ -172,11 +179,11 @@ public class Matrix
     // = e^(-x) / (1 + e^(-x))^2
     public void DSigmoid()
     {
-        // for (var i = 0; i < Shape.Rows; i++)
+        // for (var i = 0; i < Rows; i++)
         // {
-        //     for (var j = 0; j < Shape.Columns; j++)
+        //     for (var j = 0; j < Columns; j++)
         //     {
-        //         _contents[i, j] = Math.Exp(-_contents[i, j]) / Math.Pow(1 + Math.Exp(-_contents[i, j]), 2);
+        //         Contents[i, j] = Math.Exp(-Contents[i, j]) / Math.Pow(1 + Math.Exp(-Contents[i, j]), 2);
         //     }
         // }
 
@@ -234,14 +241,14 @@ public class Matrix
     {
         // This matrix is multiplicatively comformable to otherMat if and only if:
         // this.columns = otherMat.rows 
-        var thisCol = Shape.Columns;
-        var otherRow = otherMat.Shape.Rows;
+        var thisCols = Columns;
+        var otherRows = otherMat.Rows;
 
         // WRITE PROPER MESSAGE
-        if (thisCol != otherRow)
+        if (thisCols != otherRows)
             throw new MatrixArithmeticException("First matrix isn't multiplicatively conformable to the other");
 
-        var newContents = new float[Shape.Rows, otherMat.Shape.Columns];
+        var newContents = new float[thisCols, otherRows];
 
         for (var row = 0; row < newContents.GetLength(0); row++)
         for (var col = 0; col < newContents.GetLength(1); col++)
@@ -250,12 +257,12 @@ public class Matrix
             // A has as many rows as B has columns therefore A's row has the same amount of numbers as B's column 
             float sum = 0;
 
-            for (var i = 0; i < Shape.Columns; i++) sum += _contents[row, i] * otherMat.Contents[i, col];
+            for (var i = 0; i < Columns; i++) sum += Contents[row, i] * otherMat.Contents[i, col];
 
             newContents[row, col] = sum;
         }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
     public static Matrix Multiply(Matrix mat, Matrix otherMat)
@@ -270,59 +277,61 @@ public class Matrix
     {
         float sum = 0;
 
-        for (var i = 0; i < _contents.GetLength(0); i++)
-        for (var j = 0; j < _contents.GetLength(1); j++)
-            sum += _contents[i, j];
+        for (var i = 0; i < Contents.GetLength(0); i++)
+        for (var j = 0; j < Contents.GetLength(1); j++)
+            sum += Contents[i, j];
 
         return sum;
     }
 
     // Reshape the matrix 
-    public void Reshape(MatShape targetShape)
+    public void Reshape(int targetRows, int targetColumns)
     {
-        if (targetShape.Size != Shape.Size)
+        if (targetRows * targetColumns != Rows * Columns)
             throw new InvalidShapeException("Reshaping invalid - new matrix won't be the same size");
 
-        var newContents = new float[targetShape.Rows, targetShape.Columns];
+        var newContents = new float[targetRows, targetColumns];
 
         var newI = 0;
         var newJ = 0;
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
         {
-            newContents[newI, newJ] = _contents[i, j];
+            newContents[newI, newJ] = Contents[i, j];
             newJ++;
 
-            if (newJ >= targetShape.Columns)
+            if (newJ >= targetColumns)
             {
                 newJ = 0;
                 newI++;
             }
         }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
-    public static Matrix Reshape(Matrix mat, MatShape shape)
+    public static Matrix Reshape(Matrix mat, int targetRows, int targetColumns)
     {
         var returnMatrix = (Matrix)mat.MemberwiseClone();
-        returnMatrix.Reshape(shape);
+        returnMatrix.Reshape(targetRows, targetColumns);
         return returnMatrix;
     }
 
     // Change the matrix shape to (1,)
     public void Ravel()
     {
-        var newContents = new float[1, Shape.Size];
+        var newContents = new float[1, Rows * Columns];
 
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
+        for (var i = 0; i < Rows; i++)
         {
-            var newJ = i * Shape.Rows + j;
-            newContents[0, newJ] = _contents[i, j];
+            for (var j = 0; j < Columns; j++)
+            {
+                var newJ = i * Rows + j;
+                newContents[0, newJ] = Contents[i, j];
+            }
         }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
     public static Matrix Ravel(Matrix mat)
@@ -335,13 +344,15 @@ public class Matrix
     // Transpose the matrix
     public void Transpose()
     {
-        var newContents = new float[Shape.Columns, Shape.Rows];
+        var newContents = new float[Columns, Rows];
 
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            newContents[j, i] = _contents[i, j];
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+                newContents[j, i] = Contents[i, j];
+        }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
     public static Matrix Transpose(Matrix mat)
@@ -368,20 +379,20 @@ public class Matrix
     public void HorizontalStack(Matrix otherMat)
     {
         // Must have same amount of rows 
-        if (otherMat.Shape.Rows != Shape.Rows)
+        if (otherMat.Rows != Rows)
             throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
 
         // New shape = (same rows, sum of columns)
-        var newContents = new float[Shape.Rows, Shape.Columns + otherMat.Shape.Columns];
+        var newContents = new float[Rows, Columns + otherMat.Columns];
 
         for (var i = 0; i < newContents.GetLength(0); i++)
         for (var j = 0; j < newContents.GetLength(1); j++)
         {
-            var insertData = j >= Shape.Columns ? otherMat.Contents[i, j - Shape.Columns] : _contents[i, j];
+            var insertData = j >= Columns ? otherMat.Contents[i, j - Columns] : Contents[i, j];
             newContents[i, j] = insertData;
         }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
     public static Matrix HorizontalStack(Matrix mat, Matrix otherMat)
@@ -395,20 +406,20 @@ public class Matrix
     public void VerticalStack(Matrix otherMat)
     {
         // Must have same amount of columns 
-        if (otherMat.Shape.Columns != Shape.Columns)
+        if (otherMat.Columns != Columns)
             throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
 
         // New shape = (same rows, sum of columns)
-        var newContents = new float[Shape.Rows + otherMat.Shape.Rows, Shape.Columns];
+        var newContents = new float[Rows + otherMat.Rows, Columns];
 
         for (var i = 0; i < newContents.GetLength(0); i++)
         for (var j = 0; j < newContents.GetLength(1); j++)
         {
-            var insertData = i >= Shape.Rows ? otherMat.Contents[i - Shape.Rows, j] : _contents[i, j];
+            var insertData = i >= Rows ? otherMat.Contents[i - Rows, j] : Contents[i, j];
             newContents[i, j] = insertData;
         }
 
-        _contents = newContents;
+        Contents = newContents;
     }
 
     public static Matrix VerticalStack(Matrix mat, Matrix otherMat)
@@ -421,12 +432,12 @@ public class Matrix
     public void Add(Matrix otherMat)
     {
         // Shapes must be the same 
-        if (otherMat.Shape.Rows != Shape.Rows || otherMat.Shape.Columns != Shape.Columns)
+        if (otherMat.Rows != Rows || otherMat.Columns != Columns)
             throw new MatrixArithmeticException("Matrices aren't additively applicable (not the same shape)");
 
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            _contents[i, j] += otherMat.Contents[i, j];
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] += otherMat.Contents[i, j];
     }
 
     public static Matrix Add(Matrix mat, Matrix otherMat)
@@ -439,12 +450,12 @@ public class Matrix
     public void Subtract(Matrix otherMat)
     {
         // Shapes must be the same 
-        if (otherMat.Shape.Rows != Shape.Rows || otherMat.Shape.Columns != Shape.Columns)
+        if (otherMat.Rows != Rows || otherMat.Columns != Columns)
             throw new MatrixArithmeticException("Matrices aren't additively applicable (not the same shape)");
 
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            _contents[i, j] -= otherMat.Contents[i, j];
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] -= otherMat.Contents[i, j];
     }
 
     public static Matrix Subtract(Matrix mat, Matrix otherMat)
@@ -456,9 +467,9 @@ public class Matrix
 
     public void Subtract(float scalar)
     {
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            _contents[i, j] -= scalar;
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] -= scalar;
     }
 
     public static Matrix Subtract(Matrix mat, float scalar)
@@ -470,9 +481,9 @@ public class Matrix
 
     public void Add(float scalar)
     {
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            _contents[i, j] += scalar;
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] += scalar;
     }
 
     public static Matrix Add(Matrix mat, float scalar)
@@ -485,9 +496,9 @@ public class Matrix
 
     public void Multiply(float scalar)
     {
-        for (var i = 0; i < Shape.Rows; i++)
-        for (var j = 0; j < Shape.Columns; j++)
-            _contents[i, j] *= scalar;
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] *= scalar;
     }
 
     public static Matrix Multiply(Matrix mat, float scalar)
