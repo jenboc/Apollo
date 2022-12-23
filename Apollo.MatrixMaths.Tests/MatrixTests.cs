@@ -85,7 +85,7 @@ public class MatrixTests
     }
 
     [Fact]
-    public void MatMul()
+    public void SameShapeMatmul()
     {
         var expectedData = new float[,]
         {
@@ -99,6 +99,35 @@ public class MatrixTests
         defaultMat1.Multiply(defaultMat2);
         var actualData = defaultMat1.Contents;
 
+        Assert.Equal(expectedData, actualData);
+    }
+
+    [Fact]
+    public void DiffShapeMatmul()
+    {
+        var expectedData = new float[,]
+        {
+            { -7f },
+            { -1f }
+        };
+
+        var mat1Data = new float[,]
+        {
+            { 1f, -2f },
+            { 3f, 4f }
+        };
+
+        var mat2Data = new float[,]
+        {
+            { -3f },
+            { 2f }
+        };
+
+        var mat1 = new Matrix(mat1Data);
+        var mat2 = new Matrix(mat2Data);
+        var result = Matrix.Multiply(mat1, mat2);
+        var actualData = result.Contents;
+        
         Assert.Equal(expectedData, actualData);
     }
 

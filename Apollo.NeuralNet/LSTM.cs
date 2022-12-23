@@ -34,6 +34,7 @@ public class Lstm
     /// <summary>
     ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
+    /// <param name="input">Matrix representing the input into the LSTM</param>
     public Matrix Forward(Matrix input)
     {
         // Calculate forget gate value 
@@ -65,9 +66,14 @@ public class Lstm
         throw new NotImplementedException();
     }
 
-    // Updating the LSTM cell is managed by the RNN "parent" network 
-    // Adjusts variables of the cell 
-    public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix cellUpdate, Matrix outputUpdate)
+    /// <summary>
+    /// Adjusts the variables of the LSTM relative to update parameters
+    /// </summary>
+    /// <param name="forgetUpdate">Matrix to update the forget gate weight relative to</param>
+    /// <param name="inputUpdate">Matrix to update the input gate weight relative to</param>
+    /// <param name="newInfoUpdate">Matrix to update the new info gate weight relative to</param>
+    /// <param name="outputUpdate">Matrix to update the output gate weight relative to</param>
+    public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix newInfoUpdate, Matrix outputUpdate)
     {
     }
 }

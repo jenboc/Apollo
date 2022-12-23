@@ -7,4 +7,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj" />
+      <ProjectReference Include="..\Apollo.MIDI\Apollo.MIDI.csproj" />
+      <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj" />
+    </ItemGroup>
+
 </Project>

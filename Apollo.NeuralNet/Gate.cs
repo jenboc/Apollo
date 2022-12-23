@@ -29,6 +29,6 @@ public class Gate
 
     public void CalcUnactivated(Matrix input)
     {
-        Value = Matrix.Multiply(Weight, input) + Bias;
+        Value = Matrix.Multiply(input, Weight) + Bias;
     }
 }

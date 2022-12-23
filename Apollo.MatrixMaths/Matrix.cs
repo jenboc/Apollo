@@ -105,11 +105,6 @@ public class Matrix
         return returnMatrix;
     }
 
-    public static Matrix Random(int rows, int columns)
-    {
-        return Random(rows, columns);
-    }
-
     // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
     public void IterateContent(Func<float, float> contentAction)
     {
@@ -239,27 +234,27 @@ public class Matrix
     // Multiply 2 matrices
     public void Multiply(Matrix otherMat)
     {
-        // This matrix is multiplicatively comformable to otherMat if and only if:
+        // This matrix is multiplicatively conformable to otherMat if and only if:
         // this.columns = otherMat.rows 
-        var thisCols = Columns;
-        var otherRows = otherMat.Rows;
-
-        // WRITE PROPER MESSAGE
-        if (thisCols != otherRows)
+        if (Columns != otherMat.Rows)
             throw new MatrixArithmeticException("First matrix isn't multiplicatively conformable to the other");
 
-        var newContents = new float[thisCols, otherRows];
+        var newContents = new float[Rows, otherMat.Columns];
+        Console.WriteLine($"{otherMat.Rows}x{Columns}");
 
         for (var row = 0; row < newContents.GetLength(0); row++)
-        for (var col = 0; col < newContents.GetLength(1); col++)
         {
-            // Row in A * Col in B 
-            // A has as many rows as B has columns therefore A's row has the same amount of numbers as B's column 
-            float sum = 0;
+            for (var col = 0; col < newContents.GetLength(1); col++)
+            {
+                // Row in A * Col in B 
+                // A has as many columns as B has rows therefore A's columns has the same amount of numbers as B's rows 
+                float sum = 0;
 
-            for (var i = 0; i < Columns; i++) sum += Contents[row, i] * otherMat.Contents[i, col];
+                for (var i = 0; i < Columns; i++)
+                    sum += Contents[row, i] * otherMat.Contents[i, col];
 
-            newContents[row, col] = sum;
+                newContents[row, col] = sum;
+            }
         }
 
         Contents = newContents;
