@@ -9,13 +9,14 @@ public class Lstm
         VocabSize = vocabSize; // The amount of different characters present in the training data
         LearningRate = learningRate;
 
-        var gateShape = new int[] { VocabSize, VocabSize };
-        Forget = new Gate(gateShape, gateShape);
-        Input = new Gate(gateShape, gateShape);
-        NewInfo = new Gate(gateShape, gateShape);
-        Output = new Gate(gateShape, gateShape);
+        var weightShape = new int[] { VocabSize, VocabSize };
+        var biasShape = new int[] { VocabSize, 1 };
+        Forget = new Gate(weightShape, biasShape);
+        Input = new Gate(weightShape, biasShape);
+        NewInfo = new Gate(weightShape, biasShape);
+        Output = new Gate(weightShape, biasShape);
 
-        CellState = new Matrix(vocabSize, vocabSize);
+        CellState = new Matrix(VocabSize, 1);
     }
 
     // General Parameters
@@ -35,25 +36,32 @@ public class Lstm
     ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
     /// <param name="input">Matrix representing the input into the LSTM</param>
-    public Matrix Forward(Matrix input)
+    /// <param name="previousOutput">LSTM's previous output</param> 
+    public Matrix Forward(Matrix input, Matrix? previousOutput=null)
     {
+        if (previousOutput == null)
+        {
+            // Create matrix of 0s with same size as output weight of gates
+            previousOutput = new Matrix(Forget.WeightRows, Forget.WeightColumns);  
+        }
+        
         // Calculate forget gate value 
-        Forget.CalcUnactivated(input);
+        Forget.CalcUnactivated(input, previousOutput);
         Forget.Value.Sigmoid();
 
         // Calculate input gate value
-        Input.CalcUnactivated(input);
+        Input.CalcUnactivated(input, previousOutput);
         Input.Value.Sigmoid();
 
         // Calculate new info value 
-        NewInfo.CalcUnactivated(input);
+        NewInfo.CalcUnactivated(input, previousOutput);
         NewInfo.Value.Tanh();
 
         // Calculate cell state
-        CellState = Forget.Value * CellState + Input.Value * NewInfo.Value;
+        CellState = (Forget.Value * CellState) + (Input.Value * NewInfo.Value);
 
         // Calculate output gate
-        Output.CalcUnactivated(input);
+        Output.CalcUnactivated(input, previousOutput);
         Output.Value.Sigmoid();
 
         // return output 

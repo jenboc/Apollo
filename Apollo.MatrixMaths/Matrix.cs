@@ -240,7 +240,6 @@ public class Matrix
             throw new MatrixArithmeticException("First matrix isn't multiplicatively conformable to the other");
 
         var newContents = new float[Rows, otherMat.Columns];
-        Console.WriteLine($"{otherMat.Rows}x{Columns}");
 
         for (var row = 0; row < newContents.GetLength(0); row++)
         {
@@ -488,18 +487,47 @@ public class Matrix
         return returnMat;
     }
 
-
+    /// <summary>
+    /// Matrix multiplication by scalar, changing the matrix it is performed upon 
+    /// </summary>
     public void Multiply(float scalar)
     {
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
             Contents[i, j] *= scalar;
     }
-
+    
+    /// <summary>
+    /// Matrix multiplication by scalar, creating a new matrix for its output
+    /// </summary>
     public static Matrix Multiply(Matrix mat, float scalar)
     {
         var returnMat = (Matrix)mat.MemberwiseClone();
         returnMat.Multiply(scalar);
+        return returnMat;
+    }
+
+    /// <summary>
+    /// Element-Wise multiplication, changing the matrix it is performed upon 
+    /// </summary>
+    public void Hadamard(Matrix otherMat)
+    {
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+            {
+                Contents[i, j] *= otherMat.Contents[i, j];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Element-Wise multiplication, creating a new matrix for the output 
+    /// </summary>
+    public static Matrix Hadamard(Matrix mat1, Matrix mat2)
+    {
+        var returnMat = (Matrix)mat1.MemberwiseClone();
+        returnMat.Hadamard(mat2);
         return returnMat;
     }
 

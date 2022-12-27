@@ -2,7 +2,9 @@
 using Apollo.NeuralNet;
 using System.Text.Json;
 
-var mat1 = Matrix.Random(1, 5);
-var mat2 = Matrix.Random(5, 5);
+var r = new Rnn(5, 10, 10e-5f);
 
-var result = Matrix.Multiply(mat1, mat2);
+var initialInput = Matrix.Random(5,1);
+var outputs = r.Forward(initialInput);
+
+Console.WriteLine(JsonSerializer.Serialize(outputs[0].Contents));
