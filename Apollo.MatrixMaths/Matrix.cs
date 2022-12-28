@@ -7,15 +7,14 @@ public class Matrix
 {
     public float[,] Contents { get; private set; }
 
-    public int Rows
+    public float this[int i, int j]
     {
-        get { return Contents.GetLength(0); }
+        get => Contents[i, j];
+        set => Contents[i, j] = value;
     }
-
-    public int Columns
-    {
-        get { return Contents.GetLength(1); }
-    }
+    
+    public int Rows => Contents.GetLength(0);
+    public int Columns => Contents.GetLength(1);
 
     // Generate matrix full of zeros/default values 
     public Matrix(int rows, int columns)
