@@ -5,22 +5,16 @@ namespace Apollo.MatrixMaths;
 // Generic Matrix 
 public class Matrix
 {
-    public float[,] Contents {get; private set;}
+    public float[,] Contents { get; private set; }
 
     public int Rows
     {
-        get 
-        {
-            return Contents.GetLength(0);
-        }
+        get { return Contents.GetLength(0); }
     }
 
-    public int Columns 
+    public int Columns
     {
-        get 
-        {
-            return Contents.GetLength(1);
-        }
+        get { return Contents.GetLength(1); }
     }
 
     // Generate matrix full of zeros/default values 
@@ -496,7 +490,7 @@ public class Matrix
         for (var j = 0; j < Columns; j++)
             Contents[i, j] *= scalar;
     }
-    
+
     /// <summary>
     /// Matrix multiplication by scalar, creating a new matrix for its output
     /// </summary>
@@ -512,6 +506,11 @@ public class Matrix
     /// </summary>
     public void Hadamard(Matrix otherMat)
     {
+        if (otherMat.Rows != Rows && otherMat.Columns != Columns)
+        {
+            throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication");
+        }
+        
         for (var i = 0; i < Rows; i++)
         {
             for (var j = 0; j < Columns; j++)

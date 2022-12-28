@@ -10,13 +10,13 @@ public class Lstm
         LearningRate = learningRate;
 
         var weightShape = new int[] { VocabSize, VocabSize };
-        var biasShape = new int[] { VocabSize, 1 };
+        var biasShape = new int[] { 1, VocabSize };
         Forget = new Gate(weightShape, biasShape);
         Input = new Gate(weightShape, biasShape);
         NewInfo = new Gate(weightShape, biasShape);
         Output = new Gate(weightShape, biasShape);
 
-        CellState = new Matrix(VocabSize, 1);
+        CellState = new Matrix(1, VocabSize);
     }
 
     // General Parameters
@@ -35,14 +35,14 @@ public class Lstm
     /// <summary>
     ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
-    /// <param name="input">Matrix representing the input into the LSTM</param>
+    /// <param name="input">Column one-hot vector representing the input into the LSTM</param>
     /// <param name="previousOutput">LSTM's previous output</param> 
-    public Matrix Forward(Matrix input, Matrix? previousOutput=null)
+    public Matrix Forward(Matrix input, Matrix previousOutput)
     {
-        if (previousOutput == null)
+        // Validating arguments
+        if (input.Rows != VocabSize && input.Columns > 1)
         {
-            // Create matrix of 0s with same size as output weight of gates
-            previousOutput = new Matrix(Forget.WeightRows, Forget.WeightColumns);  
+            throw new LstmInputException("Input parameter must be a column vector with VocabSize rows");
         }
         
         // Calculate forget gate value 
@@ -58,7 +58,8 @@ public class Lstm
         NewInfo.Value.Tanh();
 
         // Calculate cell state
-        CellState = (Forget.Value * CellState) + (Input.Value * NewInfo.Value);
+        // Forget_Gate x CellState + Input_Gate x New_Info_Gate (using element-wise multiplication) 
+        CellState = Matrix.Hadamard(Forget.Value, CellState) + Matrix.Hadamard(Input.Value, NewInfo.Value);
 
         // Calculate output gate
         Output.CalcUnactivated(input, previousOutput);
