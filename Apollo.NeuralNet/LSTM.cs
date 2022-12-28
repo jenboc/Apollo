@@ -16,7 +16,7 @@ public class Lstm
         NewInfo = new Gate(weightShape, biasShape);
         Output = new Gate(weightShape, biasShape);
 
-        CellState = new Matrix(1, VocabSize);
+        CellState = new Matrix(VocabSize, 1);
     }
 
     // General Parameters
@@ -66,7 +66,7 @@ public class Lstm
         Output.Value.Sigmoid();
 
         // return output 
-        return Output.Value * Matrix.Tanh(CellState);
+        return Matrix.Hadamard(Output.Value, Matrix.Tanh(CellState));
     }
 
     public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate,
