@@ -10,7 +10,7 @@ public class Lstm
         LearningRate = learningRate;
 
         var weightShape = new int[] { VocabSize, VocabSize };
-        var biasShape = new int[] { 1, VocabSize };
+        var biasShape = new int[] { VocabSize, 1 };
         Forget = new Gate(weightShape, biasShape);
         Input = new Gate(weightShape, biasShape);
         NewInfo = new Gate(weightShape, biasShape);

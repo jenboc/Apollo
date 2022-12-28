@@ -49,12 +49,6 @@ public class Gate
         // input = x 
         // prev_output = h
 
-        var p1 = Matrix.Multiply(InputWeight, input);
-        var p2 = Matrix.Multiply(PrevOutputWeight, prevOutput);
-        var p3 = Bias;
-        
-        
-        
-        Value = p1 + p2 + p3;
+        Value = Matrix.Multiply(InputWeight, input) + Matrix.Multiply(PrevOutputWeight, prevOutput) + Bias;
     }
 }
