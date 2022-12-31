@@ -39,11 +39,39 @@ public class Rnn
         {
             lstmOutput = LstmCell.Forward(lstmInput, lstmOutput);
             outputs[i] = lstmOutput;
-            // Interpret outputs[i]
+            
+            outputs[i].Softmax();
+            outputs[i] = InterpretOutput(outputs[i]);
+
             lstmInput = outputs[i];
         }
 
         return outputs;
+    }
+    
+    /// <summary>
+    /// Interprets the softmaxed LSTM output as a one-hot vector
+    /// </summary>
+    /// <param name="softmax">The result after using the softmax function on the LSTM output</param>
+    /// <returns>A one-hot vector representing the LSTM's predictions</returns>
+    private Matrix InterpretOutput(Matrix softmax)
+    {
+        var highest = float.MinValue;
+        var highestIndex = -1;
+
+        for (var row = 0; row < softmax.Rows; row++)
+        {
+            if (softmax[row, 0] > highest)
+            {
+                highest = softmax[row, 0];
+                highestIndex = row;
+            }
+        }
+
+        softmax *= 0; // Set everything to 0 
+        softmax.Contents[highestIndex, 0] = 1; // Set index of highest value to 1 
+
+        return softmax;
     }
     
     /// <summary>

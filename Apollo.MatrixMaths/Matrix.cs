@@ -529,6 +529,20 @@ public class Matrix
         return returnMat;
     }
 
+    public void Softmax()
+    {
+        Exp();
+        var sum = Sum();
+        Multiply(1 / sum); 
+    }
+
+    public static Matrix Softmax(Matrix matrix)
+    {
+        var returnMat = new Matrix((float[,])matrix.Contents.Clone());
+        returnMat.Softmax();
+        return returnMat;
+    }
+
     public void Clip(float min, float max)
     {
         IterateContent(value => Math.Clamp(value, min, max));

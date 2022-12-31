@@ -93,7 +93,7 @@ public class Vocab
         var numOnes = 0;
         for (var i = 0; i < vector.Rows; i++)
         {
-            if (vector[i, 1] == 1f)
+            if (vector[i, 0] == 1f)
             {
                 index = i;
                 numOnes++;

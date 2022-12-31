@@ -398,4 +398,30 @@ public class MatrixTests
         Assert.Equal(expectedOutput, mat1x2.Contents); // Check if right answer obtained 
         Assert.Equal(expectedOutput, mat2x1.Contents); // Check if order matters
     }
+
+    [Fact]
+    public void Softmax()
+    {
+        var data = new[,]
+        {
+            { 0.59474933f },
+            { 0.6371081f },
+            { 0.62671316f },
+            { 0.7615537f }
+        };
+        
+        var expectedOutput = new[,]
+        {
+            { 0.2348922f },
+            { 0.24505568f },
+            { 0.24252155f },
+            { 0.27753058f }
+        };
+
+        var matrix = new Matrix(data);
+        matrix.Softmax();
+        var actualOutput = matrix.Contents;
+        
+        Assert.Equal(expectedOutput, actualOutput);
+    }
 }
