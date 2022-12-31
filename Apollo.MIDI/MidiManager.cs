@@ -59,13 +59,45 @@ public static class MidiManager
             throw new DirectoryNotFoundException($"{path} is not a valid directory");
     }
 
-    public static void WriteFile(List<string> data)
+    public static void WriteFile(List<string> data, string path)
     {
-        
+        var dTicks = int.Parse(data[0]);
+        var collection = new MidiEventCollection(0, dTicks);
+
+        var eventStart = 1;
+        for (var i = 1; i < data.Count; i++)
+        {
+            var line = data[i];
+            if (char.IsLetter(line[0]) && eventStart != i) // Everything before i is apart of a singular event
+            {
+                // Tempo event uses 2 lines, note event uses 4
+                if (data[eventStart][0] == 'T')
+                {
+                    var microsecondsPerQuarterNote = int.Parse(data[eventStart].Substring(1));
+                    var absoluteTime = long.Parse(data[eventStart + 1]);
+                    collection.AddEvent(new TempoEvent(microsecondsPerQuarterNote, absoluteTime), 1);
+                }
+                else if (data[eventStart][0] == 'P')
+                {
+                    var noteNumber = int.Parse(data[eventStart].Substring(1));
+                    var onEventTime = long.Parse(data[eventStart + 1]);
+                    var offEventTime = long.Parse(data[eventStart + 2]);
+                    var duration = int.Parse(data[eventStart + 3]);
+                    var velocity = int.Parse(data[eventStart + 4]);
+                
+                    collection.AddEvent(new NoteOnEvent(onEventTime, 1, noteNumber, velocity, duration), 1);
+                    collection.AddEvent(new NoteEvent(offEventTime, 1, MidiCommandCode.NoteOff, noteNumber, velocity), 1);
+                }
+
+                eventStart = i; 
+            }
+        }
+    
+        MidiFile.Export("rewritten.mid", collection);
     }
-    public static void WriteFile(string data)
+    public static void WriteFile(string data, string path)
     {
-        WriteFile(data.Split('\n').ToList());
+        WriteFile(data.Split('\n').ToList(), path);
     }
     
     /// <summary>
