@@ -53,10 +53,28 @@ public static class MidiManager
         return data;
     }
 
-    public static void ReadDir(string path)
+    public static List<List<string>> ReadDir(string path)
     {
         if (GetPathType(path) != 'd')
             throw new DirectoryNotFoundException($"{path} is not a valid directory");
+
+        var dirData = new List<List<string>>(); 
+        
+        var dirInfo = new DirectoryInfo(path);
+        var dirFiles = dirInfo.GetFiles();
+
+        foreach (var fileInfo in dirFiles)
+        {
+            Console.WriteLine(fileInfo.Name);
+            if (!fileInfo.Name.EndsWith(".mid") && !fileInfo.Name.EndsWith(".midi"))
+                continue;
+
+            var filePath = fileInfo.FullName;
+            var fileData = ReadFile(filePath);
+            dirData.Add(fileData);
+        }
+
+        return dirData;
     }
 
     public static void WriteFile(List<string> data, string path)
@@ -93,7 +111,7 @@ public static class MidiManager
             }
         }
     
-        MidiFile.Export("rewritten.mid", collection);
+        MidiFile.Export(path, collection);
     }
     public static void WriteFile(string data, string path)
     {
