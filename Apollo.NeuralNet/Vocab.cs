@@ -8,7 +8,8 @@ public class Vocab
 
     public Vocab()
     {
-        VocabList = new List<char>(); 
+        // Only characters used in string representation of the MIDI files 
+        VocabList = new List<char>() { 'P', 'T', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n' }; 
     }
 
     public Vocab(List<char> vocabList)
@@ -103,5 +104,16 @@ public class Vocab
             throw new InvalidOneHotException("A one-hot vector should only contain one 1");
 
         return this[index];
+    }
+
+    public Matrix[] PrepareTrainingData(string midiString)
+    {
+        var trainingData = new Matrix[midiString.Length];
+        for (var i = 0; i < midiString.Length; i++)
+        {
+            trainingData[i] = CreateOneHot(midiString[i]);
+        }
+
+        return trainingData;
     }
 }

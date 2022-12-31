@@ -65,7 +65,6 @@ public static class MidiManager
 
         foreach (var fileInfo in dirFiles)
         {
-            Console.WriteLine(fileInfo.Name);
             if (!fileInfo.Name.EndsWith(".mid") && !fileInfo.Name.EndsWith(".midi"))
                 continue;
 

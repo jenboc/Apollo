@@ -1,13 +1,19 @@
 ﻿using Apollo.MIDI;
+using Apollo.NeuralNet;
 
-const string PATH = @"D:\Documents\0. Documents\Programming\Apollo\TestingConsoleApp\bin\Debug\net7.0";
+const string PATH = @"bach_846.mid";
 
-var dirData = MidiManager.ReadDir(PATH);
+var vocab = new Vocab();
+var midiString = string.Join('\n', MidiManager.ReadFile(PATH));
 
-Console.WriteLine(dirData.Count);
+var trainingData = vocab.PrepareTrainingData(midiString);
 
-for (var i = 1; i <= dirData.Count; i++)
+foreach (var data in trainingData)
 {
-    var name = $"rewritten{i}.mid";
-    MidiManager.WriteFile(dirData[i - 1], name.ToString());
+    Console.WriteLine($"{data.Rows}x{data.Columns}");
+}
+
+for (var row = 0; row < trainingData[0].Rows; row++)
+{
+    Console.WriteLine(trainingData[0][row,0]);
 }
