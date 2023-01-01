@@ -18,7 +18,7 @@ public class Rnn
 
     // General Parameters
     private int VocabSize { get; }
-    private int RecurrenceAmount { get; }
+    private int RecurrenceAmount { get; set;  }
     private float LearningRate { get; }
 
     // LSTM Cell 
@@ -78,13 +78,47 @@ public class Rnn
     /// Perform the backpropagation algorithm on the neural network to optimise its parameters.
     /// </summary>
     /// <returns> A float representing the error of the network </returns>
-    public float Backprop()
+    private float Backprop()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Update the parameters of the neural network
+    /// </summary>
+    private void Update()
     {
         throw new NotImplementedException();
     }
 
-    public void Update()
+    /// <summary>
+    /// Calculate the loss using categorical cross-entropy 
+    /// </summary>
+    /// <param name="expected">The expected/desired output from the LSTM</param>
+    /// <param name="actual">The actual output of the LSTM</param>
+    /// <returns>A matrix representing the loss of the neural network</returns>
+    private float CalculateLoss(Matrix expected, Matrix actual)
     {
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Train the neural network on a single file
+    /// </summary>
+    /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
+    public void Train(Matrix[] trainingData)
+    {
+        for (var i = 0; i < trainingData.Length - 1; i++)
+        {
+            var input = trainingData[i];
+            var previousOutput = i > 0 ? trainingData[i - 1] : Matrix.Like(input); 
+            var expectedOutput = trainingData[i + 1];
+            
+            // Singular pass of LSTM 
+            var actualOutput = LstmCell.Forward(input, previousOutput);
+            actualOutput.Softmax(); // Softmax used for categorical cross-entropy loss 
+            
+            var loss = CalculateLoss(expectedOutput, actualOutput);
+        }
     }
 }

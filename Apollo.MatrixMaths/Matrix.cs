@@ -535,11 +535,22 @@ public class Matrix
         var sum = Sum();
         Multiply(1 / sum); 
     }
-
     public static Matrix Softmax(Matrix matrix)
     {
         var returnMat = new Matrix((float[,])matrix.Contents.Clone());
         returnMat.Softmax();
+        return returnMat;
+    }
+
+    public void Log(float logBase)
+    {
+        IterateContent(value => MathF.Log(value, logBase));
+    }
+
+    public static Matrix Log(Matrix matrix, float logBase)
+    {
+        var returnMat = new Matrix((float[,])matrix.Contents.Clone());
+        returnMat.Log(logBase);
         return returnMat;
     }
 

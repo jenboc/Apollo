@@ -105,19 +105,19 @@ public class MatrixTests
     [Fact]
     public void DiffShapeMatmul()
     {
-        var expectedData = new float[,]
+        var expectedData = new[,]
         {
             { -7f },
             { -1f }
         };
 
-        var mat1Data = new float[,]
+        var mat1Data = new[,]
         {
             { 1f, -2f },
             { 3f, 4f }
         };
 
-        var mat2Data = new float[,]
+        var mat2Data = new[,]
         {
             { -3f },
             { 2f }
@@ -420,6 +420,29 @@ public class MatrixTests
 
         var matrix = new Matrix(data);
         matrix.Softmax();
+        var actualOutput = matrix.Contents;
+        
+        Assert.Equal(expectedOutput, actualOutput);
+    }
+
+    [Fact]
+    public void Log()
+    {
+        var logBase = 5;
+        
+        var data = new[,]
+        {
+            { 2f, 5.5f },
+            { 25f, 125.7556f }
+        };
+        var expectedOutput = new[,]
+        {
+            { 0.43067655f, 1.0592195f },
+            { 2f, 3.003744539f }
+        };
+
+        var matrix = new Matrix(data);
+        matrix.Log(logBase);
         var actualOutput = matrix.Contents;
         
         Assert.Equal(expectedOutput, actualOutput);
