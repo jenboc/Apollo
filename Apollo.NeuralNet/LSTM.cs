@@ -105,4 +105,16 @@ public class Lstm
     {
         return new Matrix[] { CellState, CandidateState.Value };
     }
+
+    /// <summary>
+    /// Clears the value of all states and gates in the LSTM
+    /// </summary>
+    public void Clear()
+    {
+        Forget.Clear();
+        Input.Clear();
+        Output.Clear();
+        CandidateState.Clear();
+        CellState *= 0;
+    }
 }

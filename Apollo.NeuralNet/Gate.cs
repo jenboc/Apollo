@@ -51,4 +51,12 @@ public class Gate
 
         Value = Matrix.Multiply(InputWeight, input) + Matrix.Multiply(PrevOutputWeight, prevOutput) + Bias;
     }
+
+    /// <summary>
+    /// Set the value of the gate to 0 
+    /// </summary>
+    public void Clear()
+    {
+        Value *= 0;
+    }
 }

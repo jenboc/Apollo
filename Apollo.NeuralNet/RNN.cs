@@ -89,11 +89,37 @@ public class Rnn
     /// <param name="inputGates">The values of the input gate at each timestep during training</param>
     /// <param name="outputGates">The values of the output gate at each timestep during training</param>
     /// <param name="inputs">The inputs to the LSTM cell at each timestep during training</param>
-    /// <param name="outputs">The outputs from the LSTM cell at each timestep during training</param>
-    private void Backprop(List<Matrix> forgetGates, List<Matrix> candidateStates, List<Matrix> cellStates, 
-        List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> outputs)
+    /// <param name="predictedOutputs">The outputs from the LSTM cell at each timestep during training</param>
+    /// <param name="expectedOutputs">The training data</param> 
+    private void Backprop(Matrix[] forgetGates, Matrix[] candidateStates, Matrix[] cellStates, 
+        Matrix[] inputGates, Matrix[] outputGates, Matrix[] inputs, Matrix[] predictedOutputs,
+        Matrix[] expectedOutputs)
     {
-        throw new NotImplementedException();
+        // Derivatives for tunable parameters are cumulative => define outside loop 
+        
+
+        // t represents timestep
+        for (var t = 1; t < inputs.Length; t++)
+        {
+            // dL/dh(t) = (y_hat - y)V^T
+            var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(Weight);
+            
+            // dL/dc(t) = dL/dh(t) x o(t)tanh'(c_t) 
+            var dC = Matrix.Hadamard(dH, Matrix.Hadamard(outputGates[t], Matrix.DTanh(cellStates[t])));
+
+            // dL/dg(t) = dL/dc(t) x i(t) 
+            var dG = Matrix.Hadamard(dC, inputGates[t]);
+
+            // dL/do(t) = dL/dh x tanh(c(t)) 
+            var dO = Matrix.Hadamard(dH, Matrix.Tanh(cellStates[t]));
+
+            // dL/di(t) = dL/dc(t) x g(t)
+            var dI = Matrix.Hadamard(dC, candidateStates[t]);
+
+            // dL/df(t) = dL/dc(t) x c(t-1) 
+            var dF = Matrix.Hadamard(dC, cellStates[t - 1]);
+    
+        }
     }
     
     /// <summary>
@@ -121,23 +147,39 @@ public class Rnn
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
     public void Train(Matrix[] trainingData)
     {
+        LstmCell.Clear();
+
+        var gateValues = LstmCell.GetGateValues();
+        var stateValues = LstmCell.GetStateValues(); 
+        
         // Data required to perform backpropagation 
-        var previousForgetGates = new List<Matrix>();
-        var previousCandidateStates = new List<Matrix>();
-        var previousCellStates = new List<Matrix>();
-        var previousInputGates = new List<Matrix>();
-        var previousOutputGates = new List<Matrix>();
-        var previousInputs = new List<Matrix>();
-        var previousLstmOutputs = new List<Matrix>();
+        var previousForgetGates = new Matrix[trainingData.Length];
+        previousForgetGates[0] = gateValues[0].Clone();
+        
+        var previousCandidateStates = new Matrix[trainingData.Length];
+        previousCandidateStates[0] = stateValues[1].Clone();
+        
+        var previousCellStates = new Matrix[trainingData.Length];
+        previousCellStates[0] = stateValues[0].Clone();
+        
+        var previousInputGates = new Matrix[trainingData.Length];
+        previousInputGates[0] = gateValues[1].Clone();
+        
+        var previousOutputGates = new Matrix[trainingData.Length];
+        previousOutputGates[0] = gateValues[2].Clone();
+        
+        var previousInputs = new Matrix[trainingData.Length];
+        var previousLstmOutputs = new Matrix[trainingData.Length];
 
         var totalLoss = new Matrix(VocabSize, VocabSize);
-
-        for (var i = 0; i < trainingData.Length - 1; i++)
+        
+        // Start at 1 so that previousInputs[i] is supposed to produce trainingData[i]
+        for (var i = 1; i < trainingData.Length; i++)
         {
-            var input = trainingData[i];
+            var input = trainingData[i - 1];
             var previousOutput = i == 0 ? Matrix.Like(input) : previousLstmOutputs[i - 1];
             
-            var expectedOutput = trainingData[i + 1];
+            var expectedOutput = trainingData[i];
             
             var actualOutput = LstmCell.Forward(input, previousOutput); 
             
@@ -146,20 +188,20 @@ public class Rnn
 
             totalLoss += CalculateLoss(expectedOutput, actualOutput); 
 
-            previousInputs.Add(input);
+            previousInputs[i] = input;
 
-            var gateValues = LstmCell.GetGateValues();
-            previousForgetGates.Add(gateValues[0]);
-            previousInputGates.Add(gateValues[1]);
-            previousOutputGates.Add(gateValues[2]);
+            gateValues = LstmCell.GetGateValues();
+            previousForgetGates[i] = gateValues[0].Clone();
+            previousInputGates[i] = gateValues[1].Clone();
+            previousOutputGates[i] = gateValues[2].Clone();
 
-            var stateValues = LstmCell.GetStateValues();
-            previousCellStates.Add(stateValues[0]); 
-            previousCandidateStates.Add(stateValues[1]);
+            stateValues = LstmCell.GetStateValues();
+            previousCellStates[i] = stateValues[0].Clone(); 
+            previousCandidateStates[i] = stateValues[1].Clone();
 
         }
         
         Backprop(previousForgetGates, previousCandidateStates, previousCellStates, previousInputGates, 
-            previousOutputGates, previousInputs, previousLstmOutputs);
+            previousOutputGates, previousInputs, previousLstmOutputs, trainingData);
     }
 }
