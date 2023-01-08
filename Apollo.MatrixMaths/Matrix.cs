@@ -114,7 +114,7 @@ public class Matrix
 
     public static Matrix Tanh(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Tanh();
         return returnMat;
     }
@@ -136,7 +136,7 @@ public class Matrix
 
     public static Matrix DTanh(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.DTanh();
         return returnMat;
     }
@@ -158,7 +158,7 @@ public class Matrix
 
     public static Matrix Sigmoid(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Sigmoid();
         return returnMat;
     }
@@ -180,7 +180,7 @@ public class Matrix
 
     public static Matrix DSigmoid(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.DSigmoid();
         return returnMat;
     }
@@ -193,7 +193,7 @@ public class Matrix
 
     public static Matrix Sqrt(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Sqrt();
         return returnMat;
     }
@@ -206,7 +206,7 @@ public class Matrix
 
     public static Matrix Exp(Matrix mat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Exp();
         return returnMat;
     }
@@ -219,7 +219,7 @@ public class Matrix
 
     public static Matrix Power(Matrix mat, float power)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Power(power);
         return returnMat;
     }
@@ -254,7 +254,7 @@ public class Matrix
 
     public static Matrix Multiply(Matrix mat, Matrix otherMat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Multiply(otherMat);
         return returnMat;
     }
@@ -299,7 +299,7 @@ public class Matrix
 
     public static Matrix Reshape(Matrix mat, int targetRows, int targetColumns)
     {
-        var returnMatrix = new Matrix((float[,])mat.Contents.Clone());
+        var returnMatrix = mat.Clone();
         returnMatrix.Reshape(targetRows, targetColumns);
         return returnMatrix;
     }
@@ -323,7 +323,7 @@ public class Matrix
 
     public static Matrix Ravel(Matrix mat)
     {
-        var returnMatrix = new Matrix((float[,])mat.Contents.Clone());
+        var returnMatrix = mat.Clone();
         returnMatrix.Ravel();
         return returnMatrix;
     }
@@ -344,7 +344,7 @@ public class Matrix
 
     public static Matrix Transpose(Matrix mat)
     {
-        var returnMatrix = new Matrix((float[,])mat.Contents.Clone());
+        var returnMatrix = mat.Clone();
         returnMatrix.Transpose();
         return returnMatrix;
     }
@@ -357,7 +357,7 @@ public class Matrix
 
     public static Matrix Clamp(Matrix mat, int min, int max)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Clamp(min, max);
         return returnMat;
     }
@@ -384,7 +384,7 @@ public class Matrix
 
     public static Matrix HorizontalStack(Matrix mat, Matrix otherMat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.HorizontalStack(otherMat);
         return returnMat;
     }
@@ -411,7 +411,7 @@ public class Matrix
 
     public static Matrix VerticalStack(Matrix mat, Matrix otherMat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.VerticalStack(otherMat);
         return returnMat;
     }
@@ -429,7 +429,7 @@ public class Matrix
 
     public static Matrix Add(Matrix mat, Matrix otherMat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Add(otherMat);
         return returnMat;
     }
@@ -447,7 +447,7 @@ public class Matrix
 
     public static Matrix Subtract(Matrix mat, Matrix otherMat)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Subtract(otherMat);
         return returnMat;
     }
@@ -461,7 +461,7 @@ public class Matrix
 
     public static Matrix Subtract(Matrix mat, float scalar)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Subtract(scalar);
         return returnMat;
     }
@@ -475,7 +475,7 @@ public class Matrix
 
     public static Matrix Add(Matrix mat, float scalar)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Add(scalar);
         return returnMat;
     }
@@ -495,7 +495,7 @@ public class Matrix
     /// </summary>
     public static Matrix Multiply(Matrix mat, float scalar)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Multiply(scalar);
         return returnMat;
     }
@@ -524,7 +524,7 @@ public class Matrix
     /// </summary>
     public static Matrix Hadamard(Matrix mat1, Matrix mat2)
     {
-        var returnMat = new Matrix((float[,])mat1.Contents.Clone());
+        var returnMat = mat1.Clone();
         returnMat.Hadamard(mat2);
         return returnMat;
     }
@@ -537,7 +537,7 @@ public class Matrix
     }
     public static Matrix Softmax(Matrix matrix)
     {
-        var returnMat = new Matrix((float[,])matrix.Contents.Clone());
+        var returnMat = matrix.Clone();
         returnMat.Softmax();
         return returnMat;
     }
@@ -549,7 +549,7 @@ public class Matrix
 
     public static Matrix Log(Matrix matrix, float logBase)
     {
-        var returnMat = new Matrix((float[,])matrix.Contents.Clone());
+        var returnMat = matrix.Clone();
         returnMat.Log(logBase);
         return returnMat;
     }
@@ -561,7 +561,7 @@ public class Matrix
 
     public static Matrix Clip(Matrix mat, float min, float max)
     {
-        var returnMat = new Matrix((float[,])mat.Contents.Clone());
+        var returnMat = mat.Clone();
         returnMat.Clip(min, max);
         return returnMat;
     }
@@ -645,6 +645,11 @@ public class Matrix
         }
     }
 
+    public Matrix Clone()
+    {
+        return new Matrix((float[,])Contents.Clone());
+    }
+    
     public override bool Equals(object obj)
     {
         return base.Equals(obj);

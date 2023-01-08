@@ -447,4 +447,15 @@ public class MatrixTests
         
         Assert.Equal(expectedOutput, actualOutput);
     }
+
+    [Fact]
+    public void Clone()
+    {
+        var mat1 = new Matrix(defaultData);
+        var mat2 = mat1.Clone();
+
+        mat1 = Matrix.Add(mat1, mat2); 
+        
+        Assert.False(mat1.Contents == mat2.Contents);
+    }
 }
