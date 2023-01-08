@@ -78,9 +78,9 @@ public class Rnn
     /// Perform the backpropagation algorithm on the neural network to optimise its parameters.
     /// </summary>
     /// <returns> A float representing the error of the network </returns>
-    private float Backprop()
+    private void Backprop(Matrix predicted, Matrix actual)
     {
-        throw new NotImplementedException();
+        
     }
     
     /// <summary>

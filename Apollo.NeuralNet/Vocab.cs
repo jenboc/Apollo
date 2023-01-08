@@ -8,8 +8,7 @@ public class Vocab
 
     public Vocab()
     {
-        // Only characters used in string representation of the MIDI files 
-        VocabList = new List<char>() { 'P', 'T', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n' }; 
+        VocabList = new List<char>(); 
     }
 
     public Vocab(List<char> vocabList)
@@ -19,8 +18,14 @@ public class Vocab
         // Add each character one by one to avoid duplicates 
         foreach (var c in vocabList)
         {
-            AddCharacter(c);
+            AddCharacter(c); // So that duplicates are not added 
         }
+    }
+
+    public void AddCharacters(char[] characters)
+    {
+        foreach (var c in characters) 
+            AddCharacter(c);
     }
 
     /// <summary>

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsoleApp", "TestingConsoleApp\TestingConsoleApp.csproj", "{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.NeuralNet.Tests", "Apollo.NeuralNet.Tests\Apollo.NeuralNet.Tests.csproj", "{33E65A5F-974A-4755-A3E1-0CD7F1483D41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
