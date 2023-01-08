@@ -27,7 +27,7 @@ public class Lstm
     private Gate Forget { get; }
     private Gate Input { get; }
     private Gate Output { get; }
-
+    
     // States 
     private Matrix CellState { get; set; }
     
@@ -86,5 +86,23 @@ public class Lstm
     /// <param name="outputUpdate">Matrix to update the output gate weight relative to</param>
     public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix newInfoUpdate, Matrix outputUpdate)
     {
+    }
+
+    /// <summary>
+    /// Returns the values of the forget, input and output gates
+    /// </summary>
+    /// <returns>An array containing the values. Index 0 is forget, 1 is input and 2 is output</returns>
+    public Matrix[] GetGateValues()
+    {
+        return new Matrix[] { Forget.Value, Input.Value, Output.Value };
+    }
+    
+    /// <summary>
+    /// Returns the values of the cell state, and candidate state
+    /// </summary>
+    /// <returns>An array containing the values. Index 0 is cell state, 1 is candidate state</returns>
+    public Matrix[] GetStateValues()
+    {
+        return new Matrix[] { CellState, CandidateState.Value };
     }
 }

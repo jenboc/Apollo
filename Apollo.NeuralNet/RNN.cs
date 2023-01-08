@@ -14,6 +14,8 @@ public class Rnn
         LearningRate = learningRate;
 
         LstmCell = new Lstm(VocabSize, LearningRate);
+
+        Weight = Matrix.Random(VocabSize, VocabSize); 
     }
 
     // General Parameters
@@ -24,6 +26,9 @@ public class Rnn
     // LSTM Cell 
     private Lstm LstmCell { get; }
     
+    // Softmax layer weight 
+    private Matrix Weight { get; }
+
     /// <summary>
     /// Complete a full pass of the neural network, with the correct number of recurrences.
     /// </summary>
@@ -39,7 +44,8 @@ public class Rnn
         {
             lstmOutput = LstmCell.Forward(lstmInput, lstmOutput);
             outputs[i] = lstmOutput;
-            
+
+            outputs[i] = Weight * outputs[i];
             outputs[i].Softmax();
             outputs[i] = InterpretOutput(outputs[i]);
 
@@ -75,12 +81,19 @@ public class Rnn
     }
     
     /// <summary>
-    /// Perform the backpropagation algorithm on the neural network to optimise its parameters.
+    /// Perform the backpropagation algorithm on the neural network to optimise its parameters. 
     /// </summary>
-    /// <returns> A float representing the error of the network </returns>
-    private void Backprop(Matrix predicted, Matrix actual)
+    /// <param name="forgetGates">The values of the forget gate at each timestep during training</param>
+    /// <param name="candidateStates">The values of the candidate state at each timestep during training</param>
+    /// <param name="cellStates">The values of the cell state at each timestep during training</param>
+    /// <param name="inputGates">The values of the input gate at each timestep during training</param>
+    /// <param name="outputGates">The values of the output gate at each timestep during training</param>
+    /// <param name="inputs">The inputs to the LSTM cell at each timestep during training</param>
+    /// <param name="outputs">The outputs from the LSTM cell at each timestep during training</param>
+    private void Backprop(List<Matrix> forgetGates, List<Matrix> candidateStates, List<Matrix> cellStates, 
+        List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> outputs)
     {
-        
+        throw new NotImplementedException();
     }
     
     /// <summary>
@@ -97,7 +110,7 @@ public class Rnn
     /// <param name="expected">The expected/desired output from the LSTM</param>
     /// <param name="actual">The actual output of the LSTM</param>
     /// <returns>A matrix representing the loss of the neural network</returns>
-    private float CalculateLoss(Matrix expected, Matrix actual)
+    private Matrix CalculateLoss(Matrix expected, Matrix actual)
     {
         throw new NotImplementedException();
     }
@@ -108,17 +121,45 @@ public class Rnn
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
     public void Train(Matrix[] trainingData)
     {
+        // Data required to perform backpropagation 
+        var previousForgetGates = new List<Matrix>();
+        var previousCandidateStates = new List<Matrix>();
+        var previousCellStates = new List<Matrix>();
+        var previousInputGates = new List<Matrix>();
+        var previousOutputGates = new List<Matrix>();
+        var previousInputs = new List<Matrix>();
+        var previousLstmOutputs = new List<Matrix>();
+
+        var totalLoss = new Matrix(VocabSize, VocabSize);
+
         for (var i = 0; i < trainingData.Length - 1; i++)
         {
             var input = trainingData[i];
-            var previousOutput = i > 0 ? trainingData[i - 1] : Matrix.Like(input); 
+            var previousOutput = i == 0 ? Matrix.Like(input) : previousLstmOutputs[i - 1];
+            
             var expectedOutput = trainingData[i + 1];
             
-            // Singular pass of LSTM 
-            var actualOutput = LstmCell.Forward(input, previousOutput);
-            actualOutput.Softmax(); // Softmax used for categorical cross-entropy loss 
+            var actualOutput = LstmCell.Forward(input, previousOutput); 
             
-            var loss = CalculateLoss(expectedOutput, actualOutput);
+            actualOutput = Matrix.Multiply(Weight, actualOutput);
+            actualOutput.Softmax();
+
+            totalLoss += CalculateLoss(expectedOutput, actualOutput); 
+
+            previousInputs.Add(input);
+
+            var gateValues = LstmCell.GetGateValues();
+            previousForgetGates.Add(gateValues[0]);
+            previousInputGates.Add(gateValues[1]);
+            previousOutputGates.Add(gateValues[2]);
+
+            var stateValues = LstmCell.GetStateValues();
+            previousCellStates.Add(stateValues[0]); 
+            previousCandidateStates.Add(stateValues[1]);
+
         }
+        
+        Backprop(previousForgetGates, previousCandidateStates, previousCellStates, previousInputGates, 
+            previousOutputGates, previousInputs, previousLstmOutputs);
     }
 }
