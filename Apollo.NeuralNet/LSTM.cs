@@ -13,7 +13,7 @@ public class Lstm
         var biasShape = new int[] { VocabSize, 1 };
         Forget = new Gate(weightShape, biasShape);
         Input = new Gate(weightShape, biasShape);
-        NewInfo = new Gate(weightShape, biasShape);
+        CandidateState = new Gate(weightShape, biasShape);
         Output = new Gate(weightShape, biasShape);
 
         CellState = new Matrix(VocabSize, 1);
@@ -26,11 +26,13 @@ public class Lstm
     // Gates 
     private Gate Forget { get; }
     private Gate Input { get; }
-    private Gate NewInfo { get; }
     private Gate Output { get; }
 
-    // Cell state 
+    // States 
     private Matrix CellState { get; set; }
+    
+    // Candidate state uses Gate class since it carries out the same mathematical operations 
+    private Gate CandidateState { get; } 
 
     /// <summary>
     ///     Complete one pass through of the LSTM cell, given an input
@@ -54,12 +56,12 @@ public class Lstm
         Input.Value.Sigmoid();
 
         // Calculate new info value 
-        NewInfo.CalcUnactivated(input, previousOutput);
-        NewInfo.Value.Tanh();
+        CandidateState.CalcUnactivated(input, previousOutput);
+        CandidateState.Value.Tanh();
 
         // Calculate cell state
         // Forget_Gate x CellState + Input_Gate x New_Info_Gate (using element-wise multiplication) 
-        CellState = Matrix.Hadamard(Forget.Value, CellState) + Matrix.Hadamard(Input.Value, NewInfo.Value);
+        CellState = Matrix.Hadamard(Forget.Value, CellState) + Matrix.Hadamard(Input.Value, CandidateState.Value);
 
         // Calculate output gate
         Output.CalcUnactivated(input, previousOutput);
