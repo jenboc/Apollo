@@ -5,17 +5,6 @@ namespace Apollo.MatrixMaths;
 // Generic Matrix 
 public class Matrix
 {
-    public float[,] Contents { get; private set; }
-
-    public float this[int i, int j]
-    {
-        get => Contents[i, j];
-        set => Contents[i, j] = value;
-    }
-    
-    public int Rows => Contents.GetLength(0);
-    public int Columns => Contents.GetLength(1);
-
     // Generate matrix full of zeros/default values 
     public Matrix(int rows, int columns)
     {
@@ -27,6 +16,17 @@ public class Matrix
     {
         Contents = defaultData;
     }
+
+    public float[,] Contents { get; private set; }
+
+    public float this[int i, int j]
+    {
+        get => Contents[i, j];
+        set => Contents[i, j] = value;
+    }
+
+    public int Rows => Contents.GetLength(0);
+    public int Columns => Contents.GetLength(1);
 
 
     public Matrix this[string slice]
@@ -235,18 +235,16 @@ public class Matrix
         var newContents = new float[Rows, otherMat.Columns];
 
         for (var row = 0; row < newContents.GetLength(0); row++)
+        for (var col = 0; col < newContents.GetLength(1); col++)
         {
-            for (var col = 0; col < newContents.GetLength(1); col++)
-            {
-                // Row in A * Col in B 
-                // A has as many columns as B has rows therefore A's columns has the same amount of numbers as B's rows 
-                float sum = 0;
+            // Row in A * Col in B 
+            // A has as many columns as B has rows therefore A's columns has the same amount of numbers as B's rows 
+            float sum = 0;
 
-                for (var i = 0; i < Columns; i++)
-                    sum += Contents[row, i] * otherMat.Contents[i, col];
+            for (var i = 0; i < Columns; i++)
+                sum += Contents[row, i] * otherMat.Contents[i, col];
 
-                newContents[row, col] = sum;
-            }
+            newContents[row, col] = sum;
         }
 
         Contents = newContents;
@@ -310,12 +308,10 @@ public class Matrix
         var newContents = new float[1, Rows * Columns];
 
         for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
         {
-            for (var j = 0; j < Columns; j++)
-            {
-                var newJ = i * Rows + j;
-                newContents[0, newJ] = Contents[i, j];
-            }
+            var newJ = i * Rows + j;
+            newContents[0, newJ] = Contents[i, j];
         }
 
         Contents = newContents;
@@ -334,10 +330,8 @@ public class Matrix
         var newContents = new float[Columns, Rows];
 
         for (var i = 0; i < Rows; i++)
-        {
-            for (var j = 0; j < Columns; j++)
-                newContents[j, i] = Contents[i, j];
-        }
+        for (var j = 0; j < Columns; j++)
+            newContents[j, i] = Contents[i, j];
 
         Contents = newContents;
     }
@@ -481,7 +475,7 @@ public class Matrix
     }
 
     /// <summary>
-    /// Matrix multiplication by scalar, changing the matrix it is performed upon 
+    ///     Matrix multiplication by scalar, changing the matrix it is performed upon
     /// </summary>
     public void Multiply(float scalar)
     {
@@ -491,7 +485,7 @@ public class Matrix
     }
 
     /// <summary>
-    /// Matrix multiplication by scalar, creating a new matrix for its output
+    ///     Matrix multiplication by scalar, creating a new matrix for its output
     /// </summary>
     public static Matrix Multiply(Matrix mat, float scalar)
     {
@@ -501,26 +495,20 @@ public class Matrix
     }
 
     /// <summary>
-    /// Element-Wise multiplication, changing the matrix it is performed upon 
+    ///     Element-Wise multiplication, changing the matrix it is performed upon
     /// </summary>
     public void Hadamard(Matrix otherMat)
     {
         if (otherMat.Rows != Rows && otherMat.Columns != Columns)
-        {
             throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication");
-        }
-        
+
         for (var i = 0; i < Rows; i++)
-        {
-            for (var j = 0; j < Columns; j++)
-            {
-                Contents[i, j] *= otherMat.Contents[i, j];
-            }
-        }
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] *= otherMat.Contents[i, j];
     }
 
     /// <summary>
-    /// Element-Wise multiplication, creating a new matrix for the output 
+    ///     Element-Wise multiplication, creating a new matrix for the output
     /// </summary>
     public static Matrix Hadamard(Matrix mat1, Matrix mat2)
     {
@@ -533,8 +521,9 @@ public class Matrix
     {
         Exp();
         var sum = Sum();
-        Multiply(1 / sum); 
+        Multiply(1 / sum);
     }
+
     public static Matrix Softmax(Matrix matrix)
     {
         var returnMat = matrix.Clone();
@@ -649,7 +638,7 @@ public class Matrix
     {
         return new Matrix((float[,])Contents.Clone());
     }
-    
+
     public override bool Equals(object obj)
     {
         return base.Equals(obj);

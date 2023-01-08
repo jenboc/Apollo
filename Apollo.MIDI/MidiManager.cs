@@ -1,4 +1,5 @@
 ﻿using NAudio.Midi;
+
 namespace Apollo.MIDI;
 
 public static class MidiManager
@@ -7,16 +8,14 @@ public static class MidiManager
     {
         if (GetPathType(path) != 'f')
             throw new FileNotFoundException($"{path} is not a valid file path");
-        
+
         var file = new MidiFile(path, false);
         var data = new List<string>();
 
         data.Add(file.DeltaTicksPerQuarterNote.ToString());
 
         for (var trackNum = 0; trackNum < file.Tracks; trackNum++)
-        {
             foreach (var e in file.Events[trackNum])
-            {
                 if (e.GetType() == typeof(NoteOnEvent))
                 {
                     try
@@ -38,7 +37,6 @@ public static class MidiManager
                     }
                     catch
                     {
-                        continue;
                     }
                 }
                 else if (e.GetType() == typeof(TempoEvent))
@@ -47,8 +45,6 @@ public static class MidiManager
                     data.Add($"T{tempoEvent.MicrosecondsPerQuarterNote}");
                     data.Add(tempoEvent.AbsoluteTime.ToString());
                 }
-            }
-        }
 
         return data;
     }
@@ -58,8 +54,8 @@ public static class MidiManager
         if (GetPathType(path) != 'd')
             throw new DirectoryNotFoundException($"{path} is not a valid directory");
 
-        var dirData = new List<List<string>>(); 
-        
+        var dirData = new List<List<string>>();
+
         var dirInfo = new DirectoryInfo(path);
         var dirFiles = dirInfo.GetFiles();
 
@@ -101,24 +97,26 @@ public static class MidiManager
                     var offEventTime = long.Parse(data[eventStart + 2]);
                     var duration = int.Parse(data[eventStart + 3]);
                     var velocity = int.Parse(data[eventStart + 4]);
-                
+
                     collection.AddEvent(new NoteOnEvent(onEventTime, 1, noteNumber, velocity, duration), 1);
-                    collection.AddEvent(new NoteEvent(offEventTime, 1, MidiCommandCode.NoteOff, noteNumber, velocity), 1);
+                    collection.AddEvent(new NoteEvent(offEventTime, 1, MidiCommandCode.NoteOff, noteNumber, velocity),
+                        1);
                 }
 
-                eventStart = i; 
+                eventStart = i;
             }
         }
-    
+
         MidiFile.Export(path, collection);
     }
+
     public static void WriteFile(string data, string path)
     {
         WriteFile(data.Split('\n').ToList(), path);
     }
-    
+
     /// <summary>
-    /// Checks whether a path is valid 
+    ///     Checks whether a path is valid
     /// </summary>
     /// <param name="path">The path to validate</param>
     /// <returns>A character flag (d => directory, f => file, n => invalid path)</returns>

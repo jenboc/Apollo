@@ -34,16 +34,13 @@ internal class InvalidOneHotException : Exception
 {
     public InvalidOneHotException()
     {
-        
     }
 
     public InvalidOneHotException(string message) : base(message)
     {
-        
     }
 
     public InvalidOneHotException(string message, Exception inner) : base(message, inner)
     {
-        
     }
 }

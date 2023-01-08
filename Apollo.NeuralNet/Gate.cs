@@ -15,7 +15,8 @@ public class Gate
         PrevOutputWeight = Matrix.Random(weightShape[0], weightShape[1]);
         Bias = Matrix.Random(biasShape[0], biasShape[1]);
 
-        WeightGradient = new Matrix(weightShape[0], weightShape[1]);
+        InputWeightGradient = new Matrix(weightShape[0], weightShape[1]);
+        PrevOutputWeightGradient = new Matrix(weightShape[0], weightShape[1]);
         BiasGradient = new Matrix(biasShape[0], biasShape[1]);
 
         WeightRows = weightShape[0];
@@ -23,12 +24,13 @@ public class Gate
         BiasRows = biasShape[0];
         BiasColumns = biasShape[1];
     }
-    
+
     public Matrix Value { get; set; } // Attribute to store the value of the gate 
-    private Matrix InputWeight { get; }
-    private Matrix PrevOutputWeight { get; }
+    private Matrix InputWeight { get; set; }
+    private Matrix PrevOutputWeight { get; set; }
     private Matrix Bias { get; }
-    private Matrix WeightGradient { get; } // Gradient for adjusting  weight
+    private Matrix InputWeightGradient { get; } // Gradient for adjusting the input weight
+    private Matrix PrevOutputWeightGradient { get; } // Gradient for adjusting the previous output weight
     private Matrix BiasGradient { get; } // Gradient for adjusting bias 
 
     public int WeightRows { get; }
@@ -37,7 +39,7 @@ public class Gate
     public int BiasColumns { get; }
 
     /// <summary>
-    /// Calculate the value of the gate with a given input 
+    ///     Calculate the value of the gate with a given input
     /// </summary>
     /// <param name="input">The input into the gate</param>
     /// <param name="prevOutput">The previous output of the LSTM</param>
@@ -53,10 +55,16 @@ public class Gate
     }
 
     /// <summary>
-    /// Set the value of the gate to 0 
+    ///     Set the value of the gate to 0
     /// </summary>
     public void Clear()
     {
         Value *= 0;
+    }
+
+    public void Update(Matrix inputGradient, Matrix prevOutputGradient, float learningRate)
+    {
+        InputWeight = InputWeight - inputGradient * learningRate;
+        PrevOutputWeight = PrevOutputWeight - prevOutputGradient * learningRate;
     }
 }

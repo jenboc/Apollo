@@ -1,15 +1,12 @@
-﻿using Apollo.MIDI;
+﻿using Apollo.MatrixMaths;
+using Apollo.MIDI;
 using Apollo.NeuralNet;
-using Apollo.MatrixMaths;
 
 const string PATH = @"bach_846.mid";
 
 static void DisplayVector(Matrix vector)
 {
-    for (var row = 0; row < vector.Rows; row++)
-    {
-        Console.WriteLine(vector[row, 0]);
-    }
+    for (var row = 0; row < vector.Rows; row++) Console.WriteLine(vector[row, 0]);
 }
 
 var vocab = new Vocab();

@@ -127,7 +127,7 @@ public class MatrixTests
         var mat2 = new Matrix(mat2Data);
         var result = Matrix.Multiply(mat1, mat2);
         var actualData = result.Contents;
-        
+
         Assert.Equal(expectedData, actualData);
     }
 
@@ -178,8 +178,8 @@ public class MatrixTests
     [Fact]
     public void Reshape()
     {
-        int targetRows = 9;
-        int targetColumns = 1;
+        var targetRows = 9;
+        var targetColumns = 1;
 
         var expectedData = new float[,]
         {
@@ -375,7 +375,7 @@ public class MatrixTests
             { 54f, 130f, 36f },
             { 16f, 352f, 132f }
         };
-        
+
         var matContent1 = new[,]
         {
             { 1f, 0.5f, 5f },
@@ -394,7 +394,7 @@ public class MatrixTests
         var mat2 = new Matrix(matContent2);
         var mat1x2 = Matrix.Hadamard(mat1, mat2);
         var mat2x1 = Matrix.Hadamard(mat2, mat1);
-        
+
         Assert.Equal(expectedOutput, mat1x2.Contents); // Check if right answer obtained 
         Assert.Equal(expectedOutput, mat2x1.Contents); // Check if order matters
     }
@@ -409,7 +409,7 @@ public class MatrixTests
             { 0.62671316f },
             { 0.7615537f }
         };
-        
+
         var expectedOutput = new[,]
         {
             { 0.2348922f },
@@ -421,7 +421,7 @@ public class MatrixTests
         var matrix = new Matrix(data);
         matrix.Softmax();
         var actualOutput = matrix.Contents;
-        
+
         Assert.Equal(expectedOutput, actualOutput);
     }
 
@@ -429,7 +429,7 @@ public class MatrixTests
     public void Log()
     {
         var logBase = 5;
-        
+
         var data = new[,]
         {
             { 2f, 5.5f },
@@ -444,7 +444,7 @@ public class MatrixTests
         var matrix = new Matrix(data);
         matrix.Log(logBase);
         var actualOutput = matrix.Contents;
-        
+
         Assert.Equal(expectedOutput, actualOutput);
     }
 
@@ -454,8 +454,8 @@ public class MatrixTests
         var mat1 = new Matrix(defaultData);
         var mat2 = mat1.Clone();
 
-        mat1 = Matrix.Add(mat1, mat2); 
-        
+        mat1 = Matrix.Add(mat1, mat2);
+
         Assert.False(mat1.Contents == mat2.Contents);
     }
 }

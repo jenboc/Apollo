@@ -9,8 +9,8 @@ public class Lstm
         VocabSize = vocabSize; // The amount of different characters present in the training data
         LearningRate = learningRate;
 
-        var weightShape = new int[] { VocabSize, VocabSize };
-        var biasShape = new int[] { VocabSize, 1 };
+        var weightShape = new[] { VocabSize, VocabSize };
+        var biasShape = new[] { VocabSize, 1 };
         Forget = new Gate(weightShape, biasShape);
         Input = new Gate(weightShape, biasShape);
         CandidateState = new Gate(weightShape, biasShape);
@@ -27,26 +27,24 @@ public class Lstm
     private Gate Forget { get; }
     private Gate Input { get; }
     private Gate Output { get; }
-    
+
     // States 
     private Matrix CellState { get; set; }
-    
+
     // Candidate state uses Gate class since it carries out the same mathematical operations 
-    private Gate CandidateState { get; } 
+    private Gate CandidateState { get; }
 
     /// <summary>
     ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
     /// <param name="input">Column one-hot vector representing the input into the LSTM</param>
-    /// <param name="previousOutput">LSTM's previous output</param> 
+    /// <param name="previousOutput">LSTM's previous output</param>
     public Matrix Forward(Matrix input, Matrix previousOutput)
     {
         // Validating arguments
         if (input.Rows != VocabSize && input.Columns > 1)
-        {
             throw new LstmInputException("Input parameter must be a column vector with VocabSize rows");
-        }
-        
+
         // Calculate forget gate value 
         Forget.CalcUnactivated(input, previousOutput);
         Forget.Value.Sigmoid();
@@ -78,36 +76,39 @@ public class Lstm
     }
 
     /// <summary>
-    /// Adjusts the variables of the LSTM relative to update parameters
     /// </summary>
-    /// <param name="forgetUpdate">Matrix to update the forget gate weight relative to</param>
-    /// <param name="inputUpdate">Matrix to update the input gate weight relative to</param>
-    /// <param name="newInfoUpdate">Matrix to update the new info gate weight relative to</param>
-    /// <param name="outputUpdate">Matrix to update the output gate weight relative to</param>
-    public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix newInfoUpdate, Matrix outputUpdate)
+    /// <param name="dWF"></param>
+    /// <param name="dWI"></param>
+    /// <param name="dWO"></param>
+    /// <param name="dWG"></param>
+    public void Update(Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
     {
+        Forget.Update(dWF[0], dWF[1], LearningRate);
+        Input.Update(dWI[0], dWI[1], LearningRate);
+        Output.Update(dWO[0], dWO[1], LearningRate);
+        CandidateState.Update(dWG[0], dWG[1], LearningRate);
     }
 
     /// <summary>
-    /// Returns the values of the forget, input and output gates
+    ///     Returns the values of the forget, input and output gates
     /// </summary>
     /// <returns>An array containing the values. Index 0 is forget, 1 is input and 2 is output</returns>
     public Matrix[] GetGateValues()
     {
-        return new Matrix[] { Forget.Value, Input.Value, Output.Value };
+        return new[] { Forget.Value, Input.Value, Output.Value };
     }
-    
+
     /// <summary>
-    /// Returns the values of the cell state, and candidate state
+    ///     Returns the values of the cell state, and candidate state
     /// </summary>
     /// <returns>An array containing the values. Index 0 is cell state, 1 is candidate state</returns>
     public Matrix[] GetStateValues()
     {
-        return new Matrix[] { CellState, CandidateState.Value };
+        return new[] { CellState, CandidateState.Value };
     }
 
     /// <summary>
-    /// Clears the value of all states and gates in the LSTM
+    ///     Clears the value of all states and gates in the LSTM
     /// </summary>
     public void Clear()
     {

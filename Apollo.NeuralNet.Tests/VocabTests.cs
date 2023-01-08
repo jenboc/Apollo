@@ -2,8 +2,8 @@ namespace Apollo.NeuralNet.Tests;
 
 public class VocabTests
 {
-    private readonly List<char> _testingVocabList = new List<char>() { 'a', 'b', 'c', 'd', 'e' };
-    
+    private readonly List<char> _testingVocabList = new() { 'a', 'b', 'c', 'd', 'e' };
+
     [Fact]
     // Testing that vocab gives the correct character given an ID
     public void CharFromId()
@@ -22,7 +22,7 @@ public class VocabTests
     public void IdFromChar()
     {
         var vocab = new Vocab(_testingVocabList);
-        
+
         Assert.Equal(0, vocab['a']);
         Assert.Equal(1, vocab['b']);
         Assert.Equal(2, vocab['c']);
@@ -35,10 +35,10 @@ public class VocabTests
     public void NoDuplicateCharacters()
     {
         var vocab = new Vocab(_testingVocabList);
-        
+
         vocab.AddCharacter('e');
         vocab.AddCharacter('f');
-        
+
         // If the duplicate e was added, vocab[5] would be e
         Assert.Equal('f', vocab[5]);
     }
