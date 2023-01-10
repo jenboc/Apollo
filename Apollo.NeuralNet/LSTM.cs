@@ -65,13 +65,7 @@ public class Lstm
     {
         throw new NotImplementedException();
     }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="dWF"></param>
-    /// <param name="dWI"></param>
-    /// <param name="dWO"></param>
-    /// <param name="dWG"></param>
+    
     public void Update(Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
     {
         Forget.Update(dWF[0], dWF[1], LearningRate);

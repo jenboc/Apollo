@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Apollo.MatrixMaths;
 
@@ -633,7 +634,22 @@ public class Matrix
             intSlice[1] = Convert.ToInt32(splitSlice[1]);
         }
     }
+    
+    public static Matrix StackArray(Matrix[] matrices, bool vertically=true)
+    {
+        var mat = matrices[0].Clone();
 
+        for (var i = 1; i < matrices.Length; i++)
+        {
+            if (vertically) 
+                mat.VerticalStack(matrices[i]);
+            else
+                mat.HorizontalStack(matrices[i]);
+        }
+
+        return mat;
+    }
+    
     public Matrix Clone()
     {
         return new Matrix((float[,])Contents.Clone());

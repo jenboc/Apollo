@@ -178,7 +178,42 @@ public class Rnn
     ///     Train the neural network on a single file
     /// </summary>
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
-    public float Train(Matrix[] trainingData)
+    /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
+    public void Train(Matrix[] trainingData, int numEpochs)
+    {
+        var seperatedData = CreateBatches(trainingData);
+
+        var inputData = seperatedData.Item1;
+        var expectedOutputs = seperatedData.Item2;
+
+        for (var epoch = 0; epoch < numEpochs; epoch++)
+        {
+            for (var i = 0; i < inputData.Length; i++)
+            {
+                var input = inputData[i];
+                var expected = expectedOutputs[i];
+            }
+        }
+    }
+
+    private Tuple<Matrix[], Matrix[]> CreateBatches(Matrix[] trainingData)
+    {
+        var inputData = new List<Matrix>();
+        var expectedOutputs = new List<Matrix>(); 
+        
+        for (var i = 0; i < trainingData.Length - BatchSize - 1; i++)
+        {
+            var input = trainingData.Skip(i).Take(BatchSize).ToArray();
+            var expected = trainingData.Skip(i + 1).Take(BatchSize).ToArray();
+            
+            inputData.Add(Matrix.StackArray(input, true));
+            expectedOutputs.Add(Matrix.StackArray(expected, true));
+        }
+        
+        return new Tuple<Matrix[], Matrix[]>(inputData.ToArray(), expectedOutputs.ToArray());
+    }
+
+    /*public float Train()
     {
         LstmCell.Clear();
 
@@ -244,5 +279,5 @@ public class Rnn
             trainingData);
 
         return totalLoss.Sum(); 
-    }
+    }*/
 }
