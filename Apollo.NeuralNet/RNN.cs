@@ -5,21 +5,27 @@ namespace Apollo.NeuralNet;
 public class Rnn
 {
     /// <param name="vocabSize">The amount of words in the vocabulary list</param>
+    /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
+    /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
     /// <param name="learningRate">Rate of change of the parameters of the network</param>
-    public Rnn(int vocabSize, int recurrenceAmount, float learningRate)
+    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, float learningRate)
     {
         VocabSize = vocabSize;
+        HiddenSize = hiddenSize;
+        BatchSize = batchSize;
         RecurrenceAmount = recurrenceAmount;
         LearningRate = learningRate;
 
-        LstmCell = new Lstm(VocabSize, LearningRate);
+        LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, LearningRate);
 
-        Weight = Matrix.Random(VocabSize, VocabSize);
+        Weight = Matrix.Random(HiddenSize, VocabSize);
     }
 
     // General Parameters
     private int VocabSize { get; }
+    private int BatchSize { get; }
+    private int HiddenSize { get; }
     private int RecurrenceAmount { get; }
     private float LearningRate { get; }
 
@@ -165,14 +171,14 @@ public class Rnn
     /// <returns>A matrix representing the loss of the neural network</returns>
     private Matrix CalculateLoss(Matrix expected, Matrix actual)
     {
-        throw new NotImplementedException();
+        return -1 * Matrix.Hadamard(actual, Matrix.Log(expected, MathF.E)); 
     }
 
     /// <summary>
     ///     Train the neural network on a single file
     /// </summary>
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
-    public void Train(Matrix[] trainingData)
+    public float Train(Matrix[] trainingData)
     {
         LstmCell.Clear();
 
@@ -202,7 +208,7 @@ public class Rnn
 
         var previousFinalOutputs = new Matrix[trainingData.Length];
 
-        var totalLoss = new Matrix(VocabSize, VocabSize);
+        var totalLoss = new Matrix(VocabSize, 1);
 
         // Start at 1 so that previousInputs[i] is supposed to produce trainingData[i]
         for (var i = 1; i < trainingData.Length; i++)
@@ -236,5 +242,7 @@ public class Rnn
         Backprop(previousForgetGates, previousCandidateStates, previousCellStates, previousInputGates,
             previousOutputGates, previousInputs, previousLstmOutputs, previousFinalOutputs,
             trainingData);
+
+        return totalLoss.Sum(); 
     }
 }

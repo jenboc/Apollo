@@ -5,24 +5,23 @@ namespace Apollo.NeuralNet;
 // Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
 public class Gate
 {
-    /// <param name="weightShape">Shape of gate's weight matrix</param>
-    /// <param name="biasShape">Shape of gate's bias matrix </param>
-    public Gate(int[] weightShape, int[] biasShape)
+    /// <summary>
+    /// Create an LSTM gate, with correctly sized weights and bias.
+    /// </summary>
+    /// <param name="vocabSize"></param>
+    /// <param name="hiddenSize"></param>
+    /// <param name="batchSize"></param>
+    public Gate(int vocabSize, int hiddenSize, int batchSize)
     {
-        Value = new Matrix(weightShape[0], weightShape[1]);
+        Value = new Matrix(batchSize, hiddenSize);
 
-        InputWeight = Matrix.Random(weightShape[0], weightShape[1]);
-        PrevOutputWeight = Matrix.Random(weightShape[0], weightShape[1]);
-        Bias = Matrix.Random(biasShape[0], biasShape[1]);
+        InputWeight = Matrix.Random(vocabSize, hiddenSize);
+        PrevOutputWeight = Matrix.Random(hiddenSize, hiddenSize);
+        Bias = Matrix.Random(batchSize, hiddenSize);
 
-        InputWeightGradient = new Matrix(weightShape[0], weightShape[1]);
-        PrevOutputWeightGradient = new Matrix(weightShape[0], weightShape[1]);
-        BiasGradient = new Matrix(biasShape[0], biasShape[1]);
-
-        WeightRows = weightShape[0];
-        WeightColumns = weightShape[1];
-        BiasRows = biasShape[0];
-        BiasColumns = biasShape[1];
+        InputWeightGradient = Matrix.Like(InputWeight);
+        PrevOutputWeightGradient = Matrix.Like(PrevOutputWeight);
+        BiasGradient = Matrix.Like(Bias);
     }
 
     public Matrix Value { get; set; } // Attribute to store the value of the gate 
@@ -32,11 +31,6 @@ public class Gate
     private Matrix InputWeightGradient { get; } // Gradient for adjusting the input weight
     private Matrix PrevOutputWeightGradient { get; } // Gradient for adjusting the previous output weight
     private Matrix BiasGradient { get; } // Gradient for adjusting bias 
-
-    public int WeightRows { get; }
-    public int WeightColumns { get; }
-    public int BiasRows { get; }
-    public int BiasColumns { get; }
 
     /// <summary>
     ///     Calculate the value of the gate with a given input
@@ -51,7 +45,8 @@ public class Gate
         // input = x 
         // prev_output = h
 
-        Value = Matrix.Multiply(InputWeight, input) + Matrix.Multiply(PrevOutputWeight, prevOutput) + Bias;
+        Value = Matrix.Multiply(input, InputWeight) 
+                + Matrix.Multiply(prevOutput, PrevOutputWeight) + Bias;
     }
 
     /// <summary>

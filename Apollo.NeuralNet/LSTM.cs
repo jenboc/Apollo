@@ -4,23 +4,18 @@ namespace Apollo.NeuralNet;
 
 public class Lstm
 {
-    public Lstm(int vocabSize, float learningRate)
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, float learningRate)
     {
-        VocabSize = vocabSize; // The amount of different characters present in the training data
         LearningRate = learningRate;
+        
+        Forget = new Gate(vocabSize, hiddenSize, batchSize);
+        Input = new Gate(vocabSize, hiddenSize, batchSize);
+        CandidateState = new Gate(vocabSize, hiddenSize, batchSize);
+        Output = new Gate(vocabSize, hiddenSize, batchSize);
 
-        var weightShape = new[] { VocabSize, VocabSize };
-        var biasShape = new[] { VocabSize, 1 };
-        Forget = new Gate(weightShape, biasShape);
-        Input = new Gate(weightShape, biasShape);
-        CandidateState = new Gate(weightShape, biasShape);
-        Output = new Gate(weightShape, biasShape);
-
-        CellState = new Matrix(VocabSize, 1);
+        CellState = new Matrix(vocabSize, 1);
     }
-
-    // General Parameters
-    private int VocabSize { get; }
+    
     private float LearningRate { get; }
 
     // Gates 
@@ -41,10 +36,6 @@ public class Lstm
     /// <param name="previousOutput">LSTM's previous output</param>
     public Matrix Forward(Matrix input, Matrix previousOutput)
     {
-        // Validating arguments
-        if (input.Rows != VocabSize && input.Columns > 1)
-            throw new LstmInputException("Input parameter must be a column vector with VocabSize rows");
-
         // Calculate forget gate value 
         Forget.CalcUnactivated(input, previousOutput);
         Forget.Value.Sigmoid();

@@ -4,25 +4,15 @@ using Apollo.NeuralNet;
 
 const string PATH = @"bach_846.mid";
 
-static void DisplayVector(Matrix vector)
-{
-    for (var row = 0; row < vector.Rows; row++) Console.WriteLine(vector[row, 0]);
-}
+var bob = MidiManager.ReadFile(PATH);
+var fred = string.Join('\n', bob);
 
-var vocab = new Vocab();
-var midiString = string.Join('\n', MidiManager.ReadFile(PATH));
+Console.WriteLine(fred);
 
-var trainingData = vocab.PrepareTrainingData(midiString);
+var vocab = new Vocab(fred);
+var trainingData = vocab.PrepareTrainingData(fred);
 
-var rnn = new Rnn(vocab.Size, 1, 10e-5f);
+var rnn = new Rnn(vocab.Size, 500, 0.001f);
+var loss = rnn.Train(trainingData);
 
-foreach (var data in trainingData)
-{
-    var outputs = rnn.Forward(data);
-
-    foreach (var output in outputs)
-    {
-        var result = vocab.InterpretOneHot(output);
-        Console.Write(result);
-    }
-}
+Console.WriteLine(loss); 
