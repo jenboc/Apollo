@@ -99,9 +99,9 @@ public class Rnn
     ///     during training
     /// </param>
     /// <param name="expectedOutputs">The training data</param>
-    private void Backprop(Matrix[] forgetGates, Matrix[] candidateStates, Matrix[] cellStates,
-        Matrix[] inputGates, Matrix[] outputGates, Matrix[] inputs, Matrix[] lstmOutputs, Matrix[] predictedOutputs,
-        Matrix[] expectedOutputs)
+    private void Backprop(List<Matrix> forgetGates, List<Matrix> candidateStates, List<Matrix> cellStates,
+        List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> lstmOutputs, 
+        List<Matrix> predictedOutputs, List<Matrix> expectedOutputs)
     {
         // Derivatives for tunable parameters are cumulative => define outside loop 
         var dV = Matrix.Like(Weight); // Gradient for softmax layer weight 
@@ -110,13 +110,14 @@ public class Rnn
         // the previous output) 
         // [0] => derivative for input weight 
         // [1] => derivative for previous output weight 
-        var dWF = new[] { new(VocabSize, VocabSize), new Matrix(VocabSize, VocabSize) };
-        var dWI = new[] { new(VocabSize, VocabSize), new Matrix(VocabSize, VocabSize) };
-        var dWO = new[] { new(VocabSize, VocabSize), new Matrix(VocabSize, VocabSize) };
-        var dWG = new[] { new(VocabSize, VocabSize), new Matrix(VocabSize, VocabSize) };
+        var dWF = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
+        var dWI = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
+        var dWO = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
+        var dWG = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
 
         // t represents timestep
-        for (var t = 1; t < inputs.Length; t++)
+        // Go until t > 1 since there is no timestep -1 (t-1 when t = 0) 
+        for (var t = inputs.Count - 1; t > 1; t--)
         {
             // dL/dh(t) = (y_hat - y)V^T
             var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(Weight);
@@ -139,18 +140,22 @@ public class Rnn
             // Increment gradient for weights 
             dV += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
 
-            dWF[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dF, Matrix.DSigmoid(forgetGates[t]));
+            //dWF[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dF, Matrix.DSigmoid(forgetGates[t]));
+            dWF[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dF, Matrix.DSigmoid(forgetGates[t]));
             dWF[1] += Matrix.Transpose(dF) * Matrix.Hadamard(Matrix.DSigmoid(forgetGates[t]), lstmOutputs[t - 1]);
 
-            dWI[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dI, Matrix.DSigmoid(inputGates[t]));
+            //dWI[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dI, Matrix.DSigmoid(inputGates[t]));
+            dWI[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dI, Matrix.DSigmoid(inputGates[t]));
             dWI[1] += Matrix.Transpose(dI) * Matrix.Hadamard(Matrix.DSigmoid(inputGates[t]), lstmOutputs[t - 1]);
 
-            dWO[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dO, Matrix.DSigmoid(outputGates[t]));
+            dWO[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dO, Matrix.DSigmoid(outputGates[t]));
             dWO[1] += Matrix.Transpose(dO) * Matrix.Hadamard(Matrix.DSigmoid(outputGates[t]), lstmOutputs[t - 1]);
 
-            dWG[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dG, Matrix.DTanh(candidateStates[t]));
+            dWG[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dG, Matrix.DTanh(candidateStates[t]));
             dWG[1] += Matrix.Transpose(dG) * Matrix.Hadamard(Matrix.DTanh(candidateStates[t]), lstmOutputs[t - 1]);
         }
+        
+        Update(dV, dWF, dWI, dWO, dWG);
     }
 
     /// <summary>
@@ -181,22 +186,58 @@ public class Rnn
     /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
     public void Train(Matrix[] trainingData, int numEpochs)
     {
-        var seperatedData = CreateBatches(trainingData);
+        var (inputData, expectedOutputs) = CreateBatches(trainingData);
 
-        var inputData = seperatedData.Item1;
-        var expectedOutputs = seperatedData.Item2;
+        // Previous gate/state values to be used in backpropagation
+        var forgetGateValues = new List<Matrix>();
+        var candidateStateValues = new List<Matrix>();
+        var cellStateValues = new List<Matrix>();
+        var inputGateValues = new List<Matrix>();
+        var outputGateValues = new List<Matrix>();
+        var hiddenStateValues = new List<Matrix>();
+        var actualOutputValues = new List<Matrix>();
 
         for (var epoch = 0; epoch < numEpochs; epoch++)
         {
-            for (var i = 0; i < inputData.Length; i++)
+            Console.WriteLine($"Epoch {epoch+1} of {numEpochs}:");
+
+            var hiddenState = new Matrix(BatchSize, HiddenSize);
+            var totalLoss = 0f;
+
+            for (var i = 0; i < inputData.Count; i++)
             {
                 var input = inputData[i];
                 var expected = expectedOutputs[i];
+
+                hiddenState = LstmCell.Forward(input, hiddenState);
+
+                var actualOutput = hiddenState.Clone();
+                actualOutput *= Weight;
+                actualOutput.Softmax();
+                actualOutputValues.Add(actualOutput);
+
+                hiddenStateValues.Add(hiddenState);
+
+                var gateValues = LstmCell.GetGateValues();
+                forgetGateValues.Add(gateValues[0]);
+                inputGateValues.Add(gateValues[1]);
+                outputGateValues.Add(gateValues[2]);
+
+                var stateValues = LstmCell.GetStateValues();
+                cellStateValues.Add(stateValues[0]);
+                candidateStateValues.Add(stateValues[1]);
+
+                totalLoss += CalculateLoss(expected, actualOutput).Sum();
             }
+            
+            Console.WriteLine($"Loss: {totalLoss / inputData.Count}");
+
+            Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
+                inputData, hiddenStateValues, actualOutputValues, expectedOutputs);
         }
     }
 
-    private Tuple<Matrix[], Matrix[]> CreateBatches(Matrix[] trainingData)
+    private Tuple<List<Matrix>, List<Matrix>> CreateBatches(Matrix[] trainingData)
     {
         var inputData = new List<Matrix>();
         var expectedOutputs = new List<Matrix>(); 
@@ -210,7 +251,7 @@ public class Rnn
             expectedOutputs.Add(Matrix.StackArray(expected, true));
         }
         
-        return new Tuple<Matrix[], Matrix[]>(inputData.ToArray(), expectedOutputs.ToArray());
+        return new Tuple<List<Matrix>, List<Matrix>> (inputData, expectedOutputs);
     }
 
     /*public float Train()

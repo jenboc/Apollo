@@ -80,7 +80,7 @@ public class Lstm
     /// <returns>An array containing the values. Index 0 is forget, 1 is input and 2 is output</returns>
     public Matrix[] GetGateValues()
     {
-        return new[] { Forget.Value, Input.Value, Output.Value };
+        return new[] { Forget.Value.Clone(), Input.Value.Clone(), Output.Value.Clone() };
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class Lstm
     /// <returns>An array containing the values. Index 0 is cell state, 1 is candidate state</returns>
     public Matrix[] GetStateValues()
     {
-        return new[] { CellState, CandidateState.Value };
+        return new[] { CellState.Clone(), CandidateState.Value.Clone() };
     }
 
     /// <summary>

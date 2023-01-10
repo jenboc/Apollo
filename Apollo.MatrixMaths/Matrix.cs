@@ -500,8 +500,9 @@ public class Matrix
     /// </summary>
     public void Hadamard(Matrix otherMat)
     {
-        if (otherMat.Rows != Rows && otherMat.Columns != Columns)
-            throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication");
+        if (otherMat.Rows != Rows || otherMat.Columns != Columns)
+            throw new InvalidShapeException($"Matrices must be the same shape for Hadamard multiplication " +
+                                            $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
 
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)

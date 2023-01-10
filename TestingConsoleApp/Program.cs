@@ -12,16 +12,7 @@ Console.WriteLine(fred);
 var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
-var rnn = new Rnn(vocab.Size, 2, 1, 50, 0.001f);
-var initInput = trainingData[0];
-var output = rnn.Forward(initInput);
+Console.WriteLine($"Vocab Size: {vocab.Size}");
+var rnn = new Rnn(vocab.Size, 10, 32, 50, 10e-5f);
 
-foreach (var o in output)
-{
-    Console.WriteLine();
-
-    for (var c = 0; c < o.Columns; c++)
-    {
-        Console.Write($"{o[0, c]}\t");
-    }
-}
+rnn.Train(trainingData, 10);
