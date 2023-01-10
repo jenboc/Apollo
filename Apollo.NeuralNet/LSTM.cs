@@ -13,7 +13,7 @@ public class Lstm
         CandidateState = new Gate(vocabSize, hiddenSize, batchSize);
         Output = new Gate(vocabSize, hiddenSize, batchSize);
 
-        CellState = new Matrix(vocabSize, 1);
+        CellState = new Matrix(batchSize, hiddenSize);
     }
     
     private float LearningRate { get; }

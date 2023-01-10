@@ -44,14 +44,14 @@ public class Rnn
         var outputs = new Matrix[RecurrenceAmount];
 
         var lstmInput = initialInput;
-        var lstmOutput = Matrix.Like(initialInput);
+        var hiddenState = new Matrix(BatchSize, HiddenSize);
 
         for (var i = 0; i < RecurrenceAmount; i++)
         {
-            lstmOutput = LstmCell.Forward(lstmInput, lstmOutput);
-            outputs[i] = lstmOutput;
+            hiddenState = LstmCell.Forward(lstmInput, hiddenState);
+            outputs[i] = hiddenState.Clone();
 
-            outputs[i] = Weight * outputs[i];
+            outputs[i] *= Weight;
             outputs[i].Softmax();
             outputs[i] = InterpretOutput(outputs[i]);
 
