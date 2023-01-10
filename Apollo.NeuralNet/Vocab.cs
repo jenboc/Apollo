@@ -62,19 +62,19 @@ public class Vocab
     ///     Create a one-hot vector for a character in the vocab list
     /// </summary>
     /// <param name="c">The character to represent</param>
-    /// <param name="column">Flag variable to decide if the vector is a column vector, true by default</param>
+    /// <param name="row">Flag variable to decide if the vector is a row vector, true by default</param>
     /// <returns>A column or row one-hot vector</returns>
-    public Matrix CreateOneHot(char c, bool column = true)
+    public Matrix CreateOneHot(char c, bool row = true)
     {
-        var vector = new Matrix(Size, 1);
+        var vector = new Matrix(1, Size);
         var charIndex = this[c];
 
         if (charIndex == -1)
             throw new WordNotFoundException("Word does not exist in the vocab list");
 
-        vector[charIndex, 0] = 1;
+        vector[0, charIndex] = 1;
 
-        if (!column)
+        if (!row)
             vector.Transpose();
 
         return vector;
@@ -95,14 +95,14 @@ public class Vocab
             (vector.Columns == 1 && vector.Rows != Size))
             throw new InvalidOneHotException("A one-hot vector should have shape 1 x vocabSize or vocabSize x 1");
 
-        if (vector.Rows == 1 && vector.Columns > 1) // Ensure it is a column vector 
+        if (vector.Columns == 1 && vector.Rows > 1) // Ensure it is a column vector 
             vector.Transpose();
 
         // Find the index of the 1
         var index = -1;
         var numOnes = 0;
-        for (var i = 0; i < vector.Rows; i++)
-            if (vector[i, 0] == 1f)
+        for (var i = 0; i < vector.Columns; i++)
+            if (vector[0, i] == 1f)
             {
                 index = i;
                 numOnes++;
