@@ -199,6 +199,8 @@ public class Rnn
 
         for (var epoch = 0; epoch < numEpochs; epoch++)
         {
+            LstmCell.Clear();
+            
             Console.WriteLine($"Epoch {epoch+1} of {numEpochs}:");
 
             var hiddenState = new Matrix(BatchSize, HiddenSize);
