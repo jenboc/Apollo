@@ -521,7 +521,15 @@ public class Matrix
 
     public void Softmax()
     {
-        Exp();
+        // If not implemented properly, this function could produce NaNs 
+        // This is because e^x is very large when x isn't that big, thus could produce an overflow error 
+        // To counter-act this, we subtract the highest number in the matrix from every matrix element, and then 
+        // calculate the softmax since this operation does not change the result 
+        
+        var highestNumber = Max();
+        IterateContent(value => value - highestNumber);
+
+        Exp(); 
         var sum = Sum();
         Multiply(1 / sum);
     }
@@ -531,6 +539,25 @@ public class Matrix
         var returnMat = matrix.Clone();
         returnMat.Softmax();
         return returnMat;
+    }
+
+    /// <summary>
+    /// Get the highest value in the matrix
+    /// </summary>
+    /// <returns>The highest value in the matrix</returns>
+    public float Max()
+    {
+        var max = float.MinValue;
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+            {
+                if (Contents[i, j] > max)
+                    max = Contents[i, j];
+            }
+        }
+
+        return max;
     }
 
     public void Log(float logBase)
