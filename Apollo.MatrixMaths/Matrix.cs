@@ -42,7 +42,7 @@ public class Matrix
             int[] colSlice = { 0, Columns };
 
             // Scenario A: only the row slice is provided (first character in slice is not a comma, and the length of the split slice is 1) 
-            if (splitSlice[1] == "")
+            if (splitSlice.Length < 2)
             {
                 InterpretSlice(splitSlice[0], ref rowSlice);
             }
@@ -89,13 +89,13 @@ public class Matrix
         return new Matrix(matrix.Rows, matrix.Columns);
     }
 
-    // Creates matrix of random values (between 0 and 1 inclusive) given a shape 
-    public static Matrix Random(int rows, int columns, int seed = -1)
+    // Creates matrix of random values, given a shape 
+    public static Matrix Random(int rows, int columns, int min=-2, int max=2, int seed = -1)
     {
         var r = seed == -1 ? new Random() : new Random(seed);
 
         var returnMatrix = new Matrix(rows, columns);
-        returnMatrix.IterateContent(value => (float)r.NextDouble());
+        returnMatrix.IterateContent(value => r.Next(min, max) + (float)r.NextDouble());
         return returnMatrix;
     }
 
@@ -526,12 +526,29 @@ public class Matrix
         // To counter-act this, we subtract the highest number in the matrix from every matrix element, and then 
         // calculate the softmax since this operation does not change the result 
         
-        var highestNumber = Max();
-        IterateContent(value => value - highestNumber);
+        // Softmaxed matrices are considered row by row, so only apply softmax to individual rows then recompile the matrix
 
-        Exp(); 
-        var sum = Sum();
-        Multiply(1 / sum);
+        var matRows = new Matrix[Rows];
+        
+        for (var i = 0; i < Rows; i++)
+        {
+            var rowContent = new float[1, Columns];
+            for (var j = 0; j < Columns; j++)
+            {
+                rowContent[0, j] = Contents[i, j];
+            }
+
+            matRows[i] = new Matrix(rowContent);
+            
+            var highestNumber = matRows[i].Max();
+            matRows[i].IterateContent(value => value - highestNumber);
+            matRows[i].Exp(); 
+            var sum = matRows[i].Sum();
+            matRows[i].Multiply(1 / sum);
+        }
+
+        var compiled = StackArray(matRows);
+        Contents = compiled.Contents;
     }
 
     public static Matrix Softmax(Matrix matrix)

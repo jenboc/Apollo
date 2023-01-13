@@ -68,20 +68,51 @@ public class Rnn
     /// <returns>A one-hot vector representing the LSTM's predictions</returns>
     private Matrix InterpretOutput(Matrix softmax)
     {
-        var highest = float.MinValue;
-        var highestIndex = -1;
+        // var highest = float.MinValue;
+        // var highestIndex = -1;
+        //
+        // for (var row = 0; row < softmax.Rows; row++)
+        //     if (softmax[row, 0] > highest)
+        //     {
+        //         highest = softmax[row, 0];
+        //         highestIndex = row;
+        //     }
+        //
+        // softmax *= 0; // Set everything to 0 
+        // softmax.Contents[highestIndex, 0] = 1; // Set index of highest value to 1 
 
-        for (var row = 0; row < softmax.Rows; row++)
-            if (softmax[row, 0] > highest)
+        var r = new Random();
+        var interpreted = Matrix.Like(softmax);
+        
+        for (var i = 0; i < softmax.Rows; i++)
+        {
+            var highestProb = float.MinValue;
+            var highestProbIndex = -1;
+
+            var highestSucceed = float.MinValue;
+            var highestSucceedIndex = -1; 
+            
+            for (var j = 0; j < softmax.Columns; j++)
             {
-                highest = softmax[row, 0];
-                highestIndex = row;
+                if (softmax[i, j] > highestProb)
+                    highestProbIndex = j;
+                
+                var rollQuota = (int)(softmax[i, j] * 100);
+                var diceRoll = r.Next(100);
+
+                if (diceRoll <= rollQuota && softmax[i, j] > highestSucceed)
+                    highestSucceedIndex = j;
             }
+            
+            // The 1 goes into the slot with the highest probability which succeeded the dice roll 
+            // Or alternatively (if every probability failed), the highest probability in general
+            if (highestSucceedIndex == -1)
+                interpreted[i, highestProbIndex] = 1;
+            else
+                interpreted[i, highestSucceedIndex] = 1;
+        }
 
-        softmax *= 0; // Set everything to 0 
-        softmax.Contents[highestIndex, 0] = 1; // Set index of highest value to 1 
-
-        return softmax;
+        return interpreted;
     }
 
     /// <summary>
@@ -176,7 +207,7 @@ public class Rnn
     /// <returns>A matrix representing the loss of the neural network</returns>
     private Matrix CalculateLoss(Matrix expected, Matrix actual)
     {
-        return -1 * Matrix.Hadamard(actual, Matrix.Log(expected, MathF.E)); 
+        return -1 * Matrix.Hadamard(expected, Matrix.Log(actual, MathF.E)); 
     }
 
     /// <summary>
