@@ -286,13 +286,13 @@ public class MatrixTests
     [Fact]
     public void Random()
     {
-        var seeded1 = Matrix.Random(5, 5, 2);
-        var seeded2 = Matrix.Random(5, 5, 2);
+        var mat1R = new Random(5);
+        var mat2R = new Random(120);
 
-        var unseeded = Matrix.Random(5, 5);
-
-        Assert.Equal(seeded1.Contents, seeded2.Contents);
-        Assert.NotEqual(seeded1.Contents, unseeded.Contents);
+        var mat1 = new Matrix(5, 5, mat1R);
+        var mat2 = new Matrix(5, 5, mat2R);
+        
+        Assert.NotEqual(mat1.Contents, mat2.Contents);
     }
 
     [Fact]

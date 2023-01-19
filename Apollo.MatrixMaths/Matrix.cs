@@ -18,6 +18,12 @@ public class Matrix
         Contents = defaultData;
     }
 
+    public Matrix(int rows, int columns, Random r, int min=-2, int max=2)
+    {
+        Contents = new float[rows, columns];
+        IterateContent(value => r.Next(min, max) + (float)r.NextDouble());
+    }
+    
     public float[,] Contents { get; private set; }
 
     public float this[int i, int j]
@@ -87,16 +93,6 @@ public class Matrix
     public static Matrix Like(Matrix matrix)
     {
         return new Matrix(matrix.Rows, matrix.Columns);
-    }
-
-    // Creates matrix of random values, given a shape 
-    public static Matrix Random(int rows, int columns, int min=-2, int max=2, int seed = -1)
-    {
-        var r = seed == -1 ? new Random() : new Random(seed);
-
-        var returnMatrix = new Matrix(rows, columns);
-        returnMatrix.IterateContent(value => r.Next(min, max) + (float)r.NextDouble());
-        return returnMatrix;
     }
 
     // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
