@@ -8,17 +8,17 @@ public class Rnn
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
-    /// <param name="learningRate">Rate of change of the parameters of the network</param>
+    /// <param name="hyperparameters">Hyperparameters for the ADAM optimisation algorithm</param>
     /// <param name="r">Random Instance to instantiate weights</param> 
-    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, float learningRate, Random r)
+    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, AdamParameters hyperparameters, Random r)
     {
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
         RecurrenceAmount = recurrenceAmount;
-        LearningRate = learningRate;
-
-        LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, LearningRate, r);
+        Hyperparameters = hyperparameters;
+        
+        LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, r);
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
@@ -35,6 +35,9 @@ public class Rnn
 
     // Softmax layer weight 
     private Weight SoftmaxWeight { get; set; }
+    
+    // Adam hyperparameters 
+    private AdamParameters Hyperparameters { get; }
 
     /// <summary>
     ///     Complete a full pass of the neural network, with the correct number of recurrences.
@@ -135,18 +138,6 @@ public class Rnn
         List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> lstmOutputs, 
         List<Matrix> predictedOutputs, List<Matrix> expectedOutputs)
     {
-        // Derivatives for tunable parameters are cumulative => define outside loop 
-        var dV = Matrix.Like(SoftmaxWeight); // Gradient for softmax layer weight 
-
-        // Gates require 2 derivatives (one for the weight applied to the input, and one for the weight applied to 
-        // the previous output) 
-        // [0] => derivative for input weight 
-        // [1] => derivative for previous output weight 
-        var dWF = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
-        var dWI = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
-        var dWO = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
-        var dWG = new[] { new(VocabSize, HiddenSize), new Matrix(HiddenSize, HiddenSize) };
-
         // t represents timestep
         // Go until t > 1 since there is no timestep -1 (t-1 when t = 0) 
         for (var t = inputs.Count - 1; t > 1; t--)
@@ -170,34 +161,22 @@ public class Rnn
             var dF = Matrix.HadamardProd(dC, cellStates[t - 1]);
 
             // Increment gradient for weights 
-            dV += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
-
-            //dWF[0] += Matrix.HadamardProd(Matrix.Transpose(inputs[t]) * dF, Matrix.DSigmoid(forgetGates[t]));
-            dWF[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dF, Matrix.DSigmoid(forgetGates[t]));
-            dWF[1] += Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetGates[t]), lstmOutputs[t - 1]);
-
-            //dWI[0] += Matrix.HadamardProd(Matrix.Transpose(inputs[t]) * dI, Matrix.DSigmoid(inputGates[t]));
-            dWI[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGates[t]));
-            dWI[1] += Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGates[t]), lstmOutputs[t - 1]);
-
-            dWO[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGates[t]));
-            dWO[1] += Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGates[t]), lstmOutputs[t - 1]);
-
-            dWG[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStates[t]));
-            dWG[1] += Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStates[t]), lstmOutputs[t - 1]);
+            SoftmaxWeight.Gradient += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
+            
+            LstmCell.Backprop(inputs[t], dF, forgetGates[t], dI, inputGates[t], dO, outputGates[t],
+                dG, candidateStates[t], lstmOutputs[t - 1]);
         }
         
-        Update(dV, dWF, dWI, dWO, dWG);
+        Update();
     }
 
     /// <summary>
     ///     Update the parameters of the neural network
     /// </summary>
-    private void Update(Matrix dV, Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
+    private void Update()
     {
-        SoftmaxWeight.Subtract(dV * LearningRate);
-
-        LstmCell.Update(dWF, dWI, dWO, dWG);
+        SoftmaxWeight.Adam(Hyperparameters);
+        LstmCell.Update(Hyperparameters);
     }
 
     /// <summary>

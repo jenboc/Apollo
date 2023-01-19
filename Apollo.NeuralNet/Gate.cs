@@ -22,8 +22,8 @@ public class Gate
     }
 
     public Matrix Value { get; set; } // Attribute to store the value of the gate 
-    private Weight InputWeight { get; set; }
-    private Weight PrevOutputWeight { get; set; }
+    public Weight InputWeight { get; set; }
+    public Weight PrevOutputWeight { get; set; }
     private Matrix Bias { get; }
 
     /// <summary>
@@ -51,8 +51,9 @@ public class Gate
         Value *= 0;
     }
 
-    public void Update()
+    public void Update(AdamParameters hyperparameters)
     {
-
+        InputWeight.Adam(hyperparameters);
+        PrevOutputWeight.Adam(hyperparameters);
     }
 }

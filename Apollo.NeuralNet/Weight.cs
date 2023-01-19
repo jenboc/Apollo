@@ -30,22 +30,19 @@ public class Weight : Matrix
     /// <summary>
     /// Optimise the weight using the Adaptive Moment Estimation Algorithm (ADAM)
     /// </summary>
-    /// <param name="alpha">Learning Rate</param>
-    /// <param name="beta1">Exponential Decay for first moment estimates</param>
-    /// <param name="beta2">Exponential Decay for second moment estimates</param>
-    /// <param name="epsilon">Very small number to prevent division by 0</param>
-    public void Adam(float alpha, float beta1, float beta2, float epsilon)
+    /// <param name="hyperparameters">The hyperparameters for the algorithm</param> 
+    public void Adam(AdamParameters hyperparameters)
     {
         // Change ADAM matrices
-        MomentVector = beta1 * MomentVector + (1 - beta1) * Gradient;
-        InfinityNorm = beta2 * InfinityNorm + (1 - beta2) * Power(Gradient, 2);
+        MomentVector = hyperparameters.Beta1 * MomentVector + (1 - hyperparameters.Beta1) * Gradient;
+        InfinityNorm = hyperparameters.Beta2 * InfinityNorm + (1 - hyperparameters.Beta2) * Power(Gradient, 2);
         
         // Calculate m_hat and v_hat 
-        var mHat = MomentVector / (1 - beta1);
-        var vHat = InfinityNorm / (1 - beta2);
+        var mHat = MomentVector / (1 - hyperparameters.Beta1);
+        var vHat = InfinityNorm / (1 - hyperparameters.Beta2);
         
         // Update weight 
-        var update = HadamardDiv(alpha * mHat, Sqrt(vHat) + epsilon);
+        var update = HadamardDiv(hyperparameters.Alpha * mHat, Sqrt(vHat) + hyperparameters.Epsilon);
         Subtract(update);
     }
 }

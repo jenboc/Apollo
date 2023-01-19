@@ -4,10 +4,8 @@ namespace Apollo.NeuralNet;
 
 public class Lstm
 {
-    public Lstm(int vocabSize, int hiddenSize, int batchSize, float learningRate, Random r)
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, Random r)
     {
-        LearningRate = learningRate;
-        
         Forget = new Gate(vocabSize, hiddenSize, batchSize, r);
         Input = new Gate(vocabSize, hiddenSize, batchSize, r);
         CandidateState = new Gate(vocabSize, hiddenSize, batchSize, r);
@@ -16,8 +14,6 @@ public class Lstm
         CellState = new Matrix(batchSize, hiddenSize);
     }
     
-    private float LearningRate { get; }
-
     // Gates 
     private Gate Forget { get; }
     private Gate Input { get; }
@@ -60,17 +56,33 @@ public class Lstm
         return Matrix.HadamardProd(Output.Value, Matrix.Tanh(CellState));
     }
 
-    public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate,
-        Matrix inputGate, Matrix cell, Matrix outputGate, Matrix dfcs, Matrix dfhs)
+    /// <summary>
+    /// Perform backprop for a single timestep
+    /// </summary>
+    public void Backprop(Matrix input, Matrix dF, Matrix forgetValue, Matrix dI, Matrix inputGateValue, Matrix dO, Matrix outputGateValue,
+        Matrix dG, Matrix candidateStateValue, Matrix lstmOutput) 
     {
-        throw new NotImplementedException();
+        Forget.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dF, Matrix.DSigmoid(forgetValue));
+        Forget.PrevOutputWeight.Gradient += Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetValue), lstmOutput);
+        
+        Input.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGateValue));
+        Input.PrevOutputWeight.Gradient += Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGateValue), lstmOutput);
+
+        Output.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGateValue));
+        Output.PrevOutputWeight.Gradient += Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGateValue), lstmOutput);
+
+        CandidateState.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStateValue));
+        CandidateState.PrevOutputWeight.Gradient += Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
+    }
+
+    public void Update(AdamParameters hyperparameters)
+    {
+        Forget.Update(hyperparameters);
+        Input.Update(hyperparameters);
+        Output.Update(hyperparameters);
+        CandidateState.Update(hyperparameters); 
     }
     
-    public void Update(Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
-    {
-
-    }
-
     /// <summary>
     ///     Returns the values of the forget, input and output gates
     /// </summary>
