@@ -205,9 +205,10 @@ public class Rnn
     /// <param name="expected">The expected/desired output from the LSTM</param>
     /// <param name="actual">The actual output of the LSTM</param>
     /// <returns>A matrix representing the loss of the neural network</returns>
-    private Matrix CalculateLoss(Matrix expected, Matrix actual)
+    private float CalculateLoss(Matrix expected, Matrix actual)
     {
-        return -1 * Matrix.Hadamard(expected, Matrix.Log(actual, MathF.E)); 
+        var lossMatrix = -1 * Matrix.Hadamard(expected, Matrix.Log(actual, MathF.E));
+        return lossMatrix.Sum();
     }
 
     /// <summary>
@@ -215,7 +216,7 @@ public class Rnn
     /// </summary>
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
     /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
-    public void Train(Matrix[] trainingData, int numEpochs)
+    public void Train(Matrix[] trainingData, int maxError)
     {
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
 
@@ -228,14 +229,17 @@ public class Rnn
         var hiddenStateValues = new List<Matrix>();
         var actualOutputValues = new List<Matrix>();
 
-        for (var epoch = 0; epoch < numEpochs; epoch++)
+        var epoch = 1;
+
+        float totalLoss;       
+        do
         {
             LstmCell.Clear();
-            
-            Console.WriteLine($"Epoch {epoch+1} of {numEpochs}:");
+
+            Console.WriteLine($"Epoch {epoch}");
 
             var hiddenState = new Matrix(BatchSize, HiddenSize);
-            var totalLoss = 0f;
+            totalLoss = 0f;
 
             for (var i = 0; i < inputData.Count; i++)
             {
@@ -260,16 +264,23 @@ public class Rnn
                 cellStateValues.Add(stateValues[0]);
                 candidateStateValues.Add(stateValues[1]);
 
-                totalLoss += CalculateLoss(expected, actualOutput).Sum();
+                totalLoss += CalculateLoss(expected, actualOutput);
             }
-            
+
             Console.WriteLine($"Loss: {totalLoss / inputData.Count}");
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 inputData, hiddenStateValues, actualOutputValues, expectedOutputs);
-        }
-    }
 
+            epoch++;
+        } while (totalLoss > maxError);
+    }
+    
+    /// <summary>
+    /// Create valid batches from the training data
+    /// </summary>
+    /// <param name="trainingData">The training data to make the batches from</param>
+    /// <returns>A tuple in the form of (inputBatches, expectedBatches)</returns>
     private Tuple<List<Matrix>, List<Matrix>> CreateBatches(Matrix[] trainingData)
     {
         var inputData = new List<Matrix>();
@@ -286,72 +297,4 @@ public class Rnn
         
         return new Tuple<List<Matrix>, List<Matrix>> (inputData, expectedOutputs);
     }
-
-    /*public float Train()
-    {
-        LstmCell.Clear();
-
-        var gateValues = LstmCell.GetGateValues();
-        var stateValues = LstmCell.GetStateValues();
-
-        // Data required to perform backpropagation 
-        var previousForgetGates = new Matrix[trainingData.Length];
-        previousForgetGates[0] = gateValues[0].Clone();
-
-        var previousCandidateStates = new Matrix[trainingData.Length];
-        previousCandidateStates[0] = stateValues[1].Clone();
-
-        var previousCellStates = new Matrix[trainingData.Length];
-        previousCellStates[0] = stateValues[0].Clone();
-
-        var previousInputGates = new Matrix[trainingData.Length];
-        previousInputGates[0] = gateValues[1].Clone();
-
-        var previousOutputGates = new Matrix[trainingData.Length];
-        previousOutputGates[0] = gateValues[2].Clone();
-
-        var previousInputs = new Matrix[trainingData.Length];
-
-        var previousLstmOutputs = new Matrix[trainingData.Length];
-        previousLstmOutputs[0] = new Matrix(VocabSize, 1);
-
-        var previousFinalOutputs = new Matrix[trainingData.Length];
-
-        var totalLoss = new Matrix(VocabSize, 1);
-
-        // Start at 1 so that previousInputs[i] is supposed to produce trainingData[i]
-        for (var i = 1; i < trainingData.Length; i++)
-        {
-            var input = trainingData[i - 1];
-            var previousOutput = i == 0 ? Matrix.Like(input) : previousLstmOutputs[i - 1];
-
-            var expectedOutput = trainingData[i];
-
-            var actualOutput = LstmCell.Forward(input, previousOutput);
-            previousLstmOutputs[i] = actualOutput.Clone();
-
-            actualOutput = Matrix.Multiply(Weight, actualOutput);
-            actualOutput.Softmax();
-            previousFinalOutputs[i] = actualOutput.Clone();
-
-            totalLoss += CalculateLoss(expectedOutput, actualOutput);
-
-            previousInputs[i] = input;
-
-            gateValues = LstmCell.GetGateValues();
-            previousForgetGates[i] = gateValues[0].Clone();
-            previousInputGates[i] = gateValues[1].Clone();
-            previousOutputGates[i] = gateValues[2].Clone();
-
-            stateValues = LstmCell.GetStateValues();
-            previousCellStates[i] = stateValues[0].Clone();
-            previousCandidateStates[i] = stateValues[1].Clone();
-        }
-
-        Backprop(previousForgetGates, previousCandidateStates, previousCellStates, previousInputGates,
-            previousOutputGates, previousInputs, previousLstmOutputs, previousFinalOutputs,
-            trainingData);
-
-        return totalLoss.Sum(); 
-    }*/
 }

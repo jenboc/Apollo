@@ -25,9 +25,9 @@ var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
 Console.WriteLine($"Vocab Size: {vocab.Size}");
-var rnn = new Rnn(vocab.Size, 10, 32, 50, 1e-5f);
+var rnn = new Rnn(vocab.Size, 10, 32, 50, 1e-6f);
 
-rnn.Train(trainingData, 50);
+rnn.Train(trainingData, 10);
 
 var initialInput = new Matrix[32];
 for (var i = 0; i < 32; i++)
