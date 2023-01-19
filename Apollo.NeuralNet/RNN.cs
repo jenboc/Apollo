@@ -9,7 +9,8 @@ public class Rnn
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
     /// <param name="learningRate">Rate of change of the parameters of the network</param>
-    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, float learningRate)
+    /// <param name="r">Random Instance to instantiate weights</param> 
+    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, float learningRate, Random r)
     {
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
@@ -17,9 +18,9 @@ public class Rnn
         RecurrenceAmount = recurrenceAmount;
         LearningRate = learningRate;
 
-        LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, LearningRate);
+        LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, LearningRate, r);
 
-        Weight = Matrix.Random(HiddenSize, VocabSize);
+        Weight = new Matrix(HiddenSize, VocabSize, r);
     }
 
     // General Parameters

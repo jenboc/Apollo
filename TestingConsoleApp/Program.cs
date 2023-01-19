@@ -2,6 +2,8 @@
 using Apollo.MIDI;
 using Apollo.NeuralNet;
 
+var r = new Random();
+
 static void DisplayMat(Matrix mat)
 {
     for (var i = 0; i < mat.Rows; i++)
@@ -25,7 +27,7 @@ var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
 Console.WriteLine($"Vocab Size: {vocab.Size}");
-var rnn = new Rnn(vocab.Size, 10, 32, 50, 1e-6f);
+var rnn = new Rnn(vocab.Size, 10, 32, 50, 1e-6f, r);
 
 rnn.Train(trainingData, 10);
 

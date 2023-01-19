@@ -4,14 +4,14 @@ namespace Apollo.NeuralNet;
 
 public class Lstm
 {
-    public Lstm(int vocabSize, int hiddenSize, int batchSize, float learningRate)
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, float learningRate, Random r)
     {
         LearningRate = learningRate;
         
-        Forget = new Gate(vocabSize, hiddenSize, batchSize);
-        Input = new Gate(vocabSize, hiddenSize, batchSize);
-        CandidateState = new Gate(vocabSize, hiddenSize, batchSize);
-        Output = new Gate(vocabSize, hiddenSize, batchSize);
+        Forget = new Gate(vocabSize, hiddenSize, batchSize, r);
+        Input = new Gate(vocabSize, hiddenSize, batchSize, r);
+        CandidateState = new Gate(vocabSize, hiddenSize, batchSize, r);
+        Output = new Gate(vocabSize, hiddenSize, batchSize, r);
 
         CellState = new Matrix(batchSize, hiddenSize);
     }

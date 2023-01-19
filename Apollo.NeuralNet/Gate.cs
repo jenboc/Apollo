@@ -11,13 +11,13 @@ public class Gate
     /// <param name="vocabSize"></param>
     /// <param name="hiddenSize"></param>
     /// <param name="batchSize"></param>
-    public Gate(int vocabSize, int hiddenSize, int batchSize)
+    public Gate(int vocabSize, int hiddenSize, int batchSize, Random r)
     {
         Value = new Matrix(batchSize, hiddenSize);
 
-        InputWeight = Matrix.Random(vocabSize, hiddenSize);
-        PrevOutputWeight = Matrix.Random(hiddenSize, hiddenSize);
-        Bias = Matrix.Random(batchSize, hiddenSize);
+        InputWeight = new Matrix(vocabSize, hiddenSize, r);
+        PrevOutputWeight = new Matrix(hiddenSize, hiddenSize, r);
+        Bias = new Matrix(batchSize, hiddenSize, r);
 
         InputWeightGradient = Matrix.Like(InputWeight);
         PrevOutputWeightGradient = Matrix.Like(PrevOutputWeight);
