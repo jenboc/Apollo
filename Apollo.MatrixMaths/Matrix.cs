@@ -494,7 +494,7 @@ public class Matrix
     /// <summary>
     ///     Element-Wise multiplication, changing the matrix it is performed upon
     /// </summary>
-    public void Hadamard(Matrix otherMat)
+    public void HadamardProd(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
             throw new InvalidShapeException($"Matrices must be the same shape for Hadamard multiplication " +
@@ -508,10 +508,34 @@ public class Matrix
     /// <summary>
     ///     Element-Wise multiplication, creating a new matrix for the output
     /// </summary>
-    public static Matrix Hadamard(Matrix mat1, Matrix mat2)
+    public static Matrix HadamardProd(Matrix mat1, Matrix mat2)
     {
         var returnMat = mat1.Clone();
-        returnMat.Hadamard(mat2);
+        returnMat.HadamardProd(mat2);
+        return returnMat;
+    }
+
+    /// <summary>
+    /// Element-wise division, changing the matrix it is performed upon
+    /// </summary>
+    public void HadamardDiv(Matrix otherMat)
+    {
+        if (otherMat.Rows != Rows || otherMat.Columns != Columns)
+            throw new InvalidShapeException($"Matrices must be the same shape for Hadamard division " +
+                                            $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
+        
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            Contents[i, j] /= otherMat.Contents[i, j];
+    }
+    
+    /// <summary>
+    /// Element wise division, creating a new matrix for the output
+    /// </summary>
+    public static Matrix HadamardDiv(Matrix mat1, Matrix mat2)
+    {
+        var returnMat = mat1.Clone();
+        returnMat.HadamardDiv(mat2);
         return returnMat;
     }
 

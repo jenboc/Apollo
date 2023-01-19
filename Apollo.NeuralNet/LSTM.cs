@@ -50,14 +50,14 @@ public class Lstm
 
         // Calculate cell state
         // Forget_Gate x CellState + Input_Gate x New_Info_Gate (using element-wise multiplication) 
-        CellState = Matrix.Hadamard(Forget.Value, CellState) + Matrix.Hadamard(Input.Value, CandidateState.Value);
+        CellState = Matrix.HadamardProd(Forget.Value, CellState) + Matrix.HadamardProd(Input.Value, CandidateState.Value);
 
         // Calculate output gate
         Output.CalcUnactivated(input, previousOutput);
         Output.Value.Sigmoid();
 
         // return output 
-        return Matrix.Hadamard(Output.Value, Matrix.Tanh(CellState));
+        return Matrix.HadamardProd(Output.Value, Matrix.Tanh(CellState));
     }
 
     public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate,

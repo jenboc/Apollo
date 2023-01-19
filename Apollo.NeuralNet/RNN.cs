@@ -155,36 +155,36 @@ public class Rnn
             var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(Weight);
 
             // dL/dc(t) = dL/dh(t) x o(t)tanh'(c_t) 
-            var dC = Matrix.Hadamard(dH, Matrix.Hadamard(outputGates[t], Matrix.DTanh(cellStates[t])));
+            var dC = Matrix.HadamardProd(dH, Matrix.HadamardProd(outputGates[t], Matrix.DTanh(cellStates[t])));
 
             // dL/dg(t) = dL/dc(t) x i(t) 
-            var dG = Matrix.Hadamard(dC, inputGates[t]);
+            var dG = Matrix.HadamardProd(dC, inputGates[t]);
 
             // dL/do(t) = dL/dh x tanh(c(t)) 
-            var dO = Matrix.Hadamard(dH, Matrix.Tanh(cellStates[t]));
+            var dO = Matrix.HadamardProd(dH, Matrix.Tanh(cellStates[t]));
 
             // dL/di(t) = dL/dc(t) x g(t)
-            var dI = Matrix.Hadamard(dC, candidateStates[t]);
+            var dI = Matrix.HadamardProd(dC, candidateStates[t]);
 
             // dL/df(t) = dL/dc(t) x c(t-1) 
-            var dF = Matrix.Hadamard(dC, cellStates[t - 1]);
+            var dF = Matrix.HadamardProd(dC, cellStates[t - 1]);
 
             // Increment gradient for weights 
             dV += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
 
-            //dWF[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dF, Matrix.DSigmoid(forgetGates[t]));
-            dWF[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dF, Matrix.DSigmoid(forgetGates[t]));
-            dWF[1] += Matrix.Transpose(dF) * Matrix.Hadamard(Matrix.DSigmoid(forgetGates[t]), lstmOutputs[t - 1]);
+            //dWF[0] += Matrix.HadamardProd(Matrix.Transpose(inputs[t]) * dF, Matrix.DSigmoid(forgetGates[t]));
+            dWF[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dF, Matrix.DSigmoid(forgetGates[t]));
+            dWF[1] += Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetGates[t]), lstmOutputs[t - 1]);
 
-            //dWI[0] += Matrix.Hadamard(Matrix.Transpose(inputs[t]) * dI, Matrix.DSigmoid(inputGates[t]));
-            dWI[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dI, Matrix.DSigmoid(inputGates[t]));
-            dWI[1] += Matrix.Transpose(dI) * Matrix.Hadamard(Matrix.DSigmoid(inputGates[t]), lstmOutputs[t - 1]);
+            //dWI[0] += Matrix.HadamardProd(Matrix.Transpose(inputs[t]) * dI, Matrix.DSigmoid(inputGates[t]));
+            dWI[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGates[t]));
+            dWI[1] += Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGates[t]), lstmOutputs[t - 1]);
 
-            dWO[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dO, Matrix.DSigmoid(outputGates[t]));
-            dWO[1] += Matrix.Transpose(dO) * Matrix.Hadamard(Matrix.DSigmoid(outputGates[t]), lstmOutputs[t - 1]);
+            dWO[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGates[t]));
+            dWO[1] += Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGates[t]), lstmOutputs[t - 1]);
 
-            dWG[0] += Matrix.Transpose(inputs[t]) * Matrix.Hadamard(dG, Matrix.DTanh(candidateStates[t]));
-            dWG[1] += Matrix.Transpose(dG) * Matrix.Hadamard(Matrix.DTanh(candidateStates[t]), lstmOutputs[t - 1]);
+            dWG[0] += Matrix.Transpose(inputs[t]) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStates[t]));
+            dWG[1] += Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStates[t]), lstmOutputs[t - 1]);
         }
         
         Update(dV, dWF, dWI, dWO, dWG);
@@ -208,7 +208,7 @@ public class Rnn
     /// <returns>A matrix representing the loss of the neural network</returns>
     private float CalculateLoss(Matrix expected, Matrix actual)
     {
-        var lossMatrix = -1 * Matrix.Hadamard(expected, Matrix.Log(actual, MathF.E));
+        var lossMatrix = -1 * Matrix.HadamardProd(expected, Matrix.Log(actual, MathF.E));
         return lossMatrix.Sum();
     }
 

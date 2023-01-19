@@ -367,7 +367,7 @@ public class MatrixTests
     }
 
     [Fact]
-    public void Hadamard()
+    public void HadamardProd()
     {
         var expectedOutput = new[,]
         {
@@ -392,8 +392,8 @@ public class MatrixTests
 
         var mat1 = new Matrix(matContent1);
         var mat2 = new Matrix(matContent2);
-        var mat1x2 = Matrix.Hadamard(mat1, mat2);
-        var mat2x1 = Matrix.Hadamard(mat2, mat1);
+        var mat1x2 = Matrix.HadamardProd(mat1, mat2);
+        var mat2x1 = Matrix.HadamardProd(mat2, mat1);
 
         Assert.Equal(expectedOutput, mat1x2.Contents); // Check if right answer obtained 
         Assert.Equal(expectedOutput, mat2x1.Contents); // Check if order matters
