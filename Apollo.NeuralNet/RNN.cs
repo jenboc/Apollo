@@ -214,6 +214,14 @@ public class Rnn
         float totalLoss;       
         do
         {
+            forgetGateValues.Clear();
+            candidateStateValues.Clear();
+            cellStateValues.Clear();
+            inputGateValues.Clear();
+            outputGateValues.Clear();
+            hiddenStateValues.Clear();
+            actualOutputValues.Clear(); 
+            
             LstmCell.Clear();
 
             Console.WriteLine($"Epoch {epoch}");
