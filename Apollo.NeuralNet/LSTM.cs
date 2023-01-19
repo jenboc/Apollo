@@ -68,10 +68,7 @@ public class Lstm
     
     public void Update(Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
     {
-        Forget.Update(dWF[0], dWF[1], LearningRate);
-        Input.Update(dWI[0], dWI[1], LearningRate);
-        Output.Update(dWO[0], dWO[1], LearningRate);
-        CandidateState.Update(dWG[0], dWG[1], LearningRate);
+
     }
 
     /// <summary>

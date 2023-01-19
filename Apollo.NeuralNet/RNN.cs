@@ -20,7 +20,7 @@ public class Rnn
 
         LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, LearningRate, r);
 
-        Weight = new Matrix(HiddenSize, VocabSize, r);
+        SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
 
     // General Parameters
@@ -34,7 +34,7 @@ public class Rnn
     private Lstm LstmCell { get; }
 
     // Softmax layer weight 
-    private Matrix Weight { get; set; }
+    private Weight SoftmaxWeight { get; set; }
 
     /// <summary>
     ///     Complete a full pass of the neural network, with the correct number of recurrences.
@@ -52,7 +52,7 @@ public class Rnn
             hiddenState = LstmCell.Forward(lstmInput, hiddenState);
             outputs[i] = hiddenState.Clone();
 
-            outputs[i] *= Weight;
+            outputs[i] *= SoftmaxWeight;
             outputs[i].Softmax();
             outputs[i] = InterpretOutput(outputs[i]);
 
@@ -136,7 +136,7 @@ public class Rnn
         List<Matrix> predictedOutputs, List<Matrix> expectedOutputs)
     {
         // Derivatives for tunable parameters are cumulative => define outside loop 
-        var dV = Matrix.Like(Weight); // Gradient for softmax layer weight 
+        var dV = Matrix.Like(SoftmaxWeight); // Gradient for softmax layer weight 
 
         // Gates require 2 derivatives (one for the weight applied to the input, and one for the weight applied to 
         // the previous output) 
@@ -152,7 +152,7 @@ public class Rnn
         for (var t = inputs.Count - 1; t > 1; t--)
         {
             // dL/dh(t) = (y_hat - y)V^T
-            var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(Weight);
+            var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(SoftmaxWeight);
 
             // dL/dc(t) = dL/dh(t) x o(t)tanh'(c_t) 
             var dC = Matrix.HadamardProd(dH, Matrix.HadamardProd(outputGates[t], Matrix.DTanh(cellStates[t])));
@@ -195,7 +195,7 @@ public class Rnn
     /// </summary>
     private void Update(Matrix dV, Matrix[] dWF, Matrix[] dWI, Matrix[] dWO, Matrix[] dWG)
     {
-        Weight = Weight - dV * LearningRate;
+        SoftmaxWeight.Subtract(dV * LearningRate);
 
         LstmCell.Update(dWF, dWI, dWO, dWG);
     }
@@ -250,7 +250,7 @@ public class Rnn
                 hiddenState = LstmCell.Forward(input, hiddenState);
 
                 var actualOutput = hiddenState.Clone();
-                actualOutput *= Weight;
+                actualOutput *= SoftmaxWeight;
                 actualOutput.Softmax();
                 actualOutputValues.Add(actualOutput);
 

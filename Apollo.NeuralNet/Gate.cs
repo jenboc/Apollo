@@ -15,22 +15,16 @@ public class Gate
     {
         Value = new Matrix(batchSize, hiddenSize);
 
-        InputWeight = new Matrix(vocabSize, hiddenSize, r);
-        PrevOutputWeight = new Matrix(hiddenSize, hiddenSize, r);
+        InputWeight = new Weight(vocabSize, hiddenSize, r);
+        PrevOutputWeight = new Weight(hiddenSize, hiddenSize, r);
+        
         Bias = new Matrix(batchSize, hiddenSize, r);
-
-        InputWeightGradient = Matrix.Like(InputWeight);
-        PrevOutputWeightGradient = Matrix.Like(PrevOutputWeight);
-        BiasGradient = Matrix.Like(Bias);
     }
 
     public Matrix Value { get; set; } // Attribute to store the value of the gate 
-    private Matrix InputWeight { get; set; }
-    private Matrix PrevOutputWeight { get; set; }
+    private Weight InputWeight { get; set; }
+    private Weight PrevOutputWeight { get; set; }
     private Matrix Bias { get; }
-    private Matrix InputWeightGradient { get; } // Gradient for adjusting the input weight
-    private Matrix PrevOutputWeightGradient { get; } // Gradient for adjusting the previous output weight
-    private Matrix BiasGradient { get; } // Gradient for adjusting bias 
 
     /// <summary>
     ///     Calculate the value of the gate with a given input
@@ -57,9 +51,8 @@ public class Gate
         Value *= 0;
     }
 
-    public void Update(Matrix inputGradient, Matrix prevOutputGradient, float learningRate)
+    public void Update()
     {
-        InputWeight = InputWeight - inputGradient * learningRate;
-        PrevOutputWeight = PrevOutputWeight - prevOutputGradient * learningRate;
+
     }
 }
