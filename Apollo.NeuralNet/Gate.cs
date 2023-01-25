@@ -6,7 +6,7 @@ namespace Apollo.NeuralNet;
 public class Gate
 {
     /// <summary>
-    /// Create an LSTM gate, with correctly sized weights and bias.
+    ///     Create an LSTM gate, with correctly sized weights and bias.
     /// </summary>
     /// <param name="vocabSize"></param>
     /// <param name="hiddenSize"></param>
@@ -17,14 +17,14 @@ public class Gate
 
         InputWeight = new Weight(vocabSize, hiddenSize, r);
         PrevOutputWeight = new Weight(hiddenSize, hiddenSize, r);
-        
+
         Bias = new Matrix(batchSize, hiddenSize, r);
     }
 
     public Gate(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
     {
         Value = new Matrix(batchSize, hiddenSize);
-        
+
         InputWeight = Weight.ReadFromFile(reader, vocabSize, hiddenSize);
         PrevOutputWeight = Weight.ReadFromFile(reader, hiddenSize, hiddenSize);
         Bias = Matrix.ReadFromFile(reader, batchSize, hiddenSize);
@@ -48,7 +48,7 @@ public class Gate
         // input = x 
         // prev_output = h
 
-        Value = Matrix.Multiply(input, InputWeight) 
+        Value = Matrix.Multiply(input, InputWeight)
                 + Matrix.Multiply(prevOutput, PrevOutputWeight) + Bias;
     }
 
@@ -65,9 +65,9 @@ public class Gate
         InputWeight.Adam(hyperparameters);
         PrevOutputWeight.Adam(hyperparameters);
     }
-    
+
     /// <summary>
-    /// Writes the values of the gate's weights to the binary file 
+    ///     Writes the values of the gate's weights to the binary file
     /// </summary>
     /// <param name="writer">Instance of BinaryWriter to use for writing</param>
     public void WriteToFile(BinaryWriter writer)

@@ -291,7 +291,7 @@ public class MatrixTests
 
         var mat1 = new Matrix(5, 5, mat1R);
         var mat2 = new Matrix(5, 5, mat2R);
-        
+
         Assert.NotEqual(mat1.Contents, mat2.Contents);
     }
 

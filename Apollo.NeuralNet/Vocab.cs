@@ -16,7 +16,7 @@ public class Vocab
         // Add each character one by one to avoid duplicates 
         foreach (var c in vocabList) AddCharacter(c); // So that duplicates are not added 
     }
-    
+
     public Vocab(string data)
     {
         VocabList = new List<char>();

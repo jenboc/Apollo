@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using Apollo.MatrixMaths;
+﻿using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 
@@ -10,8 +9,8 @@ public class Rnn
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
     /// <param name="hyperparameters">Hyperparameters for the ADAM optimisation algorithm</param>
-    /// <param name="r">Random Instance to instantiate weights</param> 
-    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, 
+    /// <param name="r">Random Instance to instantiate weights</param>
+    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount,
         AdamParameters hyperparameters, Random r)
     {
         StatePath = statePath;
@@ -20,12 +19,12 @@ public class Rnn
         BatchSize = batchSize;
         RecurrenceAmount = recurrenceAmount;
         Hyperparameters = hyperparameters;
-        
+
         LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, r);
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
-    
+
     private string StatePath { get; }
 
     // General Parameters
@@ -40,12 +39,12 @@ public class Rnn
 
     // Softmax layer weight 
     private Weight SoftmaxWeight { get; set; }
-    
+
     // Adam hyperparameters 
     private AdamParameters Hyperparameters { get; set; }
 
     /// <summary>
-    /// Save network into a binary file
+    ///     Save network into a binary file
     /// </summary>
     private void LoadState()
     {
@@ -59,16 +58,16 @@ public class Rnn
                 RecurrenceAmount = reader.ReadInt32();
                 LearningRate = (float)reader.ReadDecimal();
 
-                LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader); 
-                
+                LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader);
+
                 Hyperparameters = AdamParameters.ReadFromFile(reader);
                 SoftmaxWeight = Weight.ReadFromFile(reader, HiddenSize, VocabSize);
             }
         }
     }
-    
+
     /// <summary>
-    /// Save the network to a binary file
+    ///     Save the network to a binary file
     /// </summary>
     private void SaveState()
     {
@@ -121,42 +120,29 @@ public class Rnn
     /// <returns>A one-hot vector representing the LSTM's predictions</returns>
     private Matrix InterpretOutput(Matrix softmax)
     {
-        // var highest = float.MinValue;
-        // var highestIndex = -1;
-        //
-        // for (var row = 0; row < softmax.Rows; row++)
-        //     if (softmax[row, 0] > highest)
-        //     {
-        //         highest = softmax[row, 0];
-        //         highestIndex = row;
-        //     }
-        //
-        // softmax *= 0; // Set everything to 0 
-        // softmax.Contents[highestIndex, 0] = 1; // Set index of highest value to 1 
-
         var r = new Random();
         var interpreted = Matrix.Like(softmax);
-        
+
         for (var i = 0; i < softmax.Rows; i++)
         {
             var highestProb = float.MinValue;
             var highestProbIndex = -1;
 
             var highestSucceed = float.MinValue;
-            var highestSucceedIndex = -1; 
-            
+            var highestSucceedIndex = -1;
+
             for (var j = 0; j < softmax.Columns; j++)
             {
                 if (softmax[i, j] > highestProb)
                     highestProbIndex = j;
-                
+
                 var rollQuota = (int)(softmax[i, j] * 100);
                 var diceRoll = r.Next(100);
 
                 if (diceRoll <= rollQuota && softmax[i, j] > highestSucceed)
                     highestSucceedIndex = j;
             }
-            
+
             // The 1 goes into the slot with the highest probability which succeeded the dice roll 
             // Or alternatively (if every probability failed), the highest probability in general
             if (highestSucceedIndex == -1)
@@ -184,7 +170,7 @@ public class Rnn
     /// </param>
     /// <param name="expectedOutputs">The training data</param>
     private void Backprop(List<Matrix> forgetGates, List<Matrix> candidateStates, List<Matrix> cellStates,
-        List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> lstmOutputs, 
+        List<Matrix> inputGates, List<Matrix> outputGates, List<Matrix> inputs, List<Matrix> lstmOutputs,
         List<Matrix> predictedOutputs, List<Matrix> expectedOutputs)
     {
         // t represents timestep
@@ -211,11 +197,11 @@ public class Rnn
 
             // Increment gradient for weights 
             SoftmaxWeight.Gradient += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
-            
+
             LstmCell.Backprop(inputs[t], dF, forgetGates[t], dI, inputGates[t], dO, outputGates[t],
                 dG, candidateStates[t], lstmOutputs[t - 1]);
         }
-        
+
         Update();
     }
 
@@ -260,7 +246,7 @@ public class Rnn
 
         var epoch = 1;
 
-        float totalLoss;       
+        float totalLoss;
         do
         {
             forgetGateValues.Clear();
@@ -269,8 +255,8 @@ public class Rnn
             inputGateValues.Clear();
             outputGateValues.Clear();
             hiddenStateValues.Clear();
-            actualOutputValues.Clear(); 
-            
+            actualOutputValues.Clear();
+
             LstmCell.Clear();
 
             Console.WriteLine($"Epoch {epoch}");
@@ -312,26 +298,26 @@ public class Rnn
             epoch++;
         } while (totalLoss > maxError);
     }
-    
+
     /// <summary>
-    /// Create valid batches from the training data
+    ///     Create valid batches from the training data
     /// </summary>
     /// <param name="trainingData">The training data to make the batches from</param>
     /// <returns>A tuple in the form of (inputBatches, expectedBatches)</returns>
     private Tuple<List<Matrix>, List<Matrix>> CreateBatches(Matrix[] trainingData)
     {
         var inputData = new List<Matrix>();
-        var expectedOutputs = new List<Matrix>(); 
-        
+        var expectedOutputs = new List<Matrix>();
+
         for (var i = 0; i < trainingData.Length - BatchSize - 1; i++)
         {
             var input = trainingData.Skip(i).Take(BatchSize).ToArray();
             var expected = trainingData.Skip(i + 1).Take(BatchSize).ToArray();
-            
-            inputData.Add(Matrix.StackArray(input, true));
-            expectedOutputs.Add(Matrix.StackArray(expected, true));
+
+            inputData.Add(Matrix.StackArray(input));
+            expectedOutputs.Add(Matrix.StackArray(expected));
         }
-        
-        return new Tuple<List<Matrix>, List<Matrix>> (inputData, expectedOutputs);
+
+        return new Tuple<List<Matrix>, List<Matrix>>(inputData, expectedOutputs);
     }
 }

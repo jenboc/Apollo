@@ -13,7 +13,7 @@ public class Lstm
 
         CellState = new Matrix(batchSize, hiddenSize);
     }
-    
+
     public Lstm(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
     {
         Forget = new Gate(vocabSize, hiddenSize, batchSize, reader);
@@ -21,9 +21,9 @@ public class Lstm
         CandidateState = new Gate(vocabSize, hiddenSize, batchSize, reader);
         Output = new Gate(vocabSize, hiddenSize, batchSize, reader);
 
-        CellState = new Matrix(batchSize, hiddenSize); 
+        CellState = new Matrix(batchSize, hiddenSize);
     }
-    
+
     // Gates 
     private Gate Forget { get; }
     private Gate Input { get; }
@@ -56,7 +56,8 @@ public class Lstm
 
         // Calculate cell state
         // Forget_Gate x CellState + Input_Gate x New_Info_Gate (using element-wise multiplication) 
-        CellState = Matrix.HadamardProd(Forget.Value, CellState) + Matrix.HadamardProd(Input.Value, CandidateState.Value);
+        CellState = Matrix.HadamardProd(Forget.Value, CellState) +
+                    Matrix.HadamardProd(Input.Value, CandidateState.Value);
 
         // Calculate output gate
         Output.CalcUnactivated(input, previousOutput);
@@ -67,22 +68,30 @@ public class Lstm
     }
 
     /// <summary>
-    /// Perform backprop for a single timestep
+    ///     Perform backprop for a single timestep
     /// </summary>
-    public void Backprop(Matrix input, Matrix dF, Matrix forgetValue, Matrix dI, Matrix inputGateValue, Matrix dO, Matrix outputGateValue,
-        Matrix dG, Matrix candidateStateValue, Matrix lstmOutput) 
+    public void Backprop(Matrix input, Matrix dF, Matrix forgetValue, Matrix dI, Matrix inputGateValue, Matrix dO,
+        Matrix outputGateValue,
+        Matrix dG, Matrix candidateStateValue, Matrix lstmOutput)
     {
         Forget.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dF, Matrix.DSigmoid(forgetValue));
-        Forget.PrevOutputWeight.Gradient += Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetValue), lstmOutput);
-        
-        Input.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGateValue));
-        Input.PrevOutputWeight.Gradient += Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGateValue), lstmOutput);
+        Forget.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetValue), lstmOutput);
 
-        Output.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGateValue));
-        Output.PrevOutputWeight.Gradient += Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGateValue), lstmOutput);
+        Input.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGateValue));
+        Input.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGateValue), lstmOutput);
 
-        CandidateState.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStateValue));
-        CandidateState.PrevOutputWeight.Gradient += Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
+        Output.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGateValue));
+        Output.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGateValue), lstmOutput);
+
+        CandidateState.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStateValue));
+        CandidateState.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
     }
 
     public void Update(AdamParameters hyperparameters)
@@ -90,9 +99,9 @@ public class Lstm
         Forget.Update(hyperparameters);
         Input.Update(hyperparameters);
         Output.Update(hyperparameters);
-        CandidateState.Update(hyperparameters); 
+        CandidateState.Update(hyperparameters);
     }
-    
+
     /// <summary>
     ///     Returns the values of the forget, input and output gates
     /// </summary>
@@ -124,14 +133,14 @@ public class Lstm
     }
 
     /// <summary>
-    /// Write the parameters of the LSTM cell to a binary file
+    ///     Write the parameters of the LSTM cell to a binary file
     /// </summary>
     /// <param name="writer">Instance of BinaryWriter to use for writing</param>
     public void WriteToFile(BinaryWriter writer)
     {
         Forget.WriteToFile(writer);
         Input.WriteToFile(writer);
-        CandidateState.WriteToFile(writer); 
+        CandidateState.WriteToFile(writer);
         Output.WriteToFile(writer);
     }
 }

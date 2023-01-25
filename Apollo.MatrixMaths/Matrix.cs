@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Apollo.MatrixMaths;
@@ -19,12 +18,12 @@ public class Matrix
         Contents = defaultData;
     }
 
-    public Matrix(int rows, int columns, Random r, int min=-2, int max=2)
+    public Matrix(int rows, int columns, Random r, int min = -2, int max = 2)
     {
         Contents = new float[rows, columns];
         IterateContent(value => r.Next(min, max) + (float)r.NextDouble());
     }
-    
+
     public float[,] Contents { get; private set; }
 
     public float this[int i, int j]
@@ -498,7 +497,7 @@ public class Matrix
     public void HadamardProd(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
-            throw new InvalidShapeException($"Matrices must be the same shape for Hadamard multiplication " +
+            throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication " +
                                             $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
 
         for (var i = 0; i < Rows; i++)
@@ -517,21 +516,21 @@ public class Matrix
     }
 
     /// <summary>
-    /// Element-wise division, changing the matrix it is performed upon
+    ///     Element-wise division, changing the matrix it is performed upon
     /// </summary>
     public void HadamardDiv(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
-            throw new InvalidShapeException($"Matrices must be the same shape for Hadamard division " +
+            throw new InvalidShapeException("Matrices must be the same shape for Hadamard division " +
                                             $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
-        
+
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
             Contents[i, j] /= otherMat.Contents[i, j];
     }
-    
+
     /// <summary>
-    /// Element wise division, creating a new matrix for the output
+    ///     Element wise division, creating a new matrix for the output
     /// </summary>
     public static Matrix HadamardDiv(Matrix mat1, Matrix mat2)
     {
@@ -546,24 +545,21 @@ public class Matrix
         // This is because e^x is very large when x isn't that big, thus could produce an overflow error 
         // To counter-act this, we subtract the highest number in the matrix from every matrix element, and then 
         // calculate the softmax since this operation does not change the result 
-        
+
         // Softmaxed matrices are considered row by row, so only apply softmax to individual rows then recompile the matrix
 
         var matRows = new Matrix[Rows];
-        
+
         for (var i = 0; i < Rows; i++)
         {
             var rowContent = new float[1, Columns];
-            for (var j = 0; j < Columns; j++)
-            {
-                rowContent[0, j] = Contents[i, j];
-            }
+            for (var j = 0; j < Columns; j++) rowContent[0, j] = Contents[i, j];
 
             matRows[i] = new Matrix(rowContent);
-            
+
             var highestNumber = matRows[i].Max();
             matRows[i].IterateContent(value => value - highestNumber);
-            matRows[i].Exp(); 
+            matRows[i].Exp();
             var sum = matRows[i].Sum();
             matRows[i].Multiply(1 / sum);
         }
@@ -580,20 +576,16 @@ public class Matrix
     }
 
     /// <summary>
-    /// Get the highest value in the matrix
+    ///     Get the highest value in the matrix
     /// </summary>
     /// <returns>The highest value in the matrix</returns>
     public float Max()
     {
         var max = float.MinValue;
         for (var i = 0; i < Rows; i++)
-        {
-            for (var j = 0; j < Columns; j++)
-            {
-                if (Contents[i, j] > max)
-                    max = Contents[i, j];
-            }
-        }
+        for (var j = 0; j < Columns; j++)
+            if (Contents[i, j] > max)
+                max = Contents[i, j];
 
         return max;
     }
@@ -700,44 +692,38 @@ public class Matrix
             intSlice[1] = Convert.ToInt32(splitSlice[1]);
         }
     }
-    
-    public static Matrix StackArray(Matrix[] matrices, bool vertically=true)
+
+    public static Matrix StackArray(Matrix[] matrices, bool vertically = true)
     {
         var mat = matrices[0].Clone();
 
         for (var i = 1; i < matrices.Length; i++)
-        {
-            if (vertically) 
+            if (vertically)
                 mat.VerticalStack(matrices[i]);
             else
                 mat.HorizontalStack(matrices[i]);
-        }
 
         return mat;
     }
-    
+
     public Matrix Clone()
     {
         return new Matrix((float[,])Contents.Clone());
     }
 
     /// <summary>
-    /// Write the matrix to a binary file
+    ///     Write the matrix to a binary file
     /// </summary>
     /// <param name="writer">Instance of BinaryWriter to use for writing</param>
     public void WriteToFile(BinaryWriter writer)
     {
         for (var i = 0; i < Rows; i++)
-        {
-            for (var j = 0; j < Columns; j++)
-            {
-                writer.Write(Contents[i,j]);
-            }
-        }
+        for (var j = 0; j < Columns; j++)
+            writer.Write(Contents[i, j]);
     }
-    
+
     /// <summary>
-    /// Read a matrix from a binary file
+    ///     Read a matrix from a binary file
     /// </summary>
     /// <param name="reader">Instance of BinaryReader to use for reading</param>
     /// <param name="rows">Number of rows in the matrix</param>
@@ -746,18 +732,14 @@ public class Matrix
     public static Matrix ReadFromFile(BinaryReader reader, int rows, int columns)
     {
         var readMat = new Matrix(rows, columns);
-        
+
         for (var i = 0; i < rows; i++)
-        {
-            for (var j = 0; j < columns; j++)
-            {
-                readMat.Contents[i, j] = (float)reader.ReadDecimal();
-            }
-        }
+        for (var j = 0; j < columns; j++)
+            readMat.Contents[i, j] = (float)reader.ReadDecimal();
 
         return readMat;
     }
-    
+
     public override bool Equals(object obj)
     {
         return base.Equals(obj);
