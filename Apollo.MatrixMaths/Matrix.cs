@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Apollo.MatrixMaths;
 
@@ -98,9 +99,11 @@ public class Matrix
     // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
     public void IterateContent(Func<float, float> contentAction)
     {
-        for (var i = 0; i < Contents.GetLength(0); i++)
-        for (var j = 0; j < Contents.GetLength(1); j++)
-            Contents[i, j] = contentAction(Contents[i, j]);
+        Parallel.For(0, Rows, i =>
+        {
+            for (var j = 0; j < Columns; j++)
+                Contents[i, j] = contentAction(Contents[i, j]);
+        });
     }
 
     // Apply tanh() to each element
@@ -231,19 +234,21 @@ public class Matrix
 
         var newContents = new float[Rows, otherMat.Columns];
 
-        for (var row = 0; row < newContents.GetLength(0); row++)
-        for (var col = 0; col < newContents.GetLength(1); col++)
+        Parallel.For(0, Rows, row =>
         {
-            // Row in A * Col in B 
-            // A has as many columns as B has rows therefore A's columns has the same amount of numbers as B's rows 
-            float sum = 0;
+            for (var col = 0; col < otherMat.Columns; col++)
+            {
+                // Row in A * Col in B 
+                // A has as many columns as B has rows therefore A's columns has the same amount of numbers as B's rows 
+                float sum = 0;
 
-            for (var i = 0; i < Columns; i++)
-                sum += Contents[row, i] * otherMat.Contents[i, col];
+                for (var i = 0; i < Columns; i++)
+                    sum += Contents[row, i] * otherMat.Contents[i, col];
 
-            newContents[row, col] = sum;
-        }
-
+                newContents[row, col] = sum;
+            }
+        });
+        
         Contents = newContents;
     }
 
