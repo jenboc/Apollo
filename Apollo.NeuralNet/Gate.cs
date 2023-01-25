@@ -21,6 +21,15 @@ public class Gate
         Bias = new Matrix(batchSize, hiddenSize, r);
     }
 
+    public Gate(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
+    {
+        Value = new Matrix(batchSize, hiddenSize);
+        
+        InputWeight = Weight.ReadFromFile(reader, vocabSize, hiddenSize);
+        PrevOutputWeight = Weight.ReadFromFile(reader, hiddenSize, hiddenSize);
+        Bias = Matrix.ReadFromFile(reader, batchSize, hiddenSize);
+    }
+
     public Matrix Value { get; set; } // Attribute to store the value of the gate 
     public Weight InputWeight { get; set; }
     public Weight PrevOutputWeight { get; set; }
@@ -55,5 +64,16 @@ public class Gate
     {
         InputWeight.Adam(hyperparameters);
         PrevOutputWeight.Adam(hyperparameters);
+    }
+    
+    /// <summary>
+    /// Writes the values of the gate's weights to the binary file 
+    /// </summary>
+    /// <param name="writer">Instance of BinaryWriter to use for writing</param>
+    public void WriteToFile(BinaryWriter writer)
+    {
+        InputWeight.WriteToFile(writer);
+        PrevOutputWeight.WriteToFile(writer);
+        Bias.WriteToFile(writer);
     }
 }

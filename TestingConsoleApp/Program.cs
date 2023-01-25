@@ -33,7 +33,7 @@ var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
 Console.WriteLine($"Vocab Size: {vocab.Size}");
-var rnn = new Rnn(vocab.Size, 10, 32, 50, hyperparameters, r);
+var rnn = new Rnn("rnn.state", vocab.Size, 10, 32, 50, hyperparameters, r);
 
 rnn.Train(trainingData, 10);
 

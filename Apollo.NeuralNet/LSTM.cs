@@ -14,6 +14,16 @@ public class Lstm
         CellState = new Matrix(batchSize, hiddenSize);
     }
     
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
+    {
+        Forget = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        Input = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        CandidateState = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        Output = new Gate(vocabSize, hiddenSize, batchSize, reader);
+
+        CellState = new Matrix(batchSize, hiddenSize); 
+    }
+    
     // Gates 
     private Gate Forget { get; }
     private Gate Input { get; }
@@ -111,5 +121,17 @@ public class Lstm
         Output.Clear();
         CandidateState.Clear();
         CellState *= 0;
+    }
+
+    /// <summary>
+    /// Write the parameters of the LSTM cell to a binary file
+    /// </summary>
+    /// <param name="writer">Instance of BinaryWriter to use for writing</param>
+    public void WriteToFile(BinaryWriter writer)
+    {
+        Forget.WriteToFile(writer);
+        Input.WriteToFile(writer);
+        CandidateState.WriteToFile(writer); 
+        Output.WriteToFile(writer);
     }
 }

@@ -14,4 +14,20 @@ public struct AdamParameters
         Beta2 = beta2;
         Epsilon = epsilon;
     }
+
+    public void WriteToFile(BinaryWriter writer)
+    {
+        writer.Write(Alpha);
+        writer.Write(Beta1);
+        writer.Write(Beta2);
+        writer.Write(Epsilon);
+    }
+
+    public static AdamParameters ReadFromFile(BinaryReader reader)
+    {
+        var adamParams = new AdamParameters((float)reader.ReadDecimal(), (float)reader.ReadDecimal(),
+            (float)reader.ReadDecimal(), (float)reader.ReadDecimal());
+
+        return adamParams;
+    }
 }

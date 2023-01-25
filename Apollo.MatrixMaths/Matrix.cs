@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Apollo.MatrixMaths;
 
@@ -720,6 +721,43 @@ public class Matrix
         return new Matrix((float[,])Contents.Clone());
     }
 
+    /// <summary>
+    /// Write the matrix to a binary file
+    /// </summary>
+    /// <param name="writer">Instance of BinaryWriter to use for writing</param>
+    public void WriteToFile(BinaryWriter writer)
+    {
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+            {
+                writer.Write(Contents[i,j]);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Read a matrix from a binary file
+    /// </summary>
+    /// <param name="reader">Instance of BinaryReader to use for reading</param>
+    /// <param name="rows">Number of rows in the matrix</param>
+    /// <param name="columns">Number of columns in the matrix</param>
+    /// <returns></returns>
+    public static Matrix ReadFromFile(BinaryReader reader, int rows, int columns)
+    {
+        var readMat = new Matrix(rows, columns);
+        
+        for (var i = 0; i < rows; i++)
+        {
+            for (var j = 0; j < columns; j++)
+            {
+                readMat.Contents[i, j] = (float)reader.ReadDecimal();
+            }
+        }
+
+        return readMat;
+    }
+    
     public override bool Equals(object obj)
     {
         return base.Equals(obj);

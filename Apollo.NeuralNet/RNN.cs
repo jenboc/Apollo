@@ -1,4 +1,5 @@
-﻿using Apollo.MatrixMaths;
+﻿using System.Runtime.Serialization.Formatters.Binary;
+using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 
@@ -10,8 +11,10 @@ public class Rnn
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
     /// <param name="hyperparameters">Hyperparameters for the ADAM optimisation algorithm</param>
     /// <param name="r">Random Instance to instantiate weights</param> 
-    public Rnn(int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, AdamParameters hyperparameters, Random r)
+    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount, 
+        AdamParameters hyperparameters, Random r)
     {
+        StatePath = statePath;
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
@@ -22,22 +25,68 @@ public class Rnn
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
+    
+    private string StatePath { get; }
 
     // General Parameters
-    private int VocabSize { get; }
-    private int BatchSize { get; }
-    private int HiddenSize { get; }
-    private int RecurrenceAmount { get; }
-    private float LearningRate { get; }
+    private int VocabSize { get; set; }
+    private int BatchSize { get; set; }
+    private int HiddenSize { get; set; }
+    private int RecurrenceAmount { get; set; }
+    private float LearningRate { get; set; }
 
     // LSTM Cell 
-    private Lstm LstmCell { get; }
+    private Lstm LstmCell { get; set; }
 
     // Softmax layer weight 
     private Weight SoftmaxWeight { get; set; }
     
     // Adam hyperparameters 
-    private AdamParameters Hyperparameters { get; }
+    private AdamParameters Hyperparameters { get; set; }
+
+    /// <summary>
+    /// Save network into a binary file
+    /// </summary>
+    private void LoadState()
+    {
+        using (var stream = File.Open(StatePath, FileMode.Open))
+        {
+            using (var reader = new BinaryReader(stream))
+            {
+                VocabSize = reader.ReadInt32();
+                BatchSize = reader.ReadInt32();
+                HiddenSize = reader.ReadInt32();
+                RecurrenceAmount = reader.ReadInt32();
+                LearningRate = (float)reader.ReadDecimal();
+
+                LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader); 
+                
+                Hyperparameters = AdamParameters.ReadFromFile(reader);
+                SoftmaxWeight = Weight.ReadFromFile(reader, HiddenSize, VocabSize);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Save the network to a binary file
+    /// </summary>
+    private void SaveState()
+    {
+        using (var stream = File.Open(StatePath, FileMode.Create))
+        {
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(VocabSize);
+                writer.Write(BatchSize);
+                writer.Write(HiddenSize);
+                writer.Write(RecurrenceAmount);
+                writer.Write(LearningRate);
+                LstmCell.WriteToFile(writer);
+                Hyperparameters.WriteToFile(writer);
+                SoftmaxWeight.WriteToFile(writer);
+            }
+        }
+    }
 
     /// <summary>
     ///     Complete a full pass of the neural network, with the correct number of recurrences.

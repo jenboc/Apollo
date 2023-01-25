@@ -1,4 +1,5 @@
-﻿using Apollo.MatrixMaths;
+﻿using System.Data.Common;
+using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 
@@ -27,6 +28,16 @@ public class Weight : Matrix
         InfinityNorm = new Matrix(rows, columns); 
     }
 
+    public Weight(float[,] defaultData) : base(defaultData)
+    {
+        // Create gradient matrix of the same size
+        Gradient = new Matrix(Rows, Columns);
+        
+        // Create ADAM matrices with same size
+        MomentVector = new Matrix(Rows, Columns);
+        InfinityNorm = new Matrix(Rows, Columns);
+    }
+
     /// <summary>
     /// Optimise the weight using the Adaptive Moment Estimation Algorithm (ADAM)
     /// </summary>
@@ -44,5 +55,11 @@ public class Weight : Matrix
         // Update weight 
         var update = HadamardDiv(hyperparameters.Alpha * mHat, Sqrt(vHat) + hyperparameters.Epsilon);
         Subtract(update);
+    }
+
+    public new static Weight ReadFromFile(BinaryReader reader, int rows, int columns)
+    {
+        var readData = Matrix.ReadFromFile(reader, rows, columns).Contents;
+        return new Weight(readData);
     }
 }
