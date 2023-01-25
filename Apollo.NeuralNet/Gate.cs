@@ -60,10 +60,10 @@ public class Gate
         Value *= 0;
     }
 
-    public void Update(AdamParameters hyperparameters)
+    public void Update(AdamParameters hyperparameters, int t)
     {
-        InputWeight.Adam(hyperparameters);
-        PrevOutputWeight.Adam(hyperparameters);
+        InputWeight.Adam(hyperparameters, t);
+        PrevOutputWeight.Adam(hyperparameters, t);
     }
 
     /// <summary>

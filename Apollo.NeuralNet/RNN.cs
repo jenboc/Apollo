@@ -175,7 +175,7 @@ public class Rnn
     {
         // t represents timestep
         // Go until t > 1 since there is no timestep -1 (t-1 when t = 0) 
-        for (var t = inputs.Count - 1; t > 1; t--)
+        for (var t = 1000 - 1; t > 1; t--)
         {
             // dL/dh(t) = (y_hat - y)V^T
             var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(SoftmaxWeight);
@@ -200,18 +200,19 @@ public class Rnn
 
             LstmCell.Backprop(inputs[t], dF, forgetGates[t], dI, inputGates[t], dO, outputGates[t],
                 dG, candidateStates[t], lstmOutputs[t - 1]);
+            
+            Update(t);
         }
 
-        Update();
     }
 
     /// <summary>
     ///     Update the parameters of the neural network
     /// </summary>
-    private void Update()
+    private void Update(int t)
     {
-        SoftmaxWeight.Adam(Hyperparameters);
-        LstmCell.Update(Hyperparameters);
+        SoftmaxWeight.Adam(Hyperparameters, t);
+        LstmCell.Update(Hyperparameters, t);
     }
 
     /// <summary>
@@ -234,7 +235,7 @@ public class Rnn
     public void Train(Matrix[] trainingData, int maxError)
     {
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
-
+        Console.WriteLine($"Input data length: {inputData.Count}");
         // Previous gate/state values to be used in backpropagation
         var forgetGateValues = new List<Matrix>();
         var candidateStateValues = new List<Matrix>();
@@ -264,7 +265,7 @@ public class Rnn
             var hiddenState = new Matrix(BatchSize, HiddenSize);
             totalLoss = 0f;
 
-            for (var i = 0; i < inputData.Count; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 var input = inputData[i];
                 var expected = expectedOutputs[i];
@@ -296,7 +297,7 @@ public class Rnn
                 inputData, hiddenStateValues, actualOutputValues, expectedOutputs);
 
             epoch++;
-        } while (totalLoss > maxError);
+        } while (totalLoss / inputData.Count > maxError);
     }
 
     /// <summary>

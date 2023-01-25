@@ -36,15 +36,15 @@ public class Weight : Matrix
     ///     Optimise the weight using the Adaptive Moment Estimation Algorithm (ADAM)
     /// </summary>
     /// <param name="hyperparameters">The hyperparameters for the algorithm</param>
-    public void Adam(AdamParameters hyperparameters)
+    public void Adam(AdamParameters hyperparameters, int t)
     {
         // Change ADAM matrices
         MomentVector = hyperparameters.Beta1 * MomentVector + (1 - hyperparameters.Beta1) * Gradient;
         InfinityNorm = hyperparameters.Beta2 * InfinityNorm + (1 - hyperparameters.Beta2) * Power(Gradient, 2);
 
         // Calculate m_hat and v_hat 
-        var mHat = MomentVector / (1 - hyperparameters.Beta1);
-        var vHat = InfinityNorm / (1 - hyperparameters.Beta2);
+        var mHat = MomentVector / (1 - MathF.Pow(hyperparameters.Beta1, t));
+        var vHat = InfinityNorm / (1 - MathF.Pow(hyperparameters.Beta2, t));
 
         // Update weight 
         var update = HadamardDiv(hyperparameters.Alpha * mHat, Sqrt(vHat) + hyperparameters.Epsilon);
