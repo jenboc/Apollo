@@ -175,7 +175,7 @@ public class Rnn
     {
         // t represents timestep
         // Go until t > 1 since there is no timestep -1 (t-1 when t = 0) 
-        for (var t = 1000 - 1; t > 1; t--)
+        for (var t = inputs.Count - 1; t > 1; t--)
         {
             // dL/dh(t) = (y_hat - y)V^T
             var dH = (predictedOutputs[t] - expectedOutputs[t]) * Matrix.Transpose(SoftmaxWeight);
@@ -232,11 +232,15 @@ public class Rnn
     /// </summary>
     /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
     /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
-    public void Train(Matrix[] trainingData, int maxError)
+    /// <param name="numTimesteps">The number of timesteps per epoch</param>
+    public void Train(Matrix[] trainingData, int numEpochs, int numTimesteps, Random r)
     {
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
         Console.WriteLine($"Input data length: {inputData.Count}");
+        
         // Previous gate/state values to be used in backpropagation
+        var usedInputs = new List<Matrix>();
+        var usedOutputs = new List<Matrix>();
         var forgetGateValues = new List<Matrix>();
         var candidateStateValues = new List<Matrix>();
         var cellStateValues = new List<Matrix>();
@@ -244,12 +248,12 @@ public class Rnn
         var outputGateValues = new List<Matrix>();
         var hiddenStateValues = new List<Matrix>();
         var actualOutputValues = new List<Matrix>();
-
-        var epoch = 1;
-
+        
         float totalLoss;
-        do
+        for (var epoch = 0; epoch < numEpochs; epoch++)
         {
+            usedInputs.Clear();
+            usedOutputs.Clear(); 
             forgetGateValues.Clear();
             candidateStateValues.Clear();
             cellStateValues.Clear();
@@ -265,10 +269,16 @@ public class Rnn
             var hiddenState = new Matrix(BatchSize, HiddenSize);
             totalLoss = 0f;
 
-            for (var i = 0; i < 1000; i++)
+            var start = r.Next(inputData.Count - numTimesteps);
+            var end = start + numTimesteps;
+
+            for (var i = start; i < end; i++)
             {
                 var input = inputData[i];
                 var expected = expectedOutputs[i];
+                
+                usedInputs.Add(input);
+                usedOutputs.Add(expected);
 
                 hiddenState = LstmCell.Forward(input, hiddenState);
 
@@ -291,13 +301,11 @@ public class Rnn
                 totalLoss += CalculateLoss(expected, actualOutput);
             }
 
-            Console.WriteLine($"Loss: {totalLoss / inputData.Count}");
+            Console.WriteLine($"Loss: {totalLoss / numTimesteps}");
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
-                inputData, hiddenStateValues, actualOutputValues, expectedOutputs);
-
-            epoch++;
-        } while (totalLoss / inputData.Count > maxError);
+                usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
+        } 
     }
 
     /// <summary>

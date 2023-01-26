@@ -32,7 +32,7 @@ var trainingData = vocab.PrepareTrainingData(fred);
 Console.WriteLine($"Vocab Size: {vocab.Size}");
 var rnn = new Rnn("rnn.state", vocab.Size, 10, 32, 50, hyperparameters, r);
 
-rnn.Train(trainingData, 2);
+rnn.Train(trainingData, 1000, 200, r);
 
 var initialInput = new Matrix[32];
 for (var i = 0; i < 32; i++) initialInput[i] = trainingData[i];
