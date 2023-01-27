@@ -38,6 +38,6 @@
         </StackPanel>
         
         <!-- Frame for showing the different pages of the application --> 
-        <Frame Grid.Row="1" Background="#0b2126"></Frame>
+        <Frame Name="PageFrame" Grid.Row="1" Background="#0b2126" NavigationUIVisibility="Hidden"></Frame>
     </Grid>
 </Window>

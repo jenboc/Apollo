@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -49,8 +50,23 @@ public partial class MainWindow : Window
         CurrentlySelected.Foreground = _unselectedColour;
         newSelected.Foreground = _selectedColour;
         CurrentlySelected = newSelected;
-        
+
         // Change page
+        switch (newSelected.Name)
+        {
+            case "TrainButton":
+                PageFrame.Source = new Uri("TrainingPage.xaml", UriKind.Relative);
+                break;
+            case "CreateButton":
+                PageFrame.Source = new Uri("CreationPage.xaml", UriKind.Relative);
+                break;
+            case "ListenButton":
+                PageFrame.Source = new Uri("ListenPage.xaml", UriKind.Relative);
+                break;
+            case "SettingsButton":
+                PageFrame.Source = new Uri("SettingsPage.xaml", UriKind.Relative);
+                break;
+        }
     }
 
     private void ButtonClick(object sender, RoutedEventArgs e)
