@@ -19,16 +19,16 @@
                Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+            <Label Name="TrainLabel" Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+            <Label Name="CreateLabel" Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+            <Label Name="ListenLabel" Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+            <Label Name="SettingsLabel" Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
         </StackPanel>
         

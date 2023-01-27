@@ -24,17 +24,17 @@
         <!-- Column 1 --> 
         <Rectangle Grid.Column="1" Fill="#0b2126"></Rectangle>
         <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Button Content="Train" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
-                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116"></Button>
+            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
             <Separator Height="50" Opacity="0"></Separator>
-            <Button Content="Create" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
-                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116"></Button>
+            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
             <Separator Height="50" Opacity="0"></Separator>
-            <Button Content="Listen" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
-                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116"></Button>
+            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
             <Separator Height="50" Opacity="0"></Separator>
-            <Button Content="Settings" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
-                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116"></Button>
+            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
         </StackPanel>
     </Grid>
 </Window>
