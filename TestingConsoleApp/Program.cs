@@ -21,8 +21,8 @@ static void DisplayMat(Matrix mat)
 
 const string PATH = @"file.mid";
 
-var bob = MidiManager.ReadFile(PATH);
-var fred = string.Join('\n', bob);
+var fred = MidiManager.ReadFile(PATH);
+MidiManager.WriteFile(fred, "testwrite.mid");
 
 Console.WriteLine(fred);
 

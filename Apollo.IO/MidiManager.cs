@@ -4,7 +4,7 @@ namespace Apollo.MIDI;
 
 public static class MidiManager
 {
-    public static List<string> ReadFile(string path)
+    public static string ReadFile(string path)
     {
         if (GetPathType(path) != 'f')
             throw new FileNotFoundException($"{path} is not a valid file path");
@@ -29,32 +29,28 @@ public static class MidiManager
                         var noteLength = onEvent.NoteLength;
                         var velocity = onEvent.Velocity;
 
-                        data.Add($"P{noteNumber}");
-                        data.Add(onTime.ToString());
-                        data.Add(offTime.ToString());
-                        data.Add(noteLength.ToString());
-                        data.Add(velocity.ToString());
+                        data.Add($"{noteNumber},{onTime},{offTime},{noteLength},{velocity}");
                     }
                     catch
                     {
+                        // Log 
                     }
                 }
                 else if (e.GetType() == typeof(TempoEvent))
                 {
                     var tempoEvent = (TempoEvent)e;
-                    data.Add($"T{tempoEvent.MicrosecondsPerQuarterNote}");
-                    data.Add(tempoEvent.AbsoluteTime.ToString());
+                    data.Add($"{tempoEvent.MicrosecondsPerQuarterNote}, {tempoEvent.AbsoluteTime}");
                 }
 
-        return data;
+        return string.Join('\n', data);
     }
 
-    public static List<List<string>> ReadDir(string path)
+    public static List<string> ReadDir(string path)
     {
         if (GetPathType(path) != 'd')
             throw new DirectoryNotFoundException($"{path} is not a valid directory");
 
-        var dirData = new List<List<string>>();
+        var dirData = new List<string>();
 
         var dirInfo = new DirectoryInfo(path);
         var dirFiles = dirInfo.GetFiles();
@@ -71,48 +67,67 @@ public static class MidiManager
 
         return dirData;
     }
-
-    public static void WriteFile(List<string> data, string path)
+    
+    /// <summary>
+    /// Used to determine what type of midi event the string represents
+    /// </summary>
+    /// <param name="e">The string representation of the event</param>
+    /// <returns>An enum denoting the type of event represented by the string</returns>
+    private static EventType DetermineEventType(string e)
     {
-        var dTicks = int.Parse(data[0]);
-        var collection = new MidiEventCollection(0, dTicks);
+        var eventData = e.Split(',');
 
-        var eventStart = 1;
-        for (var i = 1; i < data.Count; i++)
+        switch (eventData.Length)
         {
-            var line = data[i];
-            if (char.IsLetter(line[0]) && eventStart != i) // Everything before i is apart of a singular event
-            {
-                // Tempo event uses 2 lines, note event uses 4
-                if (data[eventStart][0] == 'T')
-                {
-                    var microsecondsPerQuarterNote = int.Parse(data[eventStart].Substring(1));
-                    var absoluteTime = long.Parse(data[eventStart + 1]);
-                    collection.AddEvent(new TempoEvent(microsecondsPerQuarterNote, absoluteTime), 1);
-                }
-                else if (data[eventStart][0] == 'P')
-                {
-                    var noteNumber = int.Parse(data[eventStart].Substring(1));
-                    var onEventTime = long.Parse(data[eventStart + 1]);
-                    var offEventTime = long.Parse(data[eventStart + 2]);
-                    var duration = int.Parse(data[eventStart + 3]);
-                    var velocity = int.Parse(data[eventStart + 4]);
+            case 4:
+                return EventType.NoteEvent; 
+            case 2:
+                return EventType.TempoEvent;
+            default:
+                return EventType.InvalidEvent;
+        }
+    }
+    
+    /// <summary>
+    /// Writes a string representation to a MIDI file 
+    /// </summary>
+    /// <param name="data">The string representation of the file</param>
+    /// <param name="path">The path of the file to write it to</param>
+    public static void WriteFile(string data, string path)
+    {
+        var lines = data.Split('\n');
+        var dTicks = int.Parse(lines[0]);
+        var collection = new MidiEventCollection(0, dTicks);
+        
+        for (var i = 1; i < lines.Length; i++)
+        {
+            var eventType = DetermineEventType(lines[i]);
+            var eventData = lines[i].Split(',');
 
+            switch (eventType)
+            {
+                case EventType.NoteEvent:
+                    var noteNumber = int.Parse(eventData[0]);
+                    var onEventTime = long.Parse(eventData[1]);
+                    var offEventTime = long.Parse(eventData[2]);
+                    var duration = int.Parse(eventData[3]);
+                    var velocity = int.Parse(eventData[4]);
+                    
                     collection.AddEvent(new NoteOnEvent(onEventTime, 1, noteNumber, velocity, duration), 1);
                     collection.AddEvent(new NoteEvent(offEventTime, 1, MidiCommandCode.NoteOff, noteNumber, velocity),
                         1);
-                }
-
-                eventStart = i;
+                    break;
+                case EventType.TempoEvent:
+                    var microsecondsPerQuarterNote = int.Parse(eventData[0]);
+                    var absoluteTime = long.Parse(eventData[1]);
+                    collection.AddEvent(new TempoEvent(microsecondsPerQuarterNote, absoluteTime), 1);
+                    break;
+                case EventType.InvalidEvent:
+                    break;
             }
         }
 
         MidiFile.Export(path, collection);
-    }
-
-    public static void WriteFile(string data, string path)
-    {
-        WriteFile(data.Split('\n').ToList(), path);
     }
 
     /// <summary>
