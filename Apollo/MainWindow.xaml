@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Apollo"
         mc:Ignorable="d"
-        Title="MainWindow" Height="822" Width="1171">
+        Title="Apollo - Train" Height="822" Width="1171" ResizeMode="CanMinimize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="121.17"></RowDefinition>
@@ -15,21 +15,26 @@
         <!-- Navigation Bar (Row 0) --> 
         <Rectangle Grid.Row="0" Fill="#044bd9"></Rectangle>
         
-        <Label Grid.Row="0" Content="A" FontFamily="Cinzel Decorative" FontWeight="Bold" FontSize="75"
-               Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
+        <Label Grid.Row="0" Width="100" Content="A" FontFamily="Cinzel Decorative" FontWeight="Bold" FontSize="75"
+               Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left" 
+               HorizontalContentAlignment="Center"></Label>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Name="TrainLabel" Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Button Name="TrainButton" Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Name="CreateLabel" Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Button Name="CreateButton" Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Name="ListenLabel" Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Button Name="ListenButton" Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
             <Separator Width="50" Opacity="0"></Separator>
-            <Label Name="SettingsLabel" Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Button Name="SettingsButton" Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
         </StackPanel>
         
         <!-- Frame for showing the different pages of the application --> 

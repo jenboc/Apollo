@@ -29,25 +29,8 @@ namespace Apollo
         {
             var button = (Button)sender;
 
-            States startingState = States.Train;
-            switch (button.Name)
-            {
-                case "TrainButton":
-                    startingState = States.Train;
-                    break;
-                case "CreateButton":
-                    startingState = States.Create;
-                    break;
-                case "ListenButton":
-                    startingState = States.Listen;
-                    break;
-                case "SettingsButton":
-                    startingState = States.Settings;
-                    break;
-            }
-            
             // Create new window, and make it the "main window" of the application
-            var mainWindow = new MainWindow(startingState);
+            var mainWindow = new MainWindow(Convert.ToString(button.Content));
             var app = (App)Application.Current;
             app.MainWindow = mainWindow;
             app.MainWindow.Show();

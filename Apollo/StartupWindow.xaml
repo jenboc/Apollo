@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Apollo"
         mc:Ignorable="d"
-        Title="Apollo Music Generation" Height="822" Width="1171">
+        Title="Apollo Music Generation" Height="822" Width="1171" ResizeMode="CanMinimize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="418"></ColumnDefinition>
