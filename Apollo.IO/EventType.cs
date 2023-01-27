@@ -1,4 +1,4 @@
-namespace Apollo.MIDI;
+namespace Apollo.IO;
 
 public enum EventType
 {

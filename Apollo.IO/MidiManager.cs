@@ -1,6 +1,6 @@
 ﻿using NAudio.Midi;
 
-namespace Apollo.MIDI;
+namespace Apollo.IO;
 
 public static class MidiManager
 {

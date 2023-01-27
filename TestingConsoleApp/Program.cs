@@ -1,5 +1,5 @@
 ﻿using Apollo.MatrixMaths;
-using Apollo.MIDI;
+using Apollo.IO; 
 using Apollo.NeuralNet;
 
 var alpha = 0.001f;
