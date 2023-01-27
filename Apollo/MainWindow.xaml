@@ -5,8 +5,34 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:Apollo"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="822" Width="1171">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="121.17"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
         
+        <!-- Navigation Bar (Row 0) --> 
+        <Rectangle Grid.Row="0" Fill="#044bd9"></Rectangle>
+        
+        <Label Grid.Row="0" Content="A" FontFamily="Cinzel Decorative" FontWeight="Bold" FontSize="75"
+               Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left"></Label>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Separator Width="50" Opacity="0"></Separator>
+            <Label Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Separator Width="50" Opacity="0"></Separator>
+            <Label Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+            <Separator Width="50" Opacity="0"></Separator>
+            <Label Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+        </StackPanel>
+        
+        <!-- Frame for showing the different pages of the application --> 
+        <Frame Grid.Row="1" Background="#0b2126"></Frame>
     </Grid>
 </Window>
