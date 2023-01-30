@@ -9,13 +9,13 @@ public static class MidiManager
     
     private static Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
     {
-        { 'c', 0 },
-        { 'd', 2 },
-        { 'e', 4 },
-        { 'f', 5 },
-        { 'g', 7 },
-        { 'a', 9 },
-        { 'b', 11 }
+        { 'C', 0 },
+        { 'D', 2 },
+        { 'E', 4 },
+        { 'F', 5 },
+        { 'G', 7 },
+        { 'A', 9 },
+        { 'B', 11 }
     };
 
     private static Dictionary<char, int> _pitchModifiers = new Dictionary<char, int>()
@@ -231,36 +231,33 @@ public static class MidiManager
     /// <returns>Integer of the MIDI representation of the note</returns>
     private static int ParseNote(string note)
     {
-        note = note.ToLower();
-        var noteName = note[0];
+        if (note.Length > 3)
+        {
+            note = note.Substring(0, 3);
+        }
+
+        var noteName = ' ';
+        var modifier = ' ';
+        var octave = -1;
+        foreach (var c in note)
+        {
+            if (char.IsUpper(c))
+                noteName = c;
+            else if (_pitchModifiers.ContainsKey(c) && char.IsWhiteSpace(modifier))
+                modifier = c;
+            else if (char.IsNumber(c) && octave == -1)
+                octave = (int)char.GetNumericValue(c);
+        }
         
-        char modifier;
-        int octave;
-        if (note.Length == 3) // == 3 if it has both modifier and octave
-        {
-            modifier = note[1];
-            octave = (int)char.GetNumericValue(note[2]);
-        }
-        else
-        {
-            modifier = '_'; // Placeholder for empty modifier
-
-            try
-            {
-                octave = (int)char.GetNumericValue(note[1]);
-            }
-            catch
-            {
-                octave = (int)char.GetNumericValue(note[0]);
-            }
-        }
-
+        
+        
         var noteValue = (_pitchOffsets.ContainsKey(noteName)) ? _pitchOffsets[noteName] : 0;
 
-        if (modifier != '_')
+        if (_pitchModifiers.ContainsKey(modifier))
             noteValue += _pitchModifiers[modifier];
 
-        noteValue += SEMITONES_IN_OCTAVE * octave;
+        if (octave != -1)
+            noteValue += SEMITONES_IN_OCTAVE * octave;
         
         return noteValue;
     }
