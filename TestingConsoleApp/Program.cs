@@ -37,20 +37,31 @@ for (var i = 0; i < 32; i++) initialInput[i] = trainingData[i];
 
 var outputs = rnn.Forward(Matrix.StackArray(initialInput));
 
-var generated = "";
-foreach (var output in outputs)
+static string Generate(Matrix[] outputs, Vocab vocab)
 {
-    for (var i = 0; i < output.Rows; i++)
+    var generated = "";
+    foreach (var output in outputs)
     {
-        var rowContent = new float[1, output.Columns];
+        for (var i = 0; i < output.Rows; i++)
+        {
+            var rowContent = new float[1, output.Columns];
 
-        for (var j = 0; j < output.Columns; j++) rowContent[0, j] = output[i, j];
+            for (var j = 0; j < output.Columns; j++) rowContent[0, j] = output[i, j];
 
-        var mat = new Matrix(rowContent);
-        generated += vocab.InterpretOneHot(mat);
+            var mat = new Matrix(rowContent);
+            generated += vocab.InterpretOneHot(mat);
+        }
     }
+
+    return generated;
 }
 
-Console.WriteLine(generated);
+for (var i = 1; i < 11; i++)
+{
+    var generated = Generate(outputs, vocab);
+    var fileName = $"generated{i}.mid";
+    Console.WriteLine(generated);
 
-MidiManager.WriteFile(generated, "generated.mid");
+    MidiManager.WriteFile(generated, fileName);
+    Console.Beep(5000, 1000);
+}

@@ -3,6 +3,30 @@ using NAudio.Midi;
 
 namespace Apollo.IO;
 
+struct Note
+{
+    public int Octave;
+    public char Modifier;
+    public char NoteName;
+
+    public Note()
+    {
+        Clear();
+    }
+    
+    public void Clear()
+    {
+        Octave = -1;
+        Modifier = ' ';
+        NoteName = ' ';
+    }
+
+    public bool IsIncomplete()
+    {
+        return Octave == -1 || Modifier == ' ' || NoteName == ' ';
+    }
+}
+
 public static class MidiManager
 {
     private const int SEMITONES_IN_OCTAVE = 12;
@@ -179,13 +203,13 @@ public static class MidiManager
         var noteDur = 3 * 480 / 4;
         var noteSpace = 480;
 
-        var currentNote = ""; 
         var numSpaces = 0L;
 
         var bpm = 60;
         var tempoEvent = new TempoEvent(CalculateMicrosecondsPerQuarterNote(bpm), numSpaces);
         collection.AddEvent(tempoEvent, 1);
-        
+
+        var currentNote = new Note(); 
         foreach (var c in data)
         {
             // Increment num spaces (represents absolute time) 
@@ -195,13 +219,18 @@ public static class MidiManager
                 continue; 
             }
             
-            // Add to stack if it is empty (or is related to the same note) 
-            if ((char.IsLetter(c) && char.IsUpper(c) && currentNote.Length == 0) || !(char.IsLetter(c) && char.IsUpper(c)))
-            {
-                currentNote += c; 
-                continue;
-            }
+            // Add information to note
+            if (char.IsUpper(c) && currentNote.NoteName == ' ')
+                currentNote.NoteName = c;
+            else if (_pitchModifiers.ContainsKey(c) && currentNote.Modifier == ' ')
+                currentNote.Modifier = c;
+            else if (char.IsNumber(c) && currentNote.Octave == -1)
+                currentNote.Octave = (int)char.GetNumericValue(c);
             
+            // If the information about the note isn't complete then continue
+            if (currentNote.IsIncomplete())
+                continue;
+
             // Gets here if it reaches a new note 
             // Add note to collection 
             var pitch = ParseNote(currentNote);
@@ -212,7 +241,7 @@ public static class MidiManager
             collection.AddEvent(onEvent, 1);
             collection.AddEvent(offEvent, 1);
 
-            currentNote = "";
+            currentNote.Clear();
         }
         
         collection.PrepareForExport();
@@ -229,35 +258,15 @@ public static class MidiManager
     /// </summary>
     /// <param name="note">String representation of note</param>
     /// <returns>Integer of the MIDI representation of the note</returns>
-    private static int ParseNote(string note)
+    private static int ParseNote(Note note)
     {
-        if (note.Length > 3)
-        {
-            note = note.Substring(0, 3);
-        }
+        var noteValue = (_pitchOffsets.ContainsKey(note.NoteName)) ? _pitchOffsets[note.NoteName] : 0;
 
-        var noteName = ' ';
-        var modifier = ' ';
-        var octave = -1;
-        foreach (var c in note)
-        {
-            if (char.IsUpper(c))
-                noteName = c;
-            else if (_pitchModifiers.ContainsKey(c) && char.IsWhiteSpace(modifier))
-                modifier = c;
-            else if (char.IsNumber(c) && octave == -1)
-                octave = (int)char.GetNumericValue(c);
-        }
-        
-        
-        
-        var noteValue = (_pitchOffsets.ContainsKey(noteName)) ? _pitchOffsets[noteName] : 0;
+        if (_pitchModifiers.ContainsKey(note.Modifier) && noteValue != 0)
+            noteValue += _pitchModifiers[note.Modifier];
 
-        if (_pitchModifiers.ContainsKey(modifier))
-            noteValue += _pitchModifiers[modifier];
-
-        if (octave != -1)
-            noteValue += SEMITONES_IN_OCTAVE * octave;
+        if (note.Octave != -1)
+            noteValue += SEMITONES_IN_OCTAVE * note.Octave;
         
         return noteValue;
     }

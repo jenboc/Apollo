@@ -301,7 +301,11 @@ public class Rnn
                 totalLoss += CalculateLoss(expected, actualOutput);
             }
 
-            Console.WriteLine($"Loss: {totalLoss / numTimesteps}");
+            var averageLoss = totalLoss / numTimesteps;
+            Console.WriteLine($"Loss: {averageLoss}");
+
+            if (averageLoss < 0.5f)
+                break;
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
