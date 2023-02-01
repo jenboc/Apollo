@@ -89,8 +89,10 @@ public class Rnn
     /// <returns> An array containing the output from each recurrence of the network </returns>
     public Matrix[] Forward(Matrix initialInput, int recurrenceAmount)
     {
+        // Array to store outputs at each timestep
         var outputs = new Matrix[recurrenceAmount];
 
+        // HiddenState (lstm output) = matrix of 0s when t=0 
         var lstmInput = initialInput;
         var hiddenState = new Matrix(BatchSize, HiddenSize);
 
@@ -98,11 +100,14 @@ public class Rnn
         {
             hiddenState = LstmCell.Forward(lstmInput, hiddenState);
             outputs[i] = hiddenState.Clone();
-
+            
+            // Softmax layer
+            // Apply softmax to LSTM output and interpret
             outputs[i] *= SoftmaxWeight;
             outputs[i].Softmax();
             outputs[i] = InterpretOutput(outputs[i]);
-
+            
+            // Output = next input
             lstmInput = outputs[i];
         }
 
@@ -116,35 +121,25 @@ public class Rnn
     /// <returns>A one-hot vector representing the LSTM's predictions</returns>
     private Matrix InterpretOutput(Matrix softmax)
     {
-        var r = new Random();
-        var interpreted = Matrix.Like(softmax);
+        // Create matrix of 0s the same shape as softmax matrix
+        var interpreted = Matrix.Like(softmax); 
 
+        // Find the index of the highest number on each row, and set the corresponding index in the interpreted
+        // matrix to 1
         for (var i = 0; i < softmax.Rows; i++)
         {
-            var highestProb = float.MinValue;
-            var highestProbIndex = -1;
-
-            var highestSucceed = float.MinValue;
-            var highestSucceedIndex = -1;
-
+            var highestJ = -1;
+            var highestValue = float.MinValue;
             for (var j = 0; j < softmax.Columns; j++)
             {
-                if (softmax[i, j] > highestProb)
-                    highestProbIndex = j;
-
-                var rollQuota = (int)(softmax[i, j] * 100);
-                var diceRoll = r.Next(100);
-
-                if (diceRoll <= rollQuota && softmax[i, j] > highestSucceed)
-                    highestSucceedIndex = j;
+                if (softmax[i, j] > highestValue)
+                {
+                    highestValue = softmax[i, j];
+                    highestJ = j;
+                }
             }
 
-            // The 1 goes into the slot with the highest probability which succeeded the dice roll 
-            // Or alternatively (if every probability failed), the highest probability in general
-            if (highestSucceedIndex == -1)
-                interpreted[i, highestProbIndex] = 1;
-            else
-                interpreted[i, highestSucceedIndex] = 1;
+            interpreted[i, highestJ] = 1;
         }
 
         return interpreted;
@@ -193,10 +188,12 @@ public class Rnn
 
             // Increment gradient for weights 
             SoftmaxWeight.Gradient += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
-
+            
+            // Backprop through LSTM cell
             LstmCell.Backprop(inputs[t], dF, forgetGates[t], dI, inputGates[t], dO, outputGates[t],
                 dG, candidateStates[t], lstmOutputs[t - 1]);
             
+            // Update network parameters
             Update(t);
         }
 
@@ -235,6 +232,7 @@ public class Rnn
     public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, float maximumError,
         int batchesPerEpoch, Random r)
     {
+        // Save before state
         SaveState(StateProfile.BeforeStateFile);
         
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
@@ -254,6 +252,7 @@ public class Rnn
         float totalLoss;
         for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
+            // Clear stored values on each epoch 
             usedInputs.Clear();
             usedOutputs.Clear(); 
             forgetGateValues.Clear();
@@ -263,15 +262,17 @@ public class Rnn
             outputGateValues.Clear();
             hiddenStateValues.Clear();
             actualOutputValues.Clear();
-
+            
             LstmCell.Clear();
-
+            
+            // Create new matrix to store the hidden state (LSTM output) 
+            // Instantiated as 0s since there is no outputted hidden state at t=0
             var hiddenState = new Matrix(BatchSize, HiddenSize);
             totalLoss = 0f;
 
+            // Simulate a forward pass of the network using a randomly selected training batch
             var start = r.Next(inputData.Count - batchesPerEpoch);
             var end = start + batchesPerEpoch;
-
             for (var i = start; i < end; i++)
             {
                 var input = inputData[i];
@@ -301,16 +302,21 @@ public class Rnn
                 totalLoss += CalculateLoss(expected, actualOutput);
             }
 
+            // Work out and log the average loss at this point 
             var averageLoss = totalLoss / batchesPerEpoch;
             LogManager.WriteLine($"Epoch: {epoch}\nLoss: {averageLoss}");
 
+            // Break if training can stop
+            // i.e. the loss is lower than the maximum error, and we've done the minimum amount of epochs
             if (averageLoss < maximumError && epoch >= minimumEpochs)
                 break;
 
+            // Backprop to reduce error
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
         } 
         
+        // Save after state
         SaveState(StateProfile.AfterStateFile);
     }
 

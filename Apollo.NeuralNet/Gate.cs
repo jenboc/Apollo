@@ -21,6 +21,13 @@ public class Gate
         Bias = new Matrix(batchSize, hiddenSize, r);
     }
 
+    /// <summary>
+    /// Create an LSTM gate using the state file
+    /// </summary>
+    /// <param name="vocabSize">Vocab size (already read)</param>
+    /// <param name="hiddenSize">Hidden size (already read)</param>
+    /// <param name="batchSize">Batch size (already read)</param>
+    /// <param name="reader">Stream to the state file to read from</param>
     public Gate(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
     {
         Value = new Matrix(batchSize, hiddenSize);
@@ -60,6 +67,10 @@ public class Gate
         Value *= 0;
     }
 
+    /// <summary>
+    /// Update the gate's weights
+    /// </summary>
+    /// <param name="t">Backpropagation timestep</param>
     public void Update(int t)
     {
         InputWeight.Adam(t);

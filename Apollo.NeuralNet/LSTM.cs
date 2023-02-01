@@ -94,6 +94,10 @@ public class Lstm
             Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
     }
 
+    /// <summary>
+    /// Update the gates of the LSTM
+    /// </summary>
+    /// <param name="t">Backpropagation timestep</param>
     public void Update(int t)
     {
         Forget.Update(t);

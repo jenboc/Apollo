@@ -1,5 +1,8 @@
 ﻿namespace Apollo;
 
+/// <summary>
+/// Model for containing data about a network state profile (read from and written to a JSON file) 
+/// </summary>
 public class Profile
 {
     public string BeforeStateFile { get; set; }

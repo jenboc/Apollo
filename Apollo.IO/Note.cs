@@ -20,9 +20,10 @@ struct Note
         Modifier = ' ';
         NoteName = ' ';
     }
-
+    
     public bool IsIncomplete()
     {
+        // A note is "incomplete" if it doesn't have a data value for all 3 parts of a note
         return Octave == -1 || Modifier == ' ' || NoteName == ' ';
     }
 }
