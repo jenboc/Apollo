@@ -662,7 +662,7 @@ public class Matrix
 
         for (var i = 0; i < rows; i++)
         for (var j = 0; j < columns; j++)
-            readMat.Contents[i, j] = (float)reader.ReadDecimal();
+            readMat.Contents[i, j] = reader.ReadSingle();
 
         return readMat;
     }

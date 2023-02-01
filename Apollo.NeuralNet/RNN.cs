@@ -53,7 +53,7 @@ public class Rnn
                 VocabSize = reader.ReadInt32();
                 BatchSize = reader.ReadInt32();
                 HiddenSize = reader.ReadInt32();
-                LearningRate = (float)reader.ReadDecimal();
+                LearningRate = reader.ReadSingle();
 
                 LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader);
 

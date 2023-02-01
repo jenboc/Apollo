@@ -89,6 +89,6 @@
                 Width="150" Height="75"
                 Background="#eaf205" Foreground="#044bd9"
                 FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                Content="Train" />
+                Content="Train" Click="TrainButtonClicked"/>
     </Grid>
 </Page>
