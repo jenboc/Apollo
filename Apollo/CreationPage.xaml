@@ -11,6 +11,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="150"></RowDefinition>
             <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -33,15 +34,29 @@
                Foreground="#f25c05" Content="No. Characters to Generate:" />
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="GenerationLenSlider" VerticalAlignment="Center" Width="450"
-                    Minimum="10000" Maximum="1000000" IsSnapToTickEnabled="True"
+                    Minimum="5000" Maximum="50000" IsSnapToTickEnabled="True"
                     SmallChange="100"/>
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
                    Content="{Binding ElementName=GenerationLenSlider, Path=Value}"/> 
         </StackPanel>
         
+        <!-- Beats per Minute --> 
+        <Label Grid.Row="2" Grid.Column="0"
+               VerticalAlignment="Center" HorizontalAlignment="Right"
+               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               Foreground="#f25c05" Content="Beats per Minute:" />
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <Slider Name="BpmSlider" VerticalAlignment="Center" Width="450"
+                    Minimum="30" Maximum="120" IsSnapToTickEnabled="True"
+                    SmallChange="100"/>
+            <Label VerticalAlignment="Center" HorizontalAlignment="Center"
+                   FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
+                   Content="{Binding ElementName=BpmSlider, Path=Value}"/> 
+        </StackPanel>
+        
         <!-- Create Button --> 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 Width="200" Height="200"
                 Background="#ff0000" Foreground="#000000"

@@ -331,7 +331,7 @@ public partial class MainWindow : Window
         return stringOutput;
     }
     
-    public void StartCreating(int generationLength, string savePath)
+    public void StartCreating(int generationLength, int bpm, string savePath)
     {
         Mouse.OverrideCursor = Cursors.Wait;
         
@@ -341,7 +341,7 @@ public partial class MainWindow : Window
         var stringOutput = InterpretNetworkOutput(outputs); 
         
         // Save what was generated as a midi file 
-        MidiManager.WriteFile(stringOutput, savePath, 60);
+        MidiManager.WriteFile(stringOutput, savePath, bpm);
     
         // Notify the user
         var fileName = Path.GetFileName(savePath);
