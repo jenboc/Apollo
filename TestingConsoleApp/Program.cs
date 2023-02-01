@@ -2,6 +2,41 @@
 using Apollo.IO; 
 using Apollo.NeuralNet;
 
+
+const int BATCH_SIZE = 4;
+const int HIDDEN_SIZE = 32;
+const int RECURRENCE_AMOUNT = 10000;
+const int NUM_EPOCHS = 500;
+const int NUM_TIMESTEPS = 200;
+
+static Matrix CreateGenSeed(Vocab vocab, Random r)
+{
+    var rows = new Matrix[BATCH_SIZE];
+    for (var i = 0; i < BATCH_SIZE; i++)
+    {
+        var id = r.Next(vocab.Size);
+        rows[i] = vocab.CreateOneHot(vocab[id]);
+    }
+
+    return Matrix.StackArray(rows);
+}
+
+static string Generate(Rnn rnn, Matrix genSeed, Vocab vocab)
+{
+    var outputs = rnn.Forward(genSeed);
+    var generated = "";
+    foreach (var output in outputs)
+    {
+        var rowContent = new float[1, output.Columns];
+        for (var j = 0; j < output.Columns; j++) rowContent[0, j] = output[output.Rows-1, j];
+        var mat = new Matrix(rowContent);
+        generated += vocab.InterpretOneHot(mat);
+    }
+
+    return generated;
+}
+
+
 var alpha = 0.001f;
 var beta1 = 0.9f;
 var beta2 = 0.999f;
@@ -9,15 +44,6 @@ var epsilon = 1e-8f;
 var hyperparameters = new AdamParameters(alpha, beta1, beta2, epsilon);
 
 var r = new Random();
-
-static void DisplayMat(Matrix mat)
-{
-    for (var i = 0; i < mat.Rows; i++)
-    {
-        for (var j = 0; j < mat.Columns; j++) Console.Write($"{mat[i, j]}\t");
-        Console.WriteLine();
-    }
-}
 
 const string PATH = @"file.mid";
 
@@ -28,40 +54,14 @@ var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
 Console.WriteLine($"Vocab Size: {vocab.Size}");
-var rnn = new Rnn("rnn.state", vocab.Size, 10, 32, 1000, hyperparameters, r);
+var rnn = new Rnn("rnn.state", vocab.Size, HIDDEN_SIZE, BATCH_SIZE, RECURRENCE_AMOUNT, hyperparameters, r);
 
-rnn.Train(trainingData, 500, 200, r);
+rnn.Train(trainingData, NUM_EPOCHS, NUM_TIMESTEPS, r);
 
-var initialInput = new Matrix[32];
-for (var i = 0; i < 32; i++) initialInput[i] = trainingData[i];
-
-var outputs = rnn.Forward(Matrix.StackArray(initialInput));
-
-static string Generate(Matrix[] outputs, Vocab vocab)
+for (var i = 1; i <= 10; i++)
 {
-    var generated = "";
-    foreach (var output in outputs)
-    {
-        for (var i = 0; i < output.Rows; i++)
-        {
-            var rowContent = new float[1, output.Columns];
-
-            for (var j = 0; j < output.Columns; j++) rowContent[0, j] = output[i, j];
-
-            var mat = new Matrix(rowContent);
-            generated += vocab.InterpretOneHot(mat);
-        }
-    }
-
-    return generated;
-}
-
-for (var i = 1; i < 11; i++)
-{
-    var generated = Generate(outputs, vocab);
-    var fileName = $"generated{i}.mid";
-    Console.WriteLine(generated);
-
-    MidiManager.WriteFile(generated, fileName);
-    Console.Beep(5000, 1000);
+    var fileName = $"generated/Generated{i}.mid";
+    var seed = CreateGenSeed(vocab, r);
+    var generatedString = Generate(rnn, seed, vocab); 
+    MidiManager.WriteFile(generatedString, fileName, 30);
 }

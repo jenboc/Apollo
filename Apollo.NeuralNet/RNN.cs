@@ -304,7 +304,7 @@ public class Rnn
             var averageLoss = totalLoss / numTimesteps;
             Console.WriteLine($"Loss: {averageLoss}");
 
-            if (averageLoss < 0.5f)
+            if (averageLoss < 0.5f && epoch > 50)
                 break;
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,

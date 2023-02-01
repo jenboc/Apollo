@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
-using NAudio.Midi;
+﻿using NAudio.Midi;
 
 namespace Apollo.IO;
 
+/// <summary>
+/// Struct to hold data about a single note
+/// </summary>
 struct Note
 {
     public int Octave;
@@ -27,11 +29,14 @@ struct Note
     }
 }
 
+/// <summary>
+/// Static class that handles anything to do with MidiFiles or music
+/// </summary>
 public static class MidiManager
 {
+    // Constants and dictionaries for creating MidiFile from a string 
     private const int SEMITONES_IN_OCTAVE = 12;
-    
-    private static Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
+    private static readonly Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
     {
         { 'C', 0 },
         { 'D', 2 },
@@ -41,13 +46,18 @@ public static class MidiManager
         { 'A', 9 },
         { 'B', 11 }
     };
-
-    private static Dictionary<char, int> _pitchModifiers = new Dictionary<char, int>()
+    private static readonly Dictionary<char, int> _pitchModifiers = new Dictionary<char, int>()
     {
         { '#', 1 },
         { 'b', -1 }
     };
     
+    /// <summary>
+    /// Read a MidiFile at the specified path
+    /// </summary>
+    /// <param name="path">Path to the MIDI file</param>
+    /// <returns>The string representation of the notes in the file</returns>
+    /// <exception cref="FileNotFoundException"></exception>
     public static string ReadFile(string path)
     {
         if (GetPathType(path) != 'f')
@@ -61,33 +71,6 @@ public static class MidiManager
         var prevAbsoluteTime = 0L; 
         for (var trackNum = 0; trackNum < file.Tracks; trackNum++)
         {
-            // foreach (var e in file.Events[trackNum])
-            //     if (e.GetType() == typeof(NoteOnEvent))
-            //     {
-            //         try
-            //         {
-            //             var onEvent = (NoteOnEvent)e;
-            //             var offEvent = onEvent.OffEvent;
-            //
-            //             var noteNumber = onEvent.NoteNumber;
-            //             var onTime = onEvent.AbsoluteTime;
-            //             var offTime = offEvent.AbsoluteTime;
-            //             var noteLength = onEvent.NoteLength;
-            //             var velocity = onEvent.Velocity;
-            //
-            //             data.Add($"{noteNumber},{onTime},{offTime},{noteLength},{velocity}");
-            //         }
-            //         catch
-            //         {
-            //             // Log 
-            //         }
-            //     }
-            //     else if (e.GetType() == typeof(TempoEvent))
-            //     {
-            //         var tempoEvent = (TempoEvent)e;
-            //         data.Add($"{tempoEvent.MicrosecondsPerQuarterNote}, {tempoEvent.AbsoluteTime}");
-            //     }
-            
             foreach (var e in file.Events[trackNum])
             {
                 if (e.GetType() != typeof(NoteOnEvent))
@@ -107,7 +90,12 @@ public static class MidiManager
 
         return data;
     }
-
+    
+    /// <summary>
+    /// Add a variable number of spaces to a string
+    /// </summary>
+    /// <param name="data">A reference to the string to add spaces to</param>
+    /// <param name="numSpaces">The number of spaces</param>
     private static void AddSpaces(ref string data, int numSpaces)
     {
         for (var i = 0; i < numSpaces; i++)
@@ -162,60 +150,29 @@ public static class MidiManager
     /// </summary>
     /// <param name="data">The string representation of the file</param>
     /// <param name="path">The path of the file to write it to</param>
-    public static void WriteFile(string data, string path)
+    /// <param name="beatsPerMinute">Music's beat per minute</param>
+    public static void WriteFile(string data, string path, int beatsPerMinute)
     {
-        // var lines = data.Split('\n');
-        // var dTicks = int.Parse(lines[0]);
-        // var collection = new MidiEventCollection(0, dTicks);
-        //
-        // for (var i = 1; i < lines.Length; i++)
-        // {
-        //     var eventType = DetermineEventType(lines[i]);
-        //     var eventData = lines[i].Split(',');
-        //
-        //     switch (eventType)
-        //     {
-        //         case EventType.NoteEvent:
-        //             var noteNumber = int.Parse(eventData[0]);
-        //             var onEventTime = long.Parse(eventData[1]);
-        //             var offEventTime = long.Parse(eventData[2]);
-        //             var duration = int.Parse(eventData[3]);
-        //             var velocity = int.Parse(eventData[4]);
-        //             
-        //             collection.AddEvent(new NoteOnEvent(onEventTime, 1, noteNumber, velocity, duration), 1);
-        //             collection.AddEvent(new NoteEvent(offEventTime, 1, MidiCommandCode.NoteOff, noteNumber, velocity),
-        //                 1);
-        //             break;
-        //         case EventType.TempoEvent:
-        //             var microsecondsPerQuarterNote = int.Parse(eventData[0]);
-        //             var absoluteTime = long.Parse(eventData[1]);
-        //             collection.AddEvent(new TempoEvent(microsecondsPerQuarterNote, absoluteTime), 1);
-        //             break;
-        //         case EventType.InvalidEvent:
-        //             break;
-        //     }
-        // }
-
         // Magic number, change later
         var collection = new MidiEventCollection(0, 480);
 
+        // Magic Numbers, change later
         var velocity = 100;
         var noteDur = 3 * 480 / 4;
-        var noteSpace = 480;
 
-        var numSpaces = 0L;
-
-        var bpm = 60;
-        var tempoEvent = new TempoEvent(CalculateMicrosecondsPerQuarterNote(bpm), numSpaces);
+        var absoluteTime = 0L;
+        
+        // Create tempo event so that the MidiFile is valid
+        var tempoEvent = new TempoEvent(CalculateMicrosecondsPerQuarterNote(beatsPerMinute), absoluteTime);
         collection.AddEvent(tempoEvent, 1);
 
         var currentNote = new Note(); 
         foreach (var c in data)
         {
-            // Increment num spaces (represents absolute time) 
+            // Space = increment absolute time 
             if (c == ' ')
             {
-                numSpaces++;
+                absoluteTime++;
                 continue; 
             }
             
@@ -231,12 +188,12 @@ public static class MidiManager
             if (currentNote.IsIncomplete())
                 continue;
 
-            // Gets here if it reaches a new note 
+            // Gets here when enough information was gathered for a complete note
             // Add note to collection 
             var pitch = ParseNote(currentNote);
 
-            var onEvent = new NoteOnEvent(numSpaces, 1, pitch, velocity, noteDur);
-            var offEvent = new NoteEvent(numSpaces + noteDur, 1, MidiCommandCode.NoteOff, pitch, 0);
+            var onEvent = new NoteOnEvent(absoluteTime, 1, pitch, velocity, noteDur);
+            var offEvent = new NoteEvent(absoluteTime + noteDur, 1, MidiCommandCode.NoteOff, pitch, 0);
             
             collection.AddEvent(onEvent, 1);
             collection.AddEvent(offEvent, 1);
@@ -248,6 +205,11 @@ public static class MidiManager
         MidiFile.Export(path, collection);
     }
 
+    /// <summary>
+    /// Calculate microseconds per quarter note from beats per minute
+    /// </summary>
+    /// <param name="bpm">Beats per minute</param>
+    /// <returns>Microseconds per quarter note</returns>
     private static int CalculateMicrosecondsPerQuarterNote(int bpm)
     {
         return 60 * 1000 * 1000 / bpm;
