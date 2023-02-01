@@ -1,23 +1,30 @@
 ﻿using Apollo.MatrixMaths;
+using Apollo.IO;
 
 namespace Apollo.NeuralNet;
 
 public class Rnn
 {
+    /// <param name="statePath">Path to the directory where the state files for this RNN will be stored</param>
     /// <param name="vocabSize">The amount of words in the vocabulary list</param>
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
     /// <param name="hyperparameters">Hyperparameters for the ADAM optimisation algorithm</param>
     /// <param name="r">Random Instance to instantiate weights</param>
-    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, int recurrenceAmount,
-        AdamParameters hyperparameters, Random r)
+    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, AdamParameters hyperparameters, Random r)
     {
         StatePath = statePath;
+
+        if (!Directory.Exists(StatePath))
+        {
+            LogManager.WriteLine($"{StatePath} directory not found, created the directory");
+            Directory.CreateDirectory(StatePath);
+        }
+
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
-        RecurrenceAmount = recurrenceAmount;
         Hyperparameters = hyperparameters;
 
         LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, r);
@@ -31,7 +38,6 @@ public class Rnn
     private int VocabSize { get; set; }
     private int BatchSize { get; set; }
     private int HiddenSize { get; set; }
-    private int RecurrenceAmount { get; set; }
     private float LearningRate { get; set; }
 
     // LSTM Cell 
@@ -46,16 +52,17 @@ public class Rnn
     /// <summary>
     ///     Save network into a binary file
     /// </summary>
-    private void LoadState()
+    private void LoadState(string name)
     {
-        using (var stream = File.Open(StatePath, FileMode.Open))
+        var filePath = Path.Join(StatePath, $"{name}.state");
+        
+        using (var stream = File.Open(filePath, FileMode.Open))
         {
             using (var reader = new BinaryReader(stream))
             {
                 VocabSize = reader.ReadInt32();
                 BatchSize = reader.ReadInt32();
                 HiddenSize = reader.ReadInt32();
-                RecurrenceAmount = reader.ReadInt32();
                 LearningRate = (float)reader.ReadDecimal();
 
                 LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader);
@@ -69,16 +76,17 @@ public class Rnn
     /// <summary>
     ///     Save the network to a binary file
     /// </summary>
-    private void SaveState()
+    private void SaveState(string name)
     {
-        using (var stream = File.Open(StatePath, FileMode.Create))
+        var filePath = Path.Join(StatePath, $"{name}.state");
+        
+        using (var stream = File.Open(filePath, FileMode.Create))
         {
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(VocabSize);
                 writer.Write(BatchSize);
                 writer.Write(HiddenSize);
-                writer.Write(RecurrenceAmount);
                 writer.Write(LearningRate);
                 LstmCell.WriteToFile(writer);
                 Hyperparameters.WriteToFile(writer);
@@ -91,14 +99,14 @@ public class Rnn
     ///     Complete a full pass of the neural network, with the correct number of recurrences.
     /// </summary>
     /// <returns> An array containing the output from each recurrence of the network </returns>
-    public Matrix[] Forward(Matrix initialInput)
+    public Matrix[] Forward(Matrix initialInput, int recurrenceAmount)
     {
-        var outputs = new Matrix[RecurrenceAmount];
+        var outputs = new Matrix[recurrenceAmount];
 
         var lstmInput = initialInput;
         var hiddenState = new Matrix(BatchSize, HiddenSize);
 
-        for (var i = 0; i < RecurrenceAmount; i++)
+        for (var i = 0; i < recurrenceAmount; i++)
         {
             hiddenState = LstmCell.Forward(lstmInput, hiddenState);
             outputs[i] = hiddenState.Clone();
@@ -228,15 +236,21 @@ public class Rnn
     }
 
     /// <summary>
-    ///     Train the neural network on a single file
+    /// Train the neural network on a single file
     /// </summary>
-    /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
-    /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
-    /// <param name="numTimesteps">The number of timesteps per epoch</param>
-    public void Train(Matrix[] trainingData, int numEpochs, int numTimesteps, Random r)
+    /// <param name="trainingData">The one-hot vector representation of the file</param>
+    /// <param name="minimumEpochs">The minimum number of epochs to perform</param>
+    /// <param name="maximumEpochs">The maximum number of epochs to perform before stopping</param>
+    /// <param name="maximumError">The maximum error, training will stop early if the average error is below this</param>
+    /// <param name="batchesPerEpoch">The amount of batches per epoch, do not put to high or risk NaNs</param>
+    /// <param name="r">An instance of random, to randomly select batches</param>
+    public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, float maximumError,
+        int batchesPerEpoch, Random r)
     {
+        SaveState("apollo_before");
+        
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
-        Console.WriteLine($"Input data length: {inputData.Count}");
+        LogManager.WriteLine($"Training input data length: {inputData.Count}");
         
         // Previous gate/state values to be used in backpropagation
         var usedInputs = new List<Matrix>();
@@ -250,7 +264,7 @@ public class Rnn
         var actualOutputValues = new List<Matrix>();
         
         float totalLoss;
-        for (var epoch = 0; epoch < numEpochs; epoch++)
+        for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
             usedInputs.Clear();
             usedOutputs.Clear(); 
@@ -264,13 +278,11 @@ public class Rnn
 
             LstmCell.Clear();
 
-            Console.WriteLine($"Epoch {epoch}");
-
             var hiddenState = new Matrix(BatchSize, HiddenSize);
             totalLoss = 0f;
 
-            var start = r.Next(inputData.Count - numTimesteps);
-            var end = start + numTimesteps;
+            var start = r.Next(inputData.Count - batchesPerEpoch);
+            var end = start + batchesPerEpoch;
 
             for (var i = start; i < end; i++)
             {
@@ -301,11 +313,17 @@ public class Rnn
                 totalLoss += CalculateLoss(expected, actualOutput);
             }
 
-            Console.WriteLine($"Loss: {totalLoss / numTimesteps}");
+            var averageLoss = totalLoss / batchesPerEpoch;
+            LogManager.WriteLine($"Epoch: {epoch}\nLoss: {averageLoss}");
+
+            if (averageLoss < maximumError && epoch >= minimumEpochs)
+                break;
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
         } 
+        
+        SaveState("apollo_after");
     }
 
     /// <summary>
