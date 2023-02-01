@@ -7,4 +7,10 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj" />
+      <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj" />
+      <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj" />
+    </ItemGroup>
+
 </Project>

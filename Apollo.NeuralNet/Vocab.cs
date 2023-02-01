@@ -121,4 +121,9 @@ public class Vocab
 
         return trainingData;
     }
+
+    public string AsString()
+    {
+        return string.Join("", VocabList);
+    }
 }

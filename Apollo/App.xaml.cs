@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Apollo.IO;
 
 namespace Apollo
 {
@@ -21,8 +22,11 @@ namespace Apollo
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var msg = $"Unhandled exception occurred: {e.Exception.Message}";
-            MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            var boxMsg = $"Unhandled exception occurred: {e.Exception.Message}";
+            var logMsg = boxMsg + $"\n{e.Exception.StackTrace}";
+            
+            LogManager.WriteLine(logMsg);
+            MessageBox.Show(boxMsg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
             e.Handled = true;
             Shutdown();

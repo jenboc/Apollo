@@ -1,33 +1,13 @@
 ﻿namespace Apollo.NeuralNet;
 
-public struct AdamParameters
+/// <summary>
+/// Static class for storing the recommended ADAM optimiser hyperparameters
+/// </summary>
+static class AdamParameters
 {
-    public float Alpha;
-    public float Beta1;
-    public float Beta2;
-    public float Epsilon;
-
-    public AdamParameters(float alpha, float beta1, float beta2, float epsilon)
-    {
-        Alpha = alpha;
-        Beta1 = beta1;
-        Beta2 = beta2;
-        Epsilon = epsilon;
-    }
-
-    public void WriteToFile(BinaryWriter writer)
-    {
-        writer.Write(Alpha);
-        writer.Write(Beta1);
-        writer.Write(Beta2);
-        writer.Write(Epsilon);
-    }
-
-    public static AdamParameters ReadFromFile(BinaryReader reader)
-    {
-        var adamParams = new AdamParameters((float)reader.ReadDecimal(), (float)reader.ReadDecimal(),
-            (float)reader.ReadDecimal(), (float)reader.ReadDecimal());
-
-        return adamParams;
-    }
+    // Recommended parameters.
+    public const float ALPHA = 0.001f;
+    public const float BETA1 = 0.9f;
+    public const float BETA2 = 0.999f;
+    public const float EPSILON = 1e-8f;
 }

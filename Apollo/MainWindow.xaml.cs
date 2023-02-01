@@ -1,29 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Apollo.IO;
+using Apollo.NeuralNet;
 
 namespace Apollo;
 
 public partial class MainWindow : Window
 {
-    private Button CurrentlySelected { get; set; }
-    
-    private readonly SolidColorBrush _selectedColour =
-        new ((Color)ColorConverter.ConvertFromString("#f25c05"));
-    
-    private readonly SolidColorBrush _unselectedColour = 
-            new ((Color)ColorConverter.ConvertFromString("#eaf205"));
-    
-    public MainWindow(string startingState)
+    private StoredSettings Settings { get; set; }
+    private Dictionary<string, Profile> Profiles { get; set; }
+    private Random R { get; }
+
+    public MainWindow(string startingPage)
     {
         InitializeComponent();
 
-        CurrentlySelected = TrainButton;
+        R = new Random();
+        
+        // Load settings
+        if (File.Exists(StoredSettings.SettingsPath))
+            LoadSettings();
+        else
+        {
+            Settings = StoredSettings.Default();
+            SaveSettings();
+        }
 
+        // Init Profiles dictionary
+        LoadProfiles(); 
+        
+        // Initialise Neural Network
+        InitialiseNetwork();
+
+        // Open on the correct page
+        CurrentlySelected = TrainButton;
+        
         var buttonToHighlight = TrainButton; 
-        switch (startingState.ToLower())
+        switch (startingPage.ToLower())
         {
             case "train":
                 buttonToHighlight = TrainButton;
@@ -40,7 +59,80 @@ public partial class MainWindow : Window
         }
         ChangePage(buttonToHighlight); 
     }
+    
+    #region Initialising Neural Network
 
+    // Names of the files to look for 
+    private const int HIDDEN_SIZE = 32;
+    private const int BATCH_SIZE = 4;
+    
+    private Rnn Network { get; set; }
+    private Vocab VocabList { get; set; }
+
+    /// <summary>
+    /// Initialise the neural network (and vocab list)
+    /// </summary>
+    private void InitialiseNetwork()
+    {
+        var profile = Profiles[Settings.SelectedProfilePath];
+        
+        // If one exists load it (check after state path first)
+        if (File.Exists(profile.AfterStateFile))
+        {
+            Network = new Rnn();
+            Network.LoadState(profile.AfterStateFile);
+            InitialiseVocab(profile);
+            return;
+        }
+        if (File.Exists(profile.BeforeStateFile))
+        {
+            Network = new Rnn();
+            Network.LoadState(profile.BeforeStateFile);
+            InitialiseVocab(profile);
+            return; 
+        }
+
+        // If there isn't one then just start from scratch + display necessary message
+        // But to start from scratch we must select training data for vocab 
+        InitialiseVocab(profile);
+        Network = new Rnn(profile, VocabList.Size, HIDDEN_SIZE, BATCH_SIZE, R);
+    }
+    
+    /// <summary>
+    /// Initialise the vocab list 
+    /// </summary>
+    /// <param name="profile">The network profile constructed from schema.json</param>
+    private void InitialiseVocab(Profile profile)
+    {
+        VocabList = new Vocab();
+        if (profile.Vocab.Length > 0)
+        {
+            VocabList.AddCharacters(profile.Vocab.ToCharArray());
+            return;
+        }
+
+        var stringReps = MidiManager.ReadDir(profile.TrainingDataDirectory);
+        
+        Parallel.ForEach(stringReps, stringRep =>
+        {
+            VocabList.AddCharacters(stringRep.ToCharArray());
+        });
+
+        profile.Vocab = VocabList.AsString();
+
+        SaveProfile(profile);
+    }
+    
+    #endregion
+
+    #region Page Selection 
+    
+    private Button CurrentlySelected { get; set; }
+    private readonly SolidColorBrush _selectedColour =
+        new ((Color)ColorConverter.ConvertFromString("#f25c05"));
+    private readonly SolidColorBrush _unselectedColour = 
+        new ((Color)ColorConverter.ConvertFromString("#eaf205"));
+    
     private void ChangePage(Button newSelected)
     {
         // Change window title
@@ -74,4 +166,71 @@ public partial class MainWindow : Window
         var clickedButton = (Button)sender;
         ChangePage(clickedButton);
     }
+    
+    #endregion
+    
+    #region Settings and Profile Management
+
+    private T ReadJson<T>(string path)
+    {
+        var str = File.ReadAllText(path);
+        return JsonSerializer.Deserialize<T>(str);
+    }
+
+    private void WriteJson<T>(T obj, string path)
+    {
+        var jsonString = JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
+        File.WriteAllText(path, jsonString);
+    }
+    
+    private void LoadSettings()
+    {
+        Settings = ReadJson<StoredSettings>(StoredSettings.SettingsPath);
+    }
+
+    private void SaveSettings()
+    {
+        WriteJson(Settings, StoredSettings.SettingsPath);
+    }
+
+    private void LoadProfiles()
+    {
+        Profiles = new Dictionary<string, Profile>();
+        var profileDirectories = Directory.GetDirectories(StoredSettings.ProfilesPath);
+
+        if (profileDirectories.Length == 0)
+            CreateDefaultProfile(); 
+        
+        // Check for valid profiles (profiles with a schema.json file) 
+        foreach (var dir in profileDirectories)
+        {
+            var schemaPath = Path.Join(dir, "schema.json");
+
+            if (!File.Exists(schemaPath)) // Continue if invalid 
+                continue;
+            
+            // Read the schema + add to dictionary
+            var profile = ReadJson<Profile>(schemaPath);
+            LogManager.WriteLine(profile.TrainingDataDirectory);
+            Profiles.Add(dir, profile);
+        }
+    }
+
+    private void SaveProfile(Profile profile)
+    {
+        var rootDir = Path.GetDirectoryName(profile.AfterStateFile);
+        var schema = Path.Join(rootDir, "schema.json");
+        WriteJson(profile, schema);
+    }
+
+    private void CreateDefaultProfile()
+    {
+        Directory.CreateDirectory(Path.Join(StoredSettings.ProfilesPath, "default"));
+        var schemaPath = Path.Join(StoredSettings.ProfilesPath, "default", "schema.json");
+        var defaultProfile = Profile.Default(Settings.SelectedProfilePath); 
+        
+        WriteJson(defaultProfile, schemaPath);
+    }
+    
+    #endregion
 }

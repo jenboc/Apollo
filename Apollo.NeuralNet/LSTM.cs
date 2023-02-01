@@ -94,12 +94,12 @@ public class Lstm
             Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
     }
 
-    public void Update(AdamParameters hyperparameters, int t)
+    public void Update(int t)
     {
-        Forget.Update(hyperparameters, t);
-        Input.Update(hyperparameters, t);
-        Output.Update(hyperparameters, t);
-        CandidateState.Update(hyperparameters, t);
+        Forget.Update(t);
+        Input.Update(t);
+        Output.Update(t);
+        CandidateState.Update(t);
     }
 
     /// <summary>

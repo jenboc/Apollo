@@ -77,9 +77,11 @@ public static class LogManager
         var writer = new StreamWriter(LogPath, true);
         
         // Append the time (hours:minutes:seconds:miliseconds) to the data
-        var time = DateTime.Now.ToString("hh:mm:ss:fff");
+        var time = DateTime.Now.ToString("HH:mm:ss:fff");
         data = $"[{time}]\n{data}";
         
         writer.WriteLine(data);
+        writer.Flush();
+        writer.Close();
     }
 }

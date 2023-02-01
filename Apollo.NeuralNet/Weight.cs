@@ -1,4 +1,5 @@
-﻿using Apollo.MatrixMaths;
+﻿using System.Data.Common;
+using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 
@@ -35,19 +36,19 @@ public class Weight : Matrix
     /// <summary>
     ///     Optimise the weight using the Adaptive Moment Estimation Algorithm (ADAM)
     /// </summary>
-    /// <param name="hyperparameters">The hyperparameters for the algorithm</param>
-    public void Adam(AdamParameters hyperparameters, int t)
+    /// <param name="t">Backpropagation timestep</param>
+    public void Adam(int t)
     {
         // Change ADAM matrices
-        MomentVector = hyperparameters.Beta1 * MomentVector + (1 - hyperparameters.Beta1) * Gradient;
-        InfinityNorm = hyperparameters.Beta2 * InfinityNorm + (1 - hyperparameters.Beta2) * Power(Gradient, 2);
+        MomentVector = AdamParameters.BETA1 * MomentVector + (1 - AdamParameters.BETA1) * Gradient;
+        InfinityNorm = AdamParameters.BETA2 * InfinityNorm + (1 - AdamParameters.BETA2) * Power(Gradient, 2);
 
         // Calculate m_hat and v_hat 
-        var mHat = MomentVector / (1 - MathF.Pow(hyperparameters.Beta1, t));
-        var vHat = InfinityNorm / (1 - MathF.Pow(hyperparameters.Beta2, t));
+        var mHat = MomentVector / (1 - MathF.Pow(AdamParameters.BETA1, t));
+        var vHat = InfinityNorm / (1 - MathF.Pow(AdamParameters.BETA2, t));
 
         // Update weight 
-        var update = HadamardDiv(hyperparameters.Alpha * mHat, Sqrt(vHat) + hyperparameters.Epsilon);
+        var update = HadamardDiv(AdamParameters.ALPHA * mHat, Sqrt(vHat) + AdamParameters.EPSILON);
         Subtract(update);
     }
 

@@ -5,34 +5,29 @@ namespace Apollo.NeuralNet;
 
 public class Rnn
 {
-    /// <param name="statePath">Path to the directory where the state files for this RNN will be stored</param>
+    /// <param name="profile">Profile object containing state data for the network</param>
     /// <param name="vocabSize">The amount of words in the vocabulary list</param>
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
-    /// <param name="recurrenceAmount">How many recurrences to do on a single pass through</param>
-    /// <param name="hyperparameters">Hyperparameters for the ADAM optimisation algorithm</param>
     /// <param name="r">Random Instance to instantiate weights</param>
-    public Rnn(string statePath, int vocabSize, int hiddenSize, int batchSize, AdamParameters hyperparameters, Random r)
+    public Rnn(Profile profile, int vocabSize, int hiddenSize, 
+        int batchSize, Random r)
     {
-        StatePath = statePath;
-
-        if (!Directory.Exists(StatePath))
-        {
-            LogManager.WriteLine($"{StatePath} directory not found, created the directory");
-            Directory.CreateDirectory(StatePath);
-        }
+        StateProfile = profile;
 
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
-        Hyperparameters = hyperparameters;
-
+        
         LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, r);
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
+    
+    public Rnn() 
+    {}
 
-    private string StatePath { get; }
+    private Profile StateProfile { get; set; }
 
     // General Parameters
     private int VocabSize { get; set; }
@@ -46,17 +41,12 @@ public class Rnn
     // Softmax layer weight 
     private Weight SoftmaxWeight { get; set; }
 
-    // Adam hyperparameters 
-    private AdamParameters Hyperparameters { get; set; }
-
     /// <summary>
     ///     Save network into a binary file
     /// </summary>
-    private void LoadState(string name)
+    public void LoadState(string name)
     {
-        var filePath = Path.Join(StatePath, $"{name}.state");
-        
-        using (var stream = File.Open(filePath, FileMode.Open))
+        using (var stream = File.Open(name, FileMode.Open))
         {
             using (var reader = new BinaryReader(stream))
             {
@@ -67,7 +57,6 @@ public class Rnn
 
                 LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, reader);
 
-                Hyperparameters = AdamParameters.ReadFromFile(reader);
                 SoftmaxWeight = Weight.ReadFromFile(reader, HiddenSize, VocabSize);
             }
         }
@@ -78,9 +67,7 @@ public class Rnn
     /// </summary>
     private void SaveState(string name)
     {
-        var filePath = Path.Join(StatePath, $"{name}.state");
-        
-        using (var stream = File.Open(filePath, FileMode.Create))
+        using (var stream = File.Open(name, FileMode.Create))
         {
             using (var writer = new BinaryWriter(stream))
             {
@@ -89,7 +76,6 @@ public class Rnn
                 writer.Write(HiddenSize);
                 writer.Write(LearningRate);
                 LstmCell.WriteToFile(writer);
-                Hyperparameters.WriteToFile(writer);
                 SoftmaxWeight.WriteToFile(writer);
             }
         }
@@ -219,8 +205,8 @@ public class Rnn
     /// </summary>
     private void Update(int t)
     {
-        SoftmaxWeight.Adam(Hyperparameters, t);
-        LstmCell.Update(Hyperparameters, t);
+        SoftmaxWeight.Adam(t);
+        LstmCell.Update(t);
     }
 
     /// <summary>
@@ -247,7 +233,7 @@ public class Rnn
     public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, float maximumError,
         int batchesPerEpoch, Random r)
     {
-        SaveState("apollo_before");
+        SaveState(StateProfile.BeforeStateFile);
         
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
         LogManager.WriteLine($"Training input data length: {inputData.Count}");
@@ -323,7 +309,7 @@ public class Rnn
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
         } 
         
-        SaveState("apollo_after");
+        SaveState(StateProfile.AfterStateFile);
     }
 
     /// <summary>
