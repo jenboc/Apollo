@@ -9,6 +9,9 @@ public class Vocab
         VocabList = new List<char>();
     }
 
+    /// <summary>
+    /// Create a vocab list from a pre-existing list
+    /// </summary>
     public Vocab(List<char> vocabList)
     {
         VocabList = new List<char>();
@@ -17,6 +20,9 @@ public class Vocab
         foreach (var c in vocabList) AddCharacter(c); // So that duplicates are not added 
     }
 
+    /// <summary>
+    /// Create vocab list from a string of data
+    /// </summary>
     public Vocab(string data)
     {
         VocabList = new List<char>();
@@ -114,6 +120,11 @@ public class Vocab
         return this[index];
     }
 
+    /// <summary>
+    /// Prepare training data
+    /// </summary>
+    /// <param name="midiString">String representation to convert into a series of one-hot vectors</param>
+    /// <returns>An array of one hot vectors</returns>
     public Matrix[] PrepareTrainingData(string midiString)
     {
         var trainingData = new Matrix[midiString.Length];
@@ -122,6 +133,9 @@ public class Vocab
         return trainingData;
     }
 
+    /// <summary>
+    /// Get all characters in the list as a string
+    /// </summary>
     public string AsString()
     {
         return string.Join("", VocabList);

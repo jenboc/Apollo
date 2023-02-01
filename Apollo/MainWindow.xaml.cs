@@ -114,16 +114,16 @@ public partial class MainWindow : Window
     /// <param name="profile">The network profile constructed from schema.json</param>
     private void InitialiseVocab(Profile profile)
     {
-        VocabList = new Vocab();
         // If vocab was stored in schema.json, then use that to save time (since the vocab list should be the same across
         // sessions for a given profile) 
         if (profile.Vocab.Length > 0)
         {
-            VocabList.AddCharacters(profile.Vocab.ToCharArray());
+            VocabList = new Vocab(profile.Vocab);
             return;
         }
         
         // If no vocab was stored, then build up the list from scratch
+        VocabList = new Vocab();
         var stringReps = MidiManager.ReadDir(profile.TrainingDataDirectory);
         
         Parallel.ForEach(stringReps, stringRep =>
