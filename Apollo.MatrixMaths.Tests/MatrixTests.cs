@@ -161,47 +161,6 @@ public class MatrixTests
     }
 
     [Fact]
-    public void Ravel()
-    {
-        var expectedData = new float[,]
-        {
-            { 0, 1, 4, 9, 18, 99, 1000, 2500, 1990 }
-        };
-
-        var defaultMat = new Matrix(defaultData);
-        defaultMat.Ravel();
-        var actualData = defaultMat.Contents;
-
-        Assert.Equal(expectedData, actualData);
-    }
-
-    [Fact]
-    public void Reshape()
-    {
-        var targetRows = 9;
-        var targetColumns = 1;
-
-        var expectedData = new float[,]
-        {
-            { 0 },
-            { 1 },
-            { 4 },
-            { 9 },
-            { 18 },
-            { 99 },
-            { 1000 },
-            { 2500 },
-            { 1990 }
-        };
-
-        var defaultMat = new Matrix(defaultData);
-        defaultMat.Reshape(targetRows, targetColumns);
-        var actualData = defaultMat.Contents;
-
-        Assert.Equal(expectedData, actualData);
-    }
-
-    [Fact]
     public void Transpose()
     {
         var startingData = new float[,]

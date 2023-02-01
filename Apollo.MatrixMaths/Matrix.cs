@@ -7,18 +7,33 @@ namespace Apollo.MatrixMaths;
 // Generic Matrix 
 public class Matrix
 {
-    // Generate matrix full of zeros/default values 
+    /// <summary>
+    /// Generate matrix full of zeros 
+    /// </summary>
+    /// <param name="rows">Number of rows in matrix</param>
+    /// <param name="columns">Number of columns in matrix</param>
     public Matrix(int rows, int columns)
     {
         Contents = new float[rows, columns];
     }
 
-    // Create a matrix with already defined data 
+    /// <summary>
+    /// Create a matrix with already defined data
+    /// </summary>
+    /// <param name="defaultData">Data contained in the matrix</param>
     public Matrix(float[,] defaultData)
     {
         Contents = defaultData;
     }
 
+    /// <summary>
+    /// Create a matrix of random values
+    /// </summary>
+    /// <param name="rows">Number of rows in the matrix</param>
+    /// <param name="columns">Number of columns in the matrix</param>
+    /// <param name="r">Instance of Random</param>
+    /// <param name="min">Minimum value</param>
+    /// <param name="max">Maximum value</param>
     public Matrix(int rows, int columns, Random r, int min = -2, int max = 2)
     {
         Contents = new float[rows, columns];
@@ -35,14 +50,20 @@ public class Matrix
 
     public int Rows => Contents.GetLength(0);
     public int Columns => Contents.GetLength(1);
-
-    // Create a matrix with the same shape of another matrix 
+    
+    /// <summary>
+    /// Create a new matrix with the same shape as another matrix
+    /// </summary>
+    /// <param name="matrix">Matrix to copy the shape of</param>
     public static Matrix Like(Matrix matrix)
     {
         return new Matrix(matrix.Rows, matrix.Columns);
     }
 
-    // Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
+    /// <summary>
+    /// Apply a function over each element in the matrix (used for tanh, sqrt, etc.)
+    /// </summary>
+    /// <param name="contentAction">Function to apply to every value in the matrix</param>
     public void IterateContent(Func<float, float> contentAction)
     {
         Parallel.For(0, Rows, i =>
@@ -52,12 +73,13 @@ public class Matrix
         });
     }
 
-    // Apply tanh() to each element
+    /// <summary>
+    /// Apply the hyperbolic tangent to each element in the matrix
+    /// </summary>
     public void Tanh()
     {
         IterateContent(ActivationFuncs.Tanh);
     }
-
     public static Matrix Tanh(Matrix mat)
     {
         var returnMat = mat.Clone();
@@ -65,21 +87,13 @@ public class Matrix
         return returnMat;
     }
 
-    // Derivative of tanh() 
-    // = sech^2(x) = 1 / cosh^2(x)
+    /// <summary>
+    /// Apply the derivative of the hyperbolic tangent to each element in the matrix
+    /// </summary>
     public void DTanh()
     {
-        // for (var i = 0; i < Rows; i++)
-        // {
-        //     for (var j = 0; j < Columns; j++)
-        //     {
-        //         Contents[i, j] = 1 / Math.Pow(Math.Cosh(Contents[i, j]), 2);
-        //     }
-        // }
-
         IterateContent(ActivationFuncs.DTanh);
     }
-
     public static Matrix DTanh(Matrix mat)
     {
         var returnMat = mat.Clone();
@@ -87,43 +101,27 @@ public class Matrix
         return returnMat;
     }
 
-    // Apply sigmoid function to each element 
-    // sigmoid(x) = 1 / 1 + e^-x
+    /// <summary>
+    /// Apply the sigmoid activation function to each element in the matrix
+    /// </summary>
     public void Sigmoid()
     {
-        // for (int i = 0; i < Rows; i++)
-        // {
-        //     for (int j = 0; j < Columns; j++)
-        //     {
-        //         Contents[i, j] = 1 / (1 + Math.Exp(-Contents[i, j]));
-        //     }
-        // }
-
         IterateContent(ActivationFuncs.Sigmoid);
     }
-
     public static Matrix Sigmoid(Matrix mat)
     {
         var returnMat = mat.Clone();
         returnMat.Sigmoid();
         return returnMat;
     }
-
-    // Derivative of the Sigmoid Function 
-    // = e^(-x) / (1 + e^(-x))^2
+    
+    /// <summary>
+    /// Apply the derivative of the sigmoid function to each element in the matrix
+    /// </summary>
     public void DSigmoid()
     {
-        // for (var i = 0; i < Rows; i++)
-        // {
-        //     for (var j = 0; j < Columns; j++)
-        //     {
-        //         Contents[i, j] = Math.Exp(-Contents[i, j]) / Math.Pow(1 + Math.Exp(-Contents[i, j]), 2);
-        //     }
-        // }
-
         IterateContent(ActivationFuncs.DSigmoid);
     }
-
     public static Matrix DSigmoid(Matrix mat)
     {
         var returnMat = mat.Clone();
@@ -131,12 +129,13 @@ public class Matrix
         return returnMat;
     }
 
-    // Apply sqrt to each element
+    /// <summary>
+    /// Square root each element in the matrix
+    /// </summary>
     public void Sqrt()
     {
         IterateContent(MathF.Sqrt);
     }
-
     public static Matrix Sqrt(Matrix mat)
     {
         var returnMat = mat.Clone();
@@ -144,12 +143,13 @@ public class Matrix
         return returnMat;
     }
 
-    // e ^ each element
+    /// <summary>
+    /// Put euler's number to the power of each element in the matrix
+    /// </summary>
     public void Exp()
     {
         IterateContent(MathF.Exp);
     }
-
     public static Matrix Exp(Matrix mat)
     {
         var returnMat = mat.Clone();
@@ -157,20 +157,25 @@ public class Matrix
         return returnMat;
     }
 
-    // Raise each element to a power
+    /// <summary>
+    /// Raise each element to a power
+    /// </summary>
+    /// <param name="power">The power to raise each element to</param>
     public void Power(float power)
     {
         IterateContent(value => MathF.Pow(value, power));
     }
-
     public static Matrix Power(Matrix mat, float power)
     {
         var returnMat = mat.Clone();
         returnMat.Power(power);
         return returnMat;
     }
-
-    // Multiply 2 matrices
+    
+    /// <summary>
+    /// Multiply two matrices together using standard matrix multiplication
+    /// </summary>
+    /// <param name="otherMat">The other operand</param>
     public void Multiply(Matrix otherMat)
     {
         // This matrix is multiplicatively conformable to otherMat if and only if:
@@ -197,7 +202,6 @@ public class Matrix
         
         Contents = newContents;
     }
-
     public static Matrix Multiply(Matrix mat, Matrix otherMat)
     {
         var returnMat = mat.Clone();
@@ -205,7 +209,10 @@ public class Matrix
         return returnMat;
     }
 
-    // Find the sum of every element in the matrix
+    /// <summary>
+    /// Calculate the sum of every element in the matrix
+    /// </summary>
+    /// <returns>The sum of every element in the matrix</returns>
     public float Sum()
     {
         float sum = 0;
@@ -217,62 +224,9 @@ public class Matrix
         return sum;
     }
 
-    // Reshape the matrix 
-    public void Reshape(int targetRows, int targetColumns)
-    {
-        if (targetRows * targetColumns != Rows * Columns)
-            throw new InvalidShapeException("Reshaping invalid - new matrix won't be the same size");
-
-        var newContents = new float[targetRows, targetColumns];
-
-        var newI = 0;
-        var newJ = 0;
-        for (var i = 0; i < Rows; i++)
-        for (var j = 0; j < Columns; j++)
-        {
-            newContents[newI, newJ] = Contents[i, j];
-            newJ++;
-
-            if (newJ >= targetColumns)
-            {
-                newJ = 0;
-                newI++;
-            }
-        }
-
-        Contents = newContents;
-    }
-
-    public static Matrix Reshape(Matrix mat, int targetRows, int targetColumns)
-    {
-        var returnMatrix = mat.Clone();
-        returnMatrix.Reshape(targetRows, targetColumns);
-        return returnMatrix;
-    }
-
-    // Change the matrix shape to (1,)
-    public void Ravel()
-    {
-        var newContents = new float[1, Rows * Columns];
-
-        for (var i = 0; i < Rows; i++)
-        for (var j = 0; j < Columns; j++)
-        {
-            var newJ = i * Rows + j;
-            newContents[0, newJ] = Contents[i, j];
-        }
-
-        Contents = newContents;
-    }
-
-    public static Matrix Ravel(Matrix mat)
-    {
-        var returnMatrix = mat.Clone();
-        returnMatrix.Ravel();
-        return returnMatrix;
-    }
-
-    // Transpose the matrix
+    /// <summary>
+    /// Transpose the matrix
+    /// </summary>
     public void Transpose()
     {
         var newContents = new float[Columns, Rows];
@@ -283,7 +237,6 @@ public class Matrix
 
         Contents = newContents;
     }
-
     public static Matrix Transpose(Matrix mat)
     {
         var returnMatrix = mat.Clone();
@@ -291,20 +244,26 @@ public class Matrix
         return returnMatrix;
     }
 
-    // Clamp each element between 2 bounds
+    /// <summary>
+    /// Clamp each element of the matrix between two values
+    /// </summary>
+    /// <param name="min">The minimum possible value in the matrix</param>
+    /// <param name="max">The maximum possible value in the matrix</param>
     public void Clamp(float min, float max)
     {
         IterateContent(value => Math.Clamp(value, min, max));
     }
-
     public static Matrix Clamp(Matrix mat, int min, int max)
     {
         var returnMat = mat.Clone();
         returnMat.Clamp(min, max);
         return returnMat;
     }
-
-    // Append 2 matrices horizontally 
+    
+    /// <summary>
+    /// Concatenate two matrices horizontally 
+    /// </summary>
+    /// <param name="otherMat">The matrix to concatenate to this one</param>
     public void HorizontalStack(Matrix otherMat)
     {
         // Must have same amount of rows 
@@ -323,7 +282,6 @@ public class Matrix
 
         Contents = newContents;
     }
-
     public static Matrix HorizontalStack(Matrix mat, Matrix otherMat)
     {
         var returnMat = mat.Clone();
@@ -331,7 +289,10 @@ public class Matrix
         return returnMat;
     }
 
-    // Append 2 matrices vertically
+    /// <summary>
+    /// Concatenate two matrices vertically
+    /// </summary>
+    /// <param name="otherMat">The matrix to concatenate to this one</param>
     public void VerticalStack(Matrix otherMat)
     {
         // Must have same amount of columns 
@@ -350,7 +311,6 @@ public class Matrix
 
         Contents = newContents;
     }
-
     public static Matrix VerticalStack(Matrix mat, Matrix otherMat)
     {
         var returnMat = mat.Clone();
@@ -358,6 +318,10 @@ public class Matrix
         return returnMat;
     }
 
+    /// <summary>
+    /// Add two matrices together
+    /// </summary>
+    /// <param name="otherMat">The matrix to add to this one</param>
     public void Add(Matrix otherMat)
     {
         // Shapes must be the same 
@@ -368,7 +332,6 @@ public class Matrix
         for (var j = 0; j < Columns; j++)
             Contents[i, j] += otherMat.Contents[i, j];
     }
-
     public static Matrix Add(Matrix mat, Matrix otherMat)
     {
         var returnMat = mat.Clone();
@@ -376,6 +339,10 @@ public class Matrix
         return returnMat;
     }
 
+    /// <summary>
+    /// Subtract two matrices
+    /// </summary>
+    /// <param name="otherMat">The matrix to take away from this one</param>
     public void Subtract(Matrix otherMat)
     {
         // Shapes must be the same 
@@ -386,21 +353,23 @@ public class Matrix
         for (var j = 0; j < Columns; j++)
             Contents[i, j] -= otherMat.Contents[i, j];
     }
-
     public static Matrix Subtract(Matrix mat, Matrix otherMat)
     {
         var returnMat = mat.Clone();
         returnMat.Subtract(otherMat);
         return returnMat;
     }
-
+    
+    /// <summary>
+    /// Subtract a scalar quantity from each element in the matrix 
+    /// </summary>
+    /// <param name="scalar">Quantity to subtract</param>
     public void Subtract(float scalar)
     {
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
             Contents[i, j] -= scalar;
     }
-
     public static Matrix Subtract(Matrix mat, float scalar)
     {
         var returnMat = mat.Clone();
@@ -408,13 +377,16 @@ public class Matrix
         return returnMat;
     }
 
+    /// <summary>
+    /// Add a scalar quantity to each element in the matrix
+    /// </summary>
+    /// <param name="scalar">Quantity to add</param>
     public void Add(float scalar)
     {
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
             Contents[i, j] += scalar;
     }
-
     public static Matrix Add(Matrix mat, float scalar)
     {
         var returnMat = mat.Clone();
@@ -423,18 +395,15 @@ public class Matrix
     }
 
     /// <summary>
-    ///     Matrix multiplication by scalar, changing the matrix it is performed upon
+    /// Multiply each element in the matrix by a scalar quantity
     /// </summary>
+    /// <param name="scalar">Quantity to multiply by</param>
     public void Multiply(float scalar)
     {
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
             Contents[i, j] *= scalar;
     }
-
-    /// <summary>
-    ///     Matrix multiplication by scalar, creating a new matrix for its output
-    /// </summary>
     public static Matrix Multiply(Matrix mat, float scalar)
     {
         var returnMat = mat.Clone();
@@ -443,8 +412,9 @@ public class Matrix
     }
 
     /// <summary>
-    ///     Element-Wise multiplication, changing the matrix it is performed upon
+    /// Element wise multiplication between two matrices
     /// </summary>
+    /// <param name="otherMat">Matrix to multiply by</param>
     public void HadamardProd(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
@@ -455,10 +425,6 @@ public class Matrix
         for (var j = 0; j < Columns; j++)
             Contents[i, j] *= otherMat.Contents[i, j];
     }
-
-    /// <summary>
-    ///     Element-Wise multiplication, creating a new matrix for the output
-    /// </summary>
     public static Matrix HadamardProd(Matrix mat1, Matrix mat2)
     {
         var returnMat = mat1.Clone();
@@ -467,8 +433,9 @@ public class Matrix
     }
 
     /// <summary>
-    ///     Element-wise division, changing the matrix it is performed upon
+    /// Element wise division between two matrices
     /// </summary>
+    /// <param name="otherMat">Matrix to divide by</param>
     public void HadamardDiv(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
@@ -479,10 +446,6 @@ public class Matrix
         for (var j = 0; j < Columns; j++)
             Contents[i, j] /= otherMat.Contents[i, j];
     }
-
-    /// <summary>
-    ///     Element wise division, creating a new matrix for the output
-    /// </summary>
     public static Matrix HadamardDiv(Matrix mat1, Matrix mat2)
     {
         var returnMat = mat1.Clone();
@@ -515,10 +478,10 @@ public class Matrix
             matRows[i].Multiply(1 / sum);
         }
 
+        // Compile the softmax rows into one matrix
         var compiled = StackArray(matRows);
         Contents = compiled.Contents;
     }
-
     public static Matrix Softmax(Matrix matrix)
     {
         var returnMat = matrix.Clone();
@@ -527,9 +490,8 @@ public class Matrix
     }
 
     /// <summary>
-    ///     Get the highest value in the matrix
+    /// Get the highest value in the matrix
     /// </summary>
-    /// <returns>The highest value in the matrix</returns>
     public float Max()
     {
         var max = float.MinValue;
@@ -541,30 +503,23 @@ public class Matrix
         return max;
     }
 
+    /// <summary>
+    /// Apply a logarithm to each element in the matrix
+    /// </summary>
+    /// <param name="logBase">The base of the logarithm</param>
     public void Log(float logBase)
     {
         IterateContent(value => MathF.Log(value, logBase));
     }
-
     public static Matrix Log(Matrix matrix, float logBase)
     {
         var returnMat = matrix.Clone();
         returnMat.Log(logBase);
         return returnMat;
     }
-
-    public void Clip(float min, float max)
-    {
-        IterateContent(value => Math.Clamp(value, min, max));
-    }
-
-    public static Matrix Clip(Matrix mat, float min, float max)
-    {
-        var returnMat = mat.Clone();
-        returnMat.Clip(min, max);
-        return returnMat;
-    }
-
+    
+    #region Operator overloading
+    
     public static bool operator ==(Matrix a, Matrix b)
     {
         return a.Contents == b.Contents;
@@ -620,6 +575,14 @@ public class Matrix
         return Multiply(mat, 1 / scalar);
     }
 
+    #endregion
+    
+    /// <summary>
+    /// Stack a list of matrices into a single matrix
+    /// </summary>
+    /// <param name="matrices">List of matrices to stack</param>
+    /// <param name="vertically">Flag variable specificing whether to stack vertically</param>
+    /// <returns>A compiled matrix</returns>
     public static Matrix StackArray(Matrix[] matrices, bool vertically = true)
     {
         var mat = matrices[0].Clone();
@@ -633,13 +596,16 @@ public class Matrix
         return mat;
     }
 
+    /// <summary>
+    /// Creates a copy of the matrix
+    /// </summary>
     public Matrix Clone()
     {
         return new Matrix((float[,])Contents.Clone());
     }
 
     /// <summary>
-    ///     Write the matrix to a binary file
+    /// Write the matrix to a binary file
     /// </summary>
     /// <param name="writer">Instance of BinaryWriter to use for writing</param>
     public void WriteToFile(BinaryWriter writer)
@@ -650,7 +616,7 @@ public class Matrix
     }
 
     /// <summary>
-    ///     Read a matrix from a binary file
+    /// Read a matrix from a binary file
     /// </summary>
     /// <param name="reader">Instance of BinaryReader to use for reading</param>
     /// <param name="rows">Number of rows in the matrix</param>
@@ -665,15 +631,5 @@ public class Matrix
             readMat.Contents[i, j] = reader.ReadSingle();
 
         return readMat;
-    }
-
-    public override bool Equals(object obj)
-    {
-        return base.Equals(obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
     }
 }
