@@ -2,12 +2,14 @@
 using Apollo.IO; 
 using Apollo.NeuralNet;
 
-
 const int BATCH_SIZE = 4;
 const int HIDDEN_SIZE = 32;
 const int RECURRENCE_AMOUNT = 10000;
-const int NUM_EPOCHS = 500;
-const int NUM_TIMESTEPS = 200;
+
+const int MAX_EPOCHS = 500;
+const int MIN_EPOCHS = 50;
+const float MAX_ERROR = 0.099f;
+const int BATCHES_PER_EPOCH = 200;
 
 static Matrix CreateGenSeed(Vocab vocab, Random r)
 {
@@ -23,7 +25,7 @@ static Matrix CreateGenSeed(Vocab vocab, Random r)
 
 static string Generate(Rnn rnn, Matrix genSeed, Vocab vocab)
 {
-    var outputs = rnn.Forward(genSeed);
+    var outputs = rnn.Forward(genSeed, RECURRENCE_AMOUNT);
     var generated = "";
     foreach (var output in outputs)
     {
@@ -35,7 +37,6 @@ static string Generate(Rnn rnn, Matrix genSeed, Vocab vocab)
 
     return generated;
 }
-
 
 var alpha = 0.001f;
 var beta1 = 0.9f;
@@ -52,9 +53,9 @@ var fred = MidiManager.ReadFile(PATH);
 var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
-var rnn = new Rnn("rnn.state", vocab.Size, HIDDEN_SIZE, BATCH_SIZE, RECURRENCE_AMOUNT, hyperparameters, r);
+var rnn = new Rnn("states/profile1", vocab.Size, HIDDEN_SIZE, BATCH_SIZE, hyperparameters, r);
 
-// rnn.Train(trainingData, NUM_EPOCHS, NUM_TIMESTEPS, r);
+rnn.Train(trainingData, MIN_EPOCHS, MAX_EPOCHS, MAX_ERROR, BATCHES_PER_EPOCH, r);
 
 for (var i = 1; i <= 10; i++)
 {
