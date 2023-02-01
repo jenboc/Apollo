@@ -1,4 +1,5 @@
 ﻿using Apollo.MatrixMaths;
+using Apollo.IO;
 
 namespace Apollo.NeuralNet;
 
@@ -228,15 +229,19 @@ public class Rnn
     }
 
     /// <summary>
-    ///     Train the neural network on a single file
+    /// Train the neural network on a single file
     /// </summary>
-    /// <param name="trainingData">An array of one-hot vectors representing a single MIDI file</param>
-    /// <param name="numEpochs">The amount of iterations you want to do over the training data</param>
-    /// <param name="numTimesteps">The number of timesteps per epoch</param>
-    public void Train(Matrix[] trainingData, int numEpochs, int numTimesteps, Random r)
+    /// <param name="trainingData">The one-hot vector representation of the file</param>
+    /// <param name="minimumEpochs">The minimum number of epochs to perform</param>
+    /// <param name="maximumEpochs">The maximum number of epochs to perform before stopping</param>
+    /// <param name="maximumError">The maximum error, training will not stop until the average error is below this</param>
+    /// <param name="batchesPerEpoch">The amount of batches per epoch, do not put to high or risk NaNs</param>
+    /// <param name="r">An instance of random, to randomly select batches</param>
+    public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, int maximumError,
+        int batchesPerEpoch, Random r)
     {
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
-        Console.WriteLine($"Input data length: {inputData.Count}");
+        LogManager.WriteLine($"Input data length: {inputData.Count}");
         
         // Previous gate/state values to be used in backpropagation
         var usedInputs = new List<Matrix>();
@@ -250,7 +255,7 @@ public class Rnn
         var actualOutputValues = new List<Matrix>();
         
         float totalLoss;
-        for (var epoch = 0; epoch < numEpochs; epoch++)
+        for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
             usedInputs.Clear();
             usedOutputs.Clear(); 
@@ -264,13 +269,11 @@ public class Rnn
 
             LstmCell.Clear();
 
-            Console.WriteLine($"Epoch {epoch}");
-
             var hiddenState = new Matrix(BatchSize, HiddenSize);
             totalLoss = 0f;
 
-            var start = r.Next(inputData.Count - numTimesteps);
-            var end = start + numTimesteps;
+            var start = r.Next(inputData.Count - batchesPerEpoch);
+            var end = start + batchesPerEpoch;
 
             for (var i = start; i < end; i++)
             {
@@ -301,10 +304,10 @@ public class Rnn
                 totalLoss += CalculateLoss(expected, actualOutput);
             }
 
-            var averageLoss = totalLoss / numTimesteps;
-            Console.WriteLine($"Loss: {averageLoss}");
+            var averageLoss = totalLoss / batchesPerEpoch;
+            LogManager.WriteLine($"Epoch: {epoch}\nLoss: {averageLoss}");
 
-            if (averageLoss < 0.5f && epoch > 50)
+            if (averageLoss < maximumError && epoch >= minimumEpochs)
                 break;
 
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,

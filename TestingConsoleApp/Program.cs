@@ -48,15 +48,13 @@ var r = new Random();
 const string PATH = @"file.mid";
 
 var fred = MidiManager.ReadFile(PATH);
-Console.WriteLine(fred);
 
 var vocab = new Vocab(fred);
 var trainingData = vocab.PrepareTrainingData(fred);
 
-Console.WriteLine($"Vocab Size: {vocab.Size}");
 var rnn = new Rnn("rnn.state", vocab.Size, HIDDEN_SIZE, BATCH_SIZE, RECURRENCE_AMOUNT, hyperparameters, r);
 
-rnn.Train(trainingData, NUM_EPOCHS, NUM_TIMESTEPS, r);
+// rnn.Train(trainingData, NUM_EPOCHS, NUM_TIMESTEPS, r);
 
 for (var i = 1; i <= 10; i++)
 {

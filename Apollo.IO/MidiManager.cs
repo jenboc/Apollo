@@ -64,10 +64,8 @@ public static class MidiManager
             throw new FileNotFoundException($"{path} is not a valid file path");
 
         var file = new MidiFile(path, false);
-        var data = ""; 
-        
-        Console.WriteLine(file.DeltaTicksPerQuarterNote);
-        
+        var data = "";
+
         var prevAbsoluteTime = 0L; 
         for (var trackNum = 0; trackNum < file.Tracks; trackNum++)
         {

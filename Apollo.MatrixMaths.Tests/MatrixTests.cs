@@ -332,24 +332,6 @@ public class MatrixTests
     }
 
     [Fact]
-    public void Slicing()
-    {
-        var expectedData = new float[,]
-        {
-            { 0, 1 },
-            { 9, 18 }
-        };
-        var slice = ":2,:2";
-
-        var defaultMatrix = new Matrix(defaultData);
-        var slicedMat = defaultMatrix[slice];
-
-        var actualData = slicedMat.Contents;
-
-        Assert.Equal(expectedData, actualData);
-    }
-
-    [Fact]
     public void Sigmoid()
     {
         var expectedData = new[,]

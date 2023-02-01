@@ -36,60 +36,6 @@ public class Matrix
     public int Rows => Contents.GetLength(0);
     public int Columns => Contents.GetLength(1);
 
-
-    public Matrix this[string slice]
-    {
-        get
-        {
-            slice = slice.Replace(" ", "");
-            var splitSlice = slice.Split(',');
-
-            // Default slices such that the difference between item 0 and item 1 is the same as the shape of the matrix 
-            int[] rowSlice = { 0, Rows };
-            int[] colSlice = { 0, Columns };
-
-            // Scenario A: only the row slice is provided (first character in slice is not a comma, and the length of the split slice is 1) 
-            if (splitSlice.Length < 2)
-            {
-                InterpretSlice(splitSlice[0], ref rowSlice);
-            }
-            // Scenario B: only the col slice is provided (first character in slice IS a comma, and the length of the split slice is 1) 
-            else if (splitSlice[0] == "")
-            {
-                InterpretSlice(splitSlice[1], ref colSlice);
-            }
-            // Scenario C: both are provided 
-            else
-            {
-                InterpretSlice(splitSlice[0], ref rowSlice);
-                InterpretSlice(splitSlice[1], ref colSlice);
-            }
-
-            var numRows = rowSlice[1] - rowSlice[0];
-            var numCols = colSlice[1] - colSlice[0];
-
-            // Slices will be invalid if the number of rows or columns is negative, or 0 
-            if (numRows <= 0 || numCols <= 0)
-                throw new InvalidSliceException("The inputted slice resulted in a number of rows or columns <= 0");
-
-            var sliceContent = new float[numRows, numCols];
-
-            // Start is inclusive, end is exclusive
-            for (var i = rowSlice[0]; i < rowSlice[1]; i++)
-            {
-                var sliceI = i - rowSlice[0];
-                for (var j = colSlice[0]; j < colSlice[1]; j++)
-                {
-                    var sliceJ = j - colSlice[0];
-                    sliceContent[sliceI, sliceJ] = Contents[i, j];
-                }
-            }
-
-            return new Matrix(sliceContent);
-        }
-    }
-
-
     // Create a matrix with the same shape of another matrix 
     public static Matrix Like(Matrix matrix)
     {
@@ -672,30 +618,6 @@ public class Matrix
     public static Matrix operator /(float scalar, Matrix mat)
     {
         return Multiply(mat, 1 / scalar);
-    }
-
-    private void InterpretSlice(string slice, ref int[] intSlice)
-    {
-        // The first part of the split slice tells us what rows to take the second half from
-        // The second half behaves like a regular python slice in the format START(inc.):END(ex.)  
-        // Essentially, the entire slice directs us to what rows and columns to carve out from the original matrix
-
-        var splitSlice = slice.Split(':');
-
-        if (splitSlice[1] == "") // No number after : => slice start only 
-        {
-            intSlice[0] = Convert.ToInt32(splitSlice[0]);
-        }
-        else if (splitSlice[0] == "") // No numberbefore : => slice end only 
-        {
-            intSlice[1] = Convert.ToInt32(splitSlice[1]);
-        }
-        else // One is before and one is after => first is the slice start, second is the slice end 
-        {
-            Console.WriteLine(splitSlice[0]);
-            intSlice[0] = Convert.ToInt32(splitSlice[0]);
-            intSlice[1] = Convert.ToInt32(splitSlice[1]);
-        }
     }
 
     public static Matrix StackArray(Matrix[] matrices, bool vertically = true)
