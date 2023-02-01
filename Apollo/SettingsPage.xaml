@@ -5,8 +5,10 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Apollo"
       mc:Ignorable="d"
-      Title="SettingsPage" Height="700.83" Width="1171">
+      Title="SettingsPage" Height="700.83" Width="1171"
+      Background="Transparent">
     <Grid>
-        <Label Content="Settings"></Label>
+        <Label Content="NOT YET IMPLEMENTED" VerticalAlignment="Center" HorizontalAlignment="Center"
+               FontSize="75" FontFamily="Cinzel Decorative" Foreground="#eaf205" FontWeight="Bold"/>
     </Grid>
 </Page>

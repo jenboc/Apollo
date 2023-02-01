@@ -3,54 +3,11 @@
 namespace Apollo.IO;
 
 /// <summary>
-/// Struct to hold data about a single note
-/// </summary>
-struct Note
-{
-    public int Octave;
-    public char Modifier;
-    public char NoteName;
-
-    public Note()
-    {
-        Clear();
-    }
-    
-    public void Clear()
-    {
-        Octave = -1;
-        Modifier = ' ';
-        NoteName = ' ';
-    }
-
-    public bool IsIncomplete()
-    {
-        return Octave == -1 || Modifier == ' ' || NoteName == ' ';
-    }
-}
-
-/// <summary>
 /// Static class that handles anything to do with MidiFiles or music
 /// </summary>
 public static class MidiManager
 {
-    // Constants and dictionaries for creating MidiFile from a string 
-    private const int SEMITONES_IN_OCTAVE = 12;
-    private static readonly Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
-    {
-        { 'C', 0 },
-        { 'D', 2 },
-        { 'E', 4 },
-        { 'F', 5 },
-        { 'G', 7 },
-        { 'A', 9 },
-        { 'B', 11 }
-    };
-    private static readonly Dictionary<char, int> _pitchModifiers = new Dictionary<char, int>()
-    {
-        { '#', 1 },
-        { 'b', -1 }
-    };
+    #region Reading Files
 
     private const int READ_LIMIT = 10000;
     
@@ -97,60 +54,67 @@ public static class MidiManager
     }
     
     /// <summary>
-    /// Add a variable number of spaces to a string
+    /// Reads all midi files in a given directory
     /// </summary>
-    /// <param name="data">A reference to the string to add spaces to</param>
-    /// <param name="numSpaces">The number of spaces</param>
-    private static void AddSpaces(ref string data, int numSpaces)
-    {
-        var spaces = "";
-        Parallel.For(0, numSpaces, i => { spaces += " "; });
-        data += spaces;
-    }
-
+    /// <param name="path">Path to the directory to read from</param>
+    /// <returns>List containing the string representation of every midi file in the directory</returns>
     public static List<string> ReadDir(string path)
     {
+        // Check path is a directory 
         if (GetPathType(path) != 'd')
             throw new DirectoryNotFoundException($"{path} is not a valid directory");
 
         var dirData = new List<string>();
 
+        // Iterate through all files in directory
+        // Call ReadFile with the path 
+        // Add the result to a list
         var dirInfo = new DirectoryInfo(path);
         var dirFiles = dirInfo.GetFiles();
 
         foreach (var fileInfo in dirFiles)
         {
+            // Check that the file is a midi file
             if (!fileInfo.Name.EndsWith(".mid") && !fileInfo.Name.EndsWith(".midi"))
                 continue;
             
             var filePath = fileInfo.FullName;
-            LogManager.WriteLine($"Reading {filePath}");
             var fileData = ReadFile(filePath);
             dirData.Add(fileData);
         }
 
         return dirData;
     }
-    
-    /// <summary>
-    /// Used to determine what type of midi event the string represents
-    /// </summary>
-    /// <param name="e">The string representation of the event</param>
-    /// <returns>An enum denoting the type of event represented by the string</returns>
-    private static EventType DetermineEventType(string e)
-    {
-        var eventData = e.Split(',');
 
-        switch (eventData.Length)
-        {
-            case 4:
-                return EventType.NoteEvent; 
-            case 2:
-                return EventType.TempoEvent;
-            default:
-                return EventType.InvalidEvent;
-        }
-    }
+
+    #endregion
+
+    #region Writing Files
+
+    // There are 12 semitones in an octave
+    private const int SEMITONES_IN_OCTAVE = 12;
+
+    // MIDI file parameters
+    private const int TICKS_PER_QUARTER_NOTE = 120;
+    private const int VELOCITY = 100;
+    
+    // How each note offsets the pitch
+    private static readonly Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
+    {
+        { 'C', 0 },
+        { 'D', 2 },
+        { 'E', 4 },
+        { 'F', 5 },
+        { 'G', 7 },
+        { 'A', 9 },
+        { 'B', 11 }
+    };
+    // How sharps/flats affects the pitch
+    private static readonly Dictionary<char, int> _pitchModifiers = new Dictionary<char, int>()
+    {
+        { '#', 1 },
+        { 'b', -1 }
+    };
     
     /// <summary>
     /// Writes a string representation to a MIDI file 
@@ -161,11 +125,10 @@ public static class MidiManager
     public static void WriteFile(string data, string path, int beatsPerMinute)
     {
         // Magic number, change later
-        var collection = new MidiEventCollection(0, 480);
+        var collection = new MidiEventCollection(0, TICKS_PER_QUARTER_NOTE);
 
-        // Magic Numbers, change later
-        var velocity = 100;
-        var noteDur = 3 * 480 / 4;
+        // Notes last for 3/4 of a MIDI tick
+        var noteDur = (3 / 4) * TICKS_PER_QUARTER_NOTE;
 
         var absoluteTime = 0L;
         
@@ -199,7 +162,7 @@ public static class MidiManager
             // Add note to collection 
             var pitch = ParseNote(currentNote);
 
-            var onEvent = new NoteOnEvent(absoluteTime, 1, pitch, velocity, noteDur);
+            var onEvent = new NoteOnEvent(absoluteTime, 1, pitch, VELOCITY, noteDur);
             var offEvent = new NoteEvent(absoluteTime + noteDur, 1, MidiCommandCode.NoteOff, pitch, 0);
             
             collection.AddEvent(onEvent, 1);
@@ -212,6 +175,23 @@ public static class MidiManager
         MidiFile.Export(path, collection);
     }
 
+
+    #endregion
+    
+    /// <summary>
+    /// Add a variable number of spaces to a string
+    /// </summary>
+    /// <param name="data">A reference to the string to add spaces to</param>
+    /// <param name="numSpaces">The number of spaces</param>
+    private static void AddSpaces(ref string data, int numSpaces)
+    {
+        var spaces = "";
+        Parallel.For(0, numSpaces, i => { spaces += " "; });
+        data += spaces;
+    }
+
+
+
     /// <summary>
     /// Calculate microseconds per quarter note from beats per minute
     /// </summary>
@@ -219,6 +199,8 @@ public static class MidiManager
     /// <returns>Microseconds per quarter note</returns>
     private static int CalculateMicrosecondsPerQuarterNote(int bpm)
     {
+        // Number of microseconds in a minute ÷ bpm 
+        // 60 seconds * 1000 => milliseconds * 1000 => microseconds
         return 60 * 1000 * 1000 / bpm;
     }
 
@@ -229,11 +211,14 @@ public static class MidiManager
     /// <returns>Integer of the MIDI representation of the note</returns>
     private static int ParseNote(Note note)
     {
+        // Start at the offsetted pitch for the letter (if there is one) 
         var noteValue = (_pitchOffsets.ContainsKey(note.NoteName)) ? _pitchOffsets[note.NoteName] : 0;
 
+        // Pitch modifiers can only be applied to notes w/ letter
         if (_pitchModifiers.ContainsKey(note.Modifier) && noteValue != 0)
             noteValue += _pitchModifiers[note.Modifier];
 
+        // -1 is used to state that there is no octave in the Note struct
         if (note.Octave != -1)
             noteValue += SEMITONES_IN_OCTAVE * note.Octave;
         

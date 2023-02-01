@@ -28,7 +28,7 @@
                Foreground="#eaf205" FontFamily="Roboto" FontSize="40" FontWeight="Bold"></Label>
         
         <!-- Interface (Buttons + Text Box) --> 
-        <TextBox Grid.Row="0" Grid.Column="1" Name="PathBox" Text="Path to file to play"
+        <TextBox Grid.Row="0" Grid.Column="1" Name="PathBox" Text="NOT YET IMPLEMENTED"
                  VerticalAlignment="Center" HorizontalAlignment="Center"
                  VerticalContentAlignment="Center" Height="50" Width="400"
                  FontFamily="Roboto" FontSize="20"></TextBox>
