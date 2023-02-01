@@ -51,6 +51,8 @@ public static class MidiManager
         { '#', 1 },
         { 'b', -1 }
     };
+
+    private const int READ_LIMIT = 10000;
     
     /// <summary>
     /// Read a MidiFile at the specified path
@@ -66,8 +68,10 @@ public static class MidiManager
         var file = new MidiFile(path, false);
         var data = "";
 
-        var prevAbsoluteTime = 0L; 
-        for (var trackNum = 0; trackNum < file.Tracks; trackNum++)
+        var prevAbsoluteTime = 0L;
+        var numRead = 0;
+        var reachedMax = false;
+        for (var trackNum = 0; trackNum < file.Tracks && !reachedMax; trackNum++)
         {
             foreach (var e in file.Events[trackNum])
             {
@@ -83,6 +87,9 @@ public static class MidiManager
                 data += note;
 
                 prevAbsoluteTime = absoluteTime;
+                numRead++;
+
+                reachedMax = numRead > READ_LIMIT;
             }
         }
 
@@ -96,8 +103,9 @@ public static class MidiManager
     /// <param name="numSpaces">The number of spaces</param>
     private static void AddSpaces(ref string data, int numSpaces)
     {
-        for (var i = 0; i < numSpaces; i++)
-            data += " "; 
+        var spaces = "";
+        Parallel.For(0, numSpaces, i => { spaces += " "; });
+        data += spaces;
     }
 
     public static List<string> ReadDir(string path)
@@ -114,8 +122,9 @@ public static class MidiManager
         {
             if (!fileInfo.Name.EndsWith(".mid") && !fileInfo.Name.EndsWith(".midi"))
                 continue;
-
+            
             var filePath = fileInfo.FullName;
+            LogManager.WriteLine($"Reading {filePath}");
             var fileData = ReadFile(filePath);
             dirData.Add(fileData);
         }

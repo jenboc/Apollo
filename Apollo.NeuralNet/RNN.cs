@@ -23,15 +23,17 @@ public class Rnn
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
-    
-    public Rnn() 
-    {}
+
+    public Rnn(Profile profile)
+    {
+        StateProfile = profile;
+    }
 
     private Profile StateProfile { get; set; }
 
     // General Parameters
     private int VocabSize { get; set; }
-    private int BatchSize { get; set; }
+    public int BatchSize { get; private set; } // Accessed when generating seeds for forward prop
     private int HiddenSize { get; set; }
     private float LearningRate { get; set; }
 

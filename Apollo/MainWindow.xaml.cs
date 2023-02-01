@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Apollo.IO;
 using Apollo.NeuralNet;
@@ -61,7 +62,9 @@ public partial class MainWindow : Window
                 buttonToHighlight = SettingsButton;
                 break;
         }
-        ChangePage(buttonToHighlight); 
+        ChangePage(buttonToHighlight);
+
+        Mouse.OverrideCursor = null;
     }
     
     #region Initialising Neural Network
@@ -84,23 +87,24 @@ public partial class MainWindow : Window
         // If one exists load it (check after state path first)
         if (File.Exists(profile.AfterStateFile))
         {
-            Network = new Rnn();
+            Network = new Rnn(profile);
             Network.LoadState(profile.AfterStateFile);
             InitialiseVocab(profile);
-            return;
+
         }
-        if (File.Exists(profile.BeforeStateFile))
+        else if (File.Exists(profile.BeforeStateFile))
         {
-            Network = new Rnn();
+            Network = new Rnn(profile);
             Network.LoadState(profile.BeforeStateFile);
             InitialiseVocab(profile);
-            return; 
         }
-
-        // If there isn't one then just start from scratch + display necessary message
-        // But to start from scratch we must select training data for vocab 
-        InitialiseVocab(profile);
-        Network = new Rnn(profile, VocabList.Size, HIDDEN_SIZE, BATCH_SIZE, R);
+        else
+        {
+            // If there isn't one then just start from scratch + display necessary message
+            // But to start from scratch we must select training data for vocab 
+            InitialiseVocab(profile);
+            Network = new Rnn(profile, VocabList.Size, HIDDEN_SIZE, BATCH_SIZE, R);
+        }
     }
     
     /// <summary>
@@ -257,12 +261,61 @@ public partial class MainWindow : Window
 
     public void StartTraining(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
     {
+        Mouse.OverrideCursor = Cursors.Wait;
         // Rnn is trained on each individual file separately 
         foreach (var file in TrainingData)
         {
             Network.Train(file, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
         }
+
+        Mouse.OverrideCursor = null;
+        MessageBox.Show($"Training Complete.", "Apollo", MessageBoxButton.OK,
+            MessageBoxImage.Information);
     }
 
+    private Matrix CreateGenerationSeed()
+    {
+        var rows = new Matrix[Network.BatchSize];
+
+        for (var i = 0; i < rows.Length; i++)
+        {
+            var charId = R.Next(VocabList.Size);
+            rows[i] = VocabList.CreateOneHot(VocabList[charId]);
+        }
+
+        return Matrix.StackArray(rows);
+    }
+
+    private string InterpretNetworkOutput(Matrix[] outputs)
+    {
+        var stringOutput = "";
+
+        foreach (var output in outputs)
+        {
+            // New character is the final row only. 
+            var rowContents = new float [1, output.Columns]; // 2D used to turn into matrix later
+            for (var j = 0; j < output.Columns; j++) rowContents[0, j] = output[output.Rows - 1, j];
+            var mat = new Matrix(rowContents);
+            stringOutput += VocabList.InterpretOneHot(mat);
+        }
+
+        return stringOutput;
+    }
+    
+    public void StartCreating(int generationLength, string savePath)
+    {
+        Mouse.OverrideCursor = Cursors.Wait;
+        var generationSeed = CreateGenerationSeed();
+        var outputs = Network.Forward(generationSeed, generationLength);
+        var stringOutput = InterpretNetworkOutput(outputs); 
+        
+        MidiManager.WriteFile(stringOutput, savePath, 60);
+
+        var fileName = Path.GetFileName(savePath);
+        Mouse.OverrideCursor = null;
+        MessageBox.Show($"Finished creating {fileName}", "Creation Complete", MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+    
     #endregion
 }
