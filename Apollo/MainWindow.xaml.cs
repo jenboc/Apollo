@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Apollo.IO;
 using Apollo.NeuralNet;
+using Matrix = Apollo.MatrixMaths.Matrix;
 
 namespace Apollo;
 
@@ -37,6 +38,9 @@ public partial class MainWindow : Window
         
         // Initialise Neural Network
         InitialiseNetwork();
+        
+        // Prepare Training Data 
+        PrepareTrainingData();
 
         // Open on the correct page
         CurrentlySelected = TrainButton;
@@ -68,6 +72,7 @@ public partial class MainWindow : Window
     
     private Rnn Network { get; set; }
     private Vocab VocabList { get; set; }
+    private Matrix[][] TrainingData { get; set; }
 
     /// <summary>
     /// Initialise the neural network (and vocab list)
@@ -119,8 +124,22 @@ public partial class MainWindow : Window
         });
 
         profile.Vocab = VocabList.AsString();
-
         SaveProfile(profile);
+    }
+
+    private void PrepareTrainingData()
+    {
+        var profile = Profiles[Settings.SelectedProfilePath];
+        var midiStrings = MidiManager.ReadDir(profile.TrainingDataDirectory);
+
+        TrainingData = new Matrix[midiStrings.Count][];
+
+        Parallel.For(0, midiStrings.Count, i =>
+        {
+            var str = midiStrings[i];
+            var vectorRep = VocabList.PrepareTrainingData(str);
+            TrainingData[i] = vectorRep;
+        });
     }
     
     #endregion
@@ -232,5 +251,18 @@ public partial class MainWindow : Window
         WriteJson(defaultProfile, schemaPath);
     }
     
+    #endregion
+
+    #region Page Accessable Methods
+
+    public void StartTraining(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
+    {
+        // Rnn is trained on each individual file separately 
+        foreach (var file in TrainingData)
+        {
+            Network.Train(file, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
+        }
+    }
+
     #endregion
 }
