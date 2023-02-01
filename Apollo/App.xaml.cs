@@ -19,17 +19,24 @@ namespace Apollo
         {
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
         }
-
+        
+        /// <summary>
+        /// Handling unhandled exceptions
+        /// </summary>
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            // Create messages for the logs and message box
             var boxMsg = $"Unhandled exception occurred: {e.Exception.Message}";
             var logMsg = boxMsg + $"\n{e.Exception.StackTrace}";
             
+            // Log message + stack trace
             LogManager.WriteLine(logMsg);
+            
+            // Show message to the user 
             MessageBox.Show(boxMsg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
             e.Handled = true;
-            Shutdown();
+            Shutdown(); // Close the app since the exception may have an effect on how the app runs.
         }
     }
 }
