@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths", "Apoll
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.MatrixMaths.Tests", "Apollo.MatrixMaths.Tests\Apollo.MatrixMaths.Tests.csproj", "{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsoleApp", "TestingConsoleApp\TestingConsoleApp.csproj", "{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.NeuralNet.Tests", "Apollo.NeuralNet.Tests\Apollo.NeuralNet.Tests.csproj", "{33E65A5F-974A-4755-A3E1-0CD7F1483D41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo", "Apollo\Apollo.csproj", "{AFC27BB5-31BA-4F96-A8A5-0F9CB08B761E}"
@@ -36,10 +34,6 @@ Global
 		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36A6CFD4-0C21-4D60-BFD0-37121F0A9B12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC8AAEAE-2301-4D9F-A25F-E0782F0F5333}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33E65A5F-974A-4755-A3E1-0CD7F1483D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
