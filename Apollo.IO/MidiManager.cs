@@ -95,7 +95,7 @@ public static class MidiManager
     private const int SEMITONES_IN_OCTAVE = 12;
 
     // MIDI file parameters
-    private const int TICKS_PER_QUARTER_NOTE = 120;
+    private const int TICKS_PER_QUARTER_NOTE = 480;
     private const int VELOCITY = 100;
     
     // How each note offsets the pitch

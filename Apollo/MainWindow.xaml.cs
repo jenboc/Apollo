@@ -321,7 +321,7 @@ public partial class MainWindow : Window
         
         // Check that there is training data to use 
         // If there isn't any loaded training data then prepare some 
-        if (TrainingData.GetLength(0) == 0) 
+        if (TrainingData?.GetLength(0) == null) 
             PrepareTrainingData();
         
         // Rnn is trained on each individual file separately 
@@ -384,6 +384,8 @@ public partial class MainWindow : Window
         var generationSeed = CreateGenerationSeed();
         var outputs = Network.Forward(generationSeed, generationLength);
         var stringOutput = InterpretNetworkOutput(outputs); 
+        
+        LogManager.WriteLine(stringOutput);
         
         // Save what was generated as a midi file 
         MidiManager.WriteFile(stringOutput, savePath, bpm);
