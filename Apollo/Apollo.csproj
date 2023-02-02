@@ -13,4 +13,23 @@
       <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Fonts\CinzelDecorative-Regular.ttf" />
+      <Resource Include="Fonts\CinzelDecorative-Regular.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Fonts\CinzelDecorative-Bold.ttf" />
+      <Resource Include="Fonts\CinzelDecorative-Bold.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Fonts\Roboto-Regular.ttf" />
+      <Resource Include="Fonts\Roboto-Regular.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Fonts\Roboto-Bold.ttf" />
+      <Resource Include="Fonts\Roboto-Bold.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
 </Project>
