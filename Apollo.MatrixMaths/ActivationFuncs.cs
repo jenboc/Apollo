@@ -9,7 +9,9 @@ public class ActivationFuncs
 
     private static readonly int SigmoidClip = 6; // 1 / (1 + e^-x)
 
-    // Clipped tanh (to avoid NaN) 
+    /// <summary>
+    /// Clipped Tanh (in order to avoid NaN) 
+    /// </summary>
     public static float Tanh(float x)
     {
         // Values taken from the tanh graph
@@ -21,8 +23,9 @@ public class ActivationFuncs
         return (float)Math.Tanh(x);
     }
 
-    // Derivative of hyperbolic tangent 
-    // = 1 / cosh^2(x)
+    /// <summary>
+    /// Derivative of hyperbolic tangent
+    /// </summary>
     public static float DTanh(float x)
     {
         // tanh'(x) = 0 when tanh(x) = 1 or tanh(x) = -1  (since the function no longer increases or decreases)
@@ -32,8 +35,9 @@ public class ActivationFuncs
         return 1 / (float)Math.Pow(Math.Cosh(x), 2);
     }
 
-    // Clipped Sigmoid function (to avoid NaN) 
-    // = 1 / (1 + e^-x)
+    /// <summary>
+    /// Clipped Sigmoid function (in order to avoid NaN)
+    /// </summary>
     public static float Sigmoid(float x)
     {
         // Values taken from the graph of the function 
@@ -45,8 +49,9 @@ public class ActivationFuncs
         return 1 / (1 + (float)Math.Exp(-x));
     }
 
-    // Derivative of the Sigmoid function 
-    // = e^(-x) / (1 + e^(-x))^2
+    /// <summary>
+    /// Derivative of the sigmoid function
+    /// </summary>
     public static float DSigmoid(float x)
     {
         // sigmoid'(x) = 0 when sigmoid(x) = 1  or sigmoid(x) = -1 (since the function no longer increases or decreases)

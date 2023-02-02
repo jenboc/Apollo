@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using Apollo.MatrixMaths;
+﻿using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 

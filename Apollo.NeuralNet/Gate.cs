@@ -2,15 +2,14 @@
 
 namespace Apollo.NeuralNet;
 
-// Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
+/// <summary>
+/// Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
+/// </summary>
 public class Gate
 {
     /// <summary>
     ///     Create an LSTM gate, with correctly sized weights and bias.
     /// </summary>
-    /// <param name="vocabSize"></param>
-    /// <param name="hiddenSize"></param>
-    /// <param name="batchSize"></param>
     public Gate(int vocabSize, int hiddenSize, int batchSize, Random r)
     {
         Value = new Matrix(batchSize, hiddenSize);
