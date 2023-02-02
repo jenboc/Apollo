@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Apollo.IO;
 using Apollo.NeuralNet;
+using Microsoft.Win32;
 using Matrix = Apollo.MatrixMaths.Matrix;
 
 namespace Apollo;
@@ -26,7 +27,7 @@ public partial class MainWindow : Window
     public MainWindow(string startingPage)
     {
         InitializeComponent();
-
+        
         R = new Random();
         
         // Load settings
@@ -229,12 +230,18 @@ public partial class MainWindow : Window
 
     private void LoadProfiles()
     {
+        if (!Directory.Exists(StoredSettings.ProfilesPath))
+            Directory.CreateDirectory(StoredSettings.ProfilesPath);
+        
         Profiles = new Dictionary<string, Profile>();
         var profileDirectories = Directory.GetDirectories(StoredSettings.ProfilesPath);
 
         if (profileDirectories.Length == 0)
-            CreateDefaultProfile(); 
-        
+        {
+            CreateDefaultProfile();
+            profileDirectories = Directory.GetDirectories(StoredSettings.ProfilesPath);
+        }
+
         // Check for valid profiles (profiles with a schema.json file) 
         foreach (var dir in profileDirectories)
         {
@@ -259,11 +266,49 @@ public partial class MainWindow : Window
 
     private void CreateDefaultProfile()
     {
+        // Get the training files first in case none are provided, in which case the program can quit without having 
+        // created or moved any files
+        MessageBox.Show("No network profiles were found, creating a default network");
+        MessageBox.Show("In order to create a network file, you must select the midi files to use as" +
+                        " training data");
+        var trainingFiles = GetTrainingFiles(); 
+        
+        // Create profile directory + schema.json 
         Directory.CreateDirectory(Path.Join(StoredSettings.ProfilesPath, "default"));
         var schemaPath = Path.Join(StoredSettings.ProfilesPath, "default", "schema.json");
-        var defaultProfile = Profile.Default(Settings.SelectedProfilePath); 
-        
+        var defaultProfile = Profile.Default(Settings.SelectedProfilePath);
+
+        // Create default training data directory + copy the provided training files
+        Directory.CreateDirectory(defaultProfile.TrainingDataDirectory);
+
+        foreach (var file in trainingFiles)
+        {
+            var currentPath = Path.GetFullPath(file);
+            var name = Path.GetFileName(file);
+            var newPath = Path.Join(defaultProfile.TrainingDataDirectory, name);
+            
+            File.Copy(currentPath, newPath);
+        }
+
         WriteJson(defaultProfile, schemaPath);
+    }
+
+    /// <summary>
+    /// Create an OpenFileDialog so the user can find the training files they want to use 
+    /// </summary>
+    private string[] GetTrainingFiles()
+    {
+        var fileDialog = new OpenFileDialog();
+        fileDialog.Multiselect = true;
+        fileDialog.Title = "Select multiple training files";
+        fileDialog.Filter = "MIDI File|*.mid";
+
+        if (fileDialog.ShowDialog() == true)
+        {
+            return fileDialog.FileNames;
+        }
+        
+        throw new Exception("You cannot use the program without selecting the training files");
     }
     
     #endregion
