@@ -1,0 +1,40 @@
+﻿<Window x:Class="Apollo.StartupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Apollo"
+        mc:Ignorable="d"
+        Title="Apollo Music Generation" Height="822" Width="1171" ResizeMode="CanMinimize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="418"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Column 0 --> 
+        <Rectangle Grid.Column="0" Fill="#044bd9"></Rectangle>
+        <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Content="Apollo" FontFamily="Cinzel Decorative" FontSize="50pt" Foreground="#eaf205"
+                   FontWeight="Bold" Grid.Column="0" HorizontalAlignment="Center"></Label>
+            <Label Content="generate music with ai" FontFamily="Cinzel Decorative" FontSize="20pt" 
+                   FontWeight="Bold" Grid.Column="0" HorizontalAlignment="Center" Foreground="#f25c05"></Label>
+        </StackPanel>
+        
+        <!-- Column 1 --> 
+        <Rectangle Grid.Column="1" Fill="#0b2126"></Rectangle>
+        <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
+            <Separator Height="50" Opacity="0"></Separator>
+            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
+            <Separator Height="50" Opacity="0"></Separator>
+            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
+            <Separator Height="50" Opacity="0"></Separator>
+            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold" 
+                    Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick"></Button>
+        </StackPanel>
+    </Grid>
+</Window>

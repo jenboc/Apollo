@@ -4,11 +4,11 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Apollo.IO</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj" />
-        <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj" />
+        <PackageReference Include="NAudio.Midi" Version="2.1.0" />
     </ItemGroup>
 
 </Project>

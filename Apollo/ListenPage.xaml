@@ -1,0 +1,64 @@
+﻿<Page x:Class="Apollo.ListenPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Apollo"
+      mc:Ignorable="d"
+      Title="ListenPage" Height="700.83" Width="1171"
+      Background="Transparent">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="500"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <!-- LABELS -->
+        <Label Grid.Row="0" Grid.Column="0" Content="Next Song:" HorizontalAlignment="Right" VerticalAlignment="Center"
+               Foreground="#f25c05" FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Label>
+        <Label Grid.Row="1" Grid.Column="0" Content="Now Playing:" HorizontalAlignment="Right" VerticalAlignment="Center"
+               Foreground="#0476d9" FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Label>
+        <Label Grid.Row="1" Grid.Column="1" Content="NO SONG SELECTED" HorizontalAlignment="Center" VerticalAlignment="Center"
+               Foreground="#eaf205" FontFamily="Roboto" FontSize="40" FontWeight="Bold"></Label>
+        
+        <!-- Interface (Buttons + Text Box) --> 
+        <TextBox Grid.Row="0" Grid.Column="1" Name="PathBox" Text="NOT YET IMPLEMENTED"
+                 VerticalAlignment="Center" HorizontalAlignment="Center"
+                 VerticalContentAlignment="Center" Height="50" Width="400"
+                 FontFamily="Roboto" FontSize="20"></TextBox>
+        <Button Grid.Row="0" Grid.Column="2" Content="Add to Queue" Click="AddButtonPressed" 
+                Width="300" Height="75"
+                HorizontalAlignment="Center" VerticalAlignment="Center" Background="#eaf205"
+                Foreground="#044bd9" FontFamily="Roboto" FontSize="40" FontWeight="Bold"></Button>
+        
+        <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top"
+                    Orientation="Vertical">
+            <ProgressBar Height="25" Width="500"></ProgressBar>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="-5" VerticalAlignment="Center"
+                        Background="Transparent" Foreground="#eaf205" BorderThickness="0"
+                        FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Button>
+                <Separator Width="20" Opacity="0"></Separator>
+                <Button Content="P" VerticalAlignment="Center"
+                        Background="Transparent" Foreground="#eaf205" BorderThickness="0"
+                        FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Button>
+                <Separator Width="20" Opacity="0"></Separator>
+                <Button Content="S" VerticalAlignment="Center"
+                        Background="Transparent" Foreground="#eaf205" BorderThickness="0"
+                        FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Button>
+                <Separator Width="20" Opacity="0"></Separator>
+                <Button Content="+5" VerticalAlignment="Center"
+                        Background="Transparent" Foreground="#eaf205" BorderThickness="0"
+                        FontFamily="Roboto" FontSize="50" FontWeight="Bold"></Button>
+            </StackPanel>
+        </StackPanel>
+        
+        <!-- Progress Bar --> 
+    </Grid>
+</Page>

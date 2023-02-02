@@ -4,71 +4,147 @@ namespace Apollo.NeuralNet;
 
 public class Lstm
 {
-    // General Parameters
-    private int VocabSize { get; }
-    private float LearningRate { get; }
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, Random r)
+    {
+        Forget = new Gate(vocabSize, hiddenSize, batchSize, r);
+        Input = new Gate(vocabSize, hiddenSize, batchSize, r);
+        CandidateState = new Gate(vocabSize, hiddenSize, batchSize, r);
+        Output = new Gate(vocabSize, hiddenSize, batchSize, r);
+
+        CellState = new Matrix(batchSize, hiddenSize);
+    }
+
+    public Lstm(int vocabSize, int hiddenSize, int batchSize, BinaryReader reader)
+    {
+        Forget = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        Input = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        CandidateState = new Gate(vocabSize, hiddenSize, batchSize, reader);
+        Output = new Gate(vocabSize, hiddenSize, batchSize, reader);
+
+        CellState = new Matrix(batchSize, hiddenSize);
+    }
 
     // Gates 
     private Gate Forget { get; }
     private Gate Input { get; }
-    private Gate NewInfo { get; }
     private Gate Output { get; }
-    
-    // Cell state 
+
+    // States 
     private Matrix CellState { get; set; }
 
-    public Lstm(int vocabSize, float learningRate)
-    {
-        VocabSize = vocabSize; // The amount of different characters present in the training data
-        LearningRate = learningRate;
+    // Candidate state uses Gate class since it carries out the same mathematical operations 
+    private Gate CandidateState { get; }
 
-        var gateShape = new MatShape(VocabSize, VocabSize);
-        Forget = new Gate(gateShape, gateShape);
-        Input = new Gate(gateShape, gateShape);
-        NewInfo = new Gate(gateShape, gateShape);
-        Output = new Gate(gateShape, gateShape);
-
-        CellState = new Matrix(vocabSize,  vocabSize);
-    }
-    
     /// <summary>
-    /// Complete one pass through of the LSTM cell, given an input  
+    ///     Complete one pass through of the LSTM cell, given an input
     /// </summary>
-    public Matrix Forward(Matrix input)
+    /// <param name="input">Column one-hot vector representing the input into the LSTM</param>
+    /// <param name="previousOutput">LSTM's previous output</param>
+    public Matrix Forward(Matrix input, Matrix previousOutput)
     {
         // Calculate forget gate value 
-        Forget.CalcUnactivated(input);
+        Forget.CalcUnactivated(input, previousOutput);
         Forget.Value.Sigmoid();
 
         // Calculate input gate value
-        Input.CalcUnactivated(input);
+        Input.CalcUnactivated(input, previousOutput);
         Input.Value.Sigmoid();
 
         // Calculate new info value 
-        NewInfo.CalcUnactivated(input);
-        NewInfo.Value.Tanh();
+        CandidateState.CalcUnactivated(input, previousOutput);
+        CandidateState.Value.Tanh();
 
         // Calculate cell state
-        CellState = Forget.Value * CellState + Input.Value * NewInfo.Value;
+        // Forget_Gate x CellState + Input_Gate x New_Info_Gate (using element-wise multiplication) 
+        CellState = Matrix.HadamardProd(Forget.Value, CellState) +
+                    Matrix.HadamardProd(Input.Value, CandidateState.Value);
 
         // Calculate output gate
-        Output.CalcUnactivated(input);
+        Output.CalcUnactivated(input, previousOutput);
         Output.Value.Sigmoid();
 
         // return output 
-        return Output.Value * Matrix.Tanh(CellState);
+        return Matrix.HadamardProd(Output.Value, Matrix.Tanh(CellState));
     }
 
-    public Matrix[] Backprop(Matrix input, Matrix cellState, Matrix error, Matrix cellStates, Matrix forgetGate, 
-        Matrix inputGate, Matrix cell, Matrix outputGate, Matrix dfcs, Matrix dfhs)
+    /// <summary>
+    ///     Perform backprop for a single timestep
+    /// </summary>
+    public void Backprop(Matrix input, Matrix dF, Matrix forgetValue, Matrix dI, Matrix inputGateValue, Matrix dO,
+        Matrix outputGateValue,
+        Matrix dG, Matrix candidateStateValue, Matrix lstmOutput)
     {
-        throw new NotImplementedException();
+        Forget.InputWeight.Gradient += Matrix.Transpose(input) * Matrix.HadamardProd(dF, Matrix.DSigmoid(forgetValue));
+        Forget.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dF) * Matrix.HadamardProd(Matrix.DSigmoid(forgetValue), lstmOutput);
+
+        Input.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dI, Matrix.DSigmoid(inputGateValue));
+        Input.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dI) * Matrix.HadamardProd(Matrix.DSigmoid(inputGateValue), lstmOutput);
+
+        Output.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dO, Matrix.DSigmoid(outputGateValue));
+        Output.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dO) * Matrix.HadamardProd(Matrix.DSigmoid(outputGateValue), lstmOutput);
+
+        CandidateState.InputWeight.Gradient +=
+            Matrix.Transpose(input) * Matrix.HadamardProd(dG, Matrix.DTanh(candidateStateValue));
+        CandidateState.PrevOutputWeight.Gradient +=
+            Matrix.Transpose(dG) * Matrix.HadamardProd(Matrix.DTanh(candidateStateValue), lstmOutput);
     }
 
-    // Updating the LSTM cell is managed by the RNN "parent" network 
-    // Adjusts variables of the cell 
-    public void Update(Matrix forgetUpdate, Matrix inputUpdate, Matrix cellUpdate, Matrix outputUpdate)
+    /// <summary>
+    /// Update the gates of the LSTM
+    /// </summary>
+    /// <param name="t">Backpropagation timestep</param>
+    public void Update(int t)
     {
+        Forget.Update(t);
+        Input.Update(t);
+        Output.Update(t);
+        CandidateState.Update(t);
+    }
 
+    /// <summary>
+    ///     Returns the values of the forget, input and output gates
+    /// </summary>
+    /// <returns>An array containing the values. Index 0 is forget, 1 is input and 2 is output</returns>
+    public Matrix[] GetGateValues()
+    {
+        return new[] { Forget.Value.Clone(), Input.Value.Clone(), Output.Value.Clone() };
+    }
+
+    /// <summary>
+    ///     Returns the values of the cell state, and candidate state
+    /// </summary>
+    /// <returns>An array containing the values. Index 0 is cell state, 1 is candidate state</returns>
+    public Matrix[] GetStateValues()
+    {
+        return new[] { CellState.Clone(), CandidateState.Value.Clone() };
+    }
+
+    /// <summary>
+    ///     Clears the value of all states and gates in the LSTM
+    /// </summary>
+    public void Clear()
+    {
+        Forget.Clear();
+        Input.Clear();
+        Output.Clear();
+        CandidateState.Clear();
+        CellState *= 0;
+    }
+
+    /// <summary>
+    ///     Write the parameters of the LSTM cell to a binary file
+    /// </summary>
+    /// <param name="writer">Instance of BinaryWriter to use for writing</param>
+    public void WriteToFile(BinaryWriter writer)
+    {
+        Forget.WriteToFile(writer);
+        Input.WriteToFile(writer);
+        CandidateState.WriteToFile(writer);
+        Output.WriteToFile(writer);
     }
 }
