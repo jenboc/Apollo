@@ -121,25 +121,37 @@ public class Rnn
     /// <returns>A one-hot vector representing the LSTM's predictions</returns>
     private Matrix InterpretOutput(Matrix softmax)
     {
+        var r = new Random();
         // Create matrix of 0s the same shape as softmax matrix
-        var interpreted = Matrix.Like(softmax); 
+        var interpreted = Matrix.Like(softmax);
 
         // Find the index of the highest number on each row, and set the corresponding index in the interpreted
         // matrix to 1
         for (var i = 0; i < softmax.Rows; i++)
         {
-            var highestJ = -1;
-            var highestValue = float.MinValue;
+            var highestProb = float.MinValue;
+            var highestProbIndex = -1;
+
+            var highestSucceed = float.MinValue;
+            var highestSucceedIndex = -1;
+
             for (var j = 0; j < softmax.Columns; j++)
             {
-                if (softmax[i, j] > highestValue)
-                {
-                    highestValue = softmax[i, j];
-                    highestJ = j;
-                }
+                if (softmax[i, j] > highestProb)
+                    highestProbIndex = j;
+                var rollQuota = (int)(softmax[i, j] * 100);
+                var diceRoll = r.Next(100);
+
+                if (diceRoll <= rollQuota && softmax[i, j] > highestSucceed)
+                    highestSucceedIndex = j;
             }
 
-            interpreted[i, highestJ] = 1;
+            // The 1 goes into the slot with the highest probability which succeeded the dice roll 
+            // Or alternatively (if every probability failed), the highest probability in general
+            if (highestSucceedIndex == -1)
+                interpreted[i, highestProbIndex] = 1;
+            else
+                interpreted[i, highestSucceedIndex] = 1;
         }
 
         return interpreted;
