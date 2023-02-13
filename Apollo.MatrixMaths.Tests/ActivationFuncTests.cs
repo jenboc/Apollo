@@ -2,12 +2,20 @@
 
 public class ActivationFuncTests
 {
+    /// <summary>
+    /// Test data used for the unit tests
+    /// </summary>
+    
+    // Boundary Data
     private readonly float _sigmoidBoundary = 6.0001f;
     private readonly float _tanhBoundary = 4.0001f;
-    private readonly float _testData = 3;
+    
+    // Normal Data
+    private readonly float _testData = 3; 
 
 
     [Fact]
+    // Tests tanh is found correctly for a single value
     public void Tanh()
     {
         var expectedData = 0.9950547537f; // Expected data for "testData"
@@ -20,6 +28,7 @@ public class ActivationFuncTests
     }
 
     [Fact]
+    // Test the derivative of tanh is correctly found for a given value 
     public void DTanh()
     {
         var expectedData = 0.009866037165f;
@@ -32,6 +41,7 @@ public class ActivationFuncTests
     }
 
     [Fact]
+    // Test the sigmoid function is correctly found for a given value 
     public void Sigmoid()
     {
         var expectedData = 0.9525741268f;
@@ -44,6 +54,7 @@ public class ActivationFuncTests
     }
 
     [Fact]
+    // Test the derivative of the sigmoid function is correctly found for a given value 
     public void DSigmoid()
     {
         var expectedData = 0.045176655f;

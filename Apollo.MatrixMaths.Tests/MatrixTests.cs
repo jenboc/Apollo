@@ -2,6 +2,9 @@ namespace Apollo.MatrixMaths.Tests;
 
 public class MatrixTests
 {
+    /// <summary>
+    /// Test data used in the majority of the unit tests
+    /// </summary>
     private readonly float[,] defaultData =
     {
         { 0, 1, 4 },
@@ -17,6 +20,8 @@ public class MatrixTests
     };
 
     [Fact]
+    // Tests that the power operation is correctly performed
+    // i.e. each item in the matrix is taken and put to the specified power separately 
     public void Power()
     {
         float[,] expectedData =
@@ -34,6 +39,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that the square root operation is correctly performed
+    // i.e. the square root of each item in the matrix is found separately
     public void Sqrt()
     {
         var expectedData = new[,]
@@ -51,6 +58,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that the exp operation is correctly performed
+    // i.e. Euler's number is put to the power of each item in the matrix separately 
     public void Exp()
     {
         var expectedData = new[,]
@@ -68,6 +77,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that the tanh operation is correctly performed
+    // i.e. tanh is applied to each item in the matrix separately 
     public void Tanh()
     {
         var expectedData = new[,]
@@ -85,6 +96,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that standard matrix multiplication is correctly applied to matrices of the same shape
     public void SameShapeMatmul()
     {
         var expectedData = new float[,]
@@ -103,6 +115,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that standard matrix multiplication is correctly applied to matrices of different but valid shapes
     public void DiffShapeMatmul()
     {
         var expectedData = new[,]
@@ -132,6 +145,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that multiplying a matrix by a scalar works as expected
+    // i.e. each item in the matrix is independently multiplied by the scalar quantity 
     public void ScalarMul()
     {
         var scalar = 2;
@@ -150,6 +165,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Checks that summing the elements in the matrix works as expected
     public void Sum()
     {
         var expectedData = 5621.0;
@@ -161,6 +177,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Checks that the transpose operation works as expected
+    // i.e. the first row becomes the first column, and the second row becomes the second column, etc.
     public void Transpose()
     {
         var startingData = new float[,]
@@ -184,6 +202,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Checks that the clamp operation works as expected
+    // i.e. all the elements in the matrix after the operation should be in the interval [min, max]
     public void Clamp()
     {
         var min = 2;
@@ -204,6 +224,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Checks that matrices can be stacked horizontally
+    // i.e. pushed next to one another 
     public void HorizontalStack()
     {
         var expectedData = new float[,]
@@ -222,6 +244,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Checks that matrices can be stacked vertically
+    // i.e. stacked one on top of the other 
     public void VerticalStack()
     {
         var expectedData = new float[,]
@@ -243,6 +267,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that matrices can be randomly generated 
     public void Random()
     {
         var mat1R = new Random(5);
@@ -255,6 +280,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that two matrices can be added together correctly
+    // (Addition is element-wise) 
     public void Add()
     {
         var expectedData = new float[,]
@@ -273,6 +300,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that two matrices can be subtracted correctly
+    // (Subtraction is element-wise)
     public void Subtract()
     {
         var expectedData = new float[,]
@@ -291,6 +320,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that the sigmoid function is correctly applied to the matrix
+    // i.e. the sigmoid function is carried out on each item in the matrix separately 
     public void Sigmoid()
     {
         var expectedData = new[,]
@@ -308,6 +339,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests element-wise multiplication is correctly carried out
     public void HadamardProd()
     {
         var expectedOutput = new[,]
@@ -341,6 +373,7 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests the softmax activation function is correctly carried out on the matrix
     public void Softmax()
     {
         var data = new[,]
@@ -361,6 +394,8 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests logarithms are correctly performed on the matrix
+    // i.e. the logarithm should be carried out on each element separately 
     public void Log()
     {
         var logBase = 5;
@@ -384,12 +419,14 @@ public class MatrixTests
     }
 
     [Fact]
+    // Tests that the matrix can be cloned properly 
+    // i.e. the clone should not be affected when the original is changed 
     public void Clone()
     {
         var mat1 = new Matrix(defaultData);
         var mat2 = mat1.Clone();
 
-        mat1 = Matrix.Add(mat1, mat2);
+        mat1.Add(mat2);
 
         Assert.False(mat1.Contents == mat2.Contents);
     }

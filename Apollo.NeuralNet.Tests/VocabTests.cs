@@ -2,6 +2,7 @@ namespace Apollo.NeuralNet.Tests;
 
 public class VocabTests
 {
+    // The vocab list which is used to instantiate the vocab class for testing
     private readonly List<char> _testingVocabList = new() { 'a', 'b', 'c', 'd', 'e' };
 
     [Fact]
