@@ -18,16 +18,16 @@ public partial class MainWindow : Window
 {
     // Model for storing the settings in the network
     private StoredSettings Settings { get; set; }
-    
-    // Dictionary for mapping profile paths to profile models
-    private Dictionary<string, Profile> Profiles { get; set; }
+
+    private ProfileManager ProfileManagement { get; set; }
+
     // Random instance used by the majority of the application 
     private Random R { get; }
 
     public MainWindow(string startingPage)
     {
         InitializeComponent();
-        
+
         R = new Random();
         
         // Load settings
@@ -39,8 +39,7 @@ public partial class MainWindow : Window
             SaveSettings();
         }
 
-        // Init Profiles dictionary
-        LoadProfiles(); 
+        ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
         
         // Initialise Neural Network
         InitialiseNetwork();
@@ -84,8 +83,11 @@ public partial class MainWindow : Window
     /// </summary>
     private void InitialiseNetwork()
     {
-        var profile = Profiles[Settings.SelectedProfilePath];
-        
+        var profile = ProfileManagement.GetProfile(Settings.SelectedProfilePath);
+
+        if (profile == null)
+            throw new Exception("Selected profile is not found");
+
         // If one exists load it (check after state path first)
         if (File.Exists(profile.AfterStateFile))
         {
@@ -143,7 +145,11 @@ public partial class MainWindow : Window
     private void PrepareTrainingData()
     {
         // Get the string representation of the training data
-        var profile = Profiles[Settings.SelectedProfilePath];
+        var profile = ProfileManagement.GetProfile(Settings.SelectedProfilePath);
+
+        if (profile == null)
+            throw new Exception("Selected profile does not exist");
+        
         var midiStrings = MidiManager.ReadDir(profile.TrainingDataDirectory);
 
         TrainingData = new Matrix[midiStrings.Count][];
@@ -226,35 +232,6 @@ public partial class MainWindow : Window
     private void SaveSettings()
     {
         WriteJson(Settings, StoredSettings.SettingsPath);
-    }
-
-    private void LoadProfiles()
-    {
-        if (!Directory.Exists(StoredSettings.ProfilesPath))
-            Directory.CreateDirectory(StoredSettings.ProfilesPath);
-        
-        Profiles = new Dictionary<string, Profile>();
-        var profileDirectories = Directory.GetDirectories(StoredSettings.ProfilesPath);
-
-        if (profileDirectories.Length == 0)
-        {
-            CreateDefaultProfile();
-            profileDirectories = Directory.GetDirectories(StoredSettings.ProfilesPath);
-        }
-
-        // Check for valid profiles (profiles with a schema.json file) 
-        foreach (var dir in profileDirectories)
-        {
-            var schemaPath = Path.Join(dir, "schema.json");
-
-            if (!File.Exists(schemaPath)) // Continue if invalid 
-                continue;
-            
-            // Read the schema + add to dictionary
-            var profile = ReadJson<Profile>(schemaPath);
-            LogManager.WriteLine(profile.TrainingDataDirectory);
-            Profiles.Add(dir, profile);
-        }
     }
 
     private void SaveProfile(Profile profile)

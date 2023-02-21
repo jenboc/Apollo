@@ -18,7 +18,7 @@ public class StoredSettings
     {
         var settings = new StoredSettings();
         // name of the directory in "states" directory which contains the profile data
-        settings.SelectedProfilePath = Path.Join(ProfilesPath, "default");
+        settings.SelectedProfilePath = "default";
         settings.DefaultLength = 10000;
 
         return settings;
