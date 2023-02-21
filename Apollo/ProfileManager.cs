@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
+using Apollo.IO;
 using Microsoft.Win32;
 
 namespace Apollo;
@@ -11,10 +14,16 @@ namespace Apollo;
 public class ProfileManager
 {
     private readonly Dictionary<string, Profile> _profiles;
+    private string ProfilesPath { get; set; }
 
-    public ProfileManager()
+    /// <summary>
+    /// Instantiate a ProfileManager object
+    /// </summary>
+    /// <param name="profilesPath">The path where all the profiles are stored</param>
+    public ProfileManager(string profilesPath)
     {
         _profiles = new Dictionary<string, Profile>();
+        ProfilesPath = profilesPath; 
         LoadFromFileSystem(); // Fill the dictionary with already existing profiles 
     }
 
@@ -45,16 +54,38 @@ public class ProfileManager
     /// </summary>
     private void LoadFromFileSystem()
     {
+        if (!Directory.Exists(ProfilesPath))
+            Directory.CreateDirectory(ProfilesPath);
         
+        var profileDirectories = Directory.GetDirectories(ProfilesPath);
+
+        if (profileDirectories.Length == 0)
+        {
+            CreateProfile("default", mandatory: true);
+            profileDirectories = Directory.GetDirectories(ProfilesPath);
+        }
+
+        // Check for valid profiles (profiles with a schema.json file) 
+        foreach (var dir in profileDirectories)
+        {
+            var schemaPath = Path.Join(dir, "schema.json");
+
+            if (!File.Exists(schemaPath)) // Continue if invalid 
+                continue;
+            
+            // Read the schema + add to dictionary
+            var profile = ReadJson<Profile>(schemaPath);
+            LogManager.WriteLine(profile.TrainingDataDirectory);
+            _profiles.Add(dir, profile);
+        }
     }
 
     /// <summary>
     /// Create a profile
     /// </summary>
-    /// <param name="name"></param>
-    public void CreateProfile(string name)
+    public void CreateProfile(string name, bool mandatory=false)
     {
-        var trainingFiles = SelectTrainingFiles();
+        var trainingFiles = SelectTrainingFiles(mandatory);
 
         if (trainingFiles.Length == 0) // Do not continue if no files are selected 
         {
@@ -75,5 +106,17 @@ public class ProfileManager
     public Profile? LoadProfile(string name)
     {
         return _profiles.TryGetValue(name, out var profile) ? profile : null;
+    }
+    
+    private T ReadJson<T>(string path)
+    {
+        var str = File.ReadAllText(path);
+        return JsonSerializer.Deserialize<T>(str);
+    }
+    
+    private void WriteJson<T>(T obj, string path)
+    {
+        var jsonString = JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
+        File.WriteAllText(path, jsonString);
     }
 }
