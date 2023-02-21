@@ -85,35 +85,67 @@ public class ProfileManager
     /// </summary>
     public void CreateProfile(string name, bool mandatory=false)
     {
+        // Get user to select training files
         var trainingFiles = SelectTrainingFiles(mandatory);
-
-        if (trainingFiles.Length == 0) // Do not continue if no files are selected 
+        
+        // Do not continue if no files are selected 
+        if (trainingFiles.Length == 0) 
         {
             MessageBox.Show("You must select training files in order to create a profile");
             return;
         }
-
-        var path = name; 
-        var profile = Profile.Default(path);
+        
+        // Create directory where profile info is stored
+        var profilePath = Path.Join(ProfilesPath, name);
+        Directory.CreateDirectory(profilePath);
+        
+        // Create the profile and add it to the dictionary
+        var profile = Profile.Default(profilePath);
         _profiles.Add(name, profile);
+        
+        // Copy the training data into the profile training data directory
+        Directory.CreateDirectory(profile.TrainingDataDirectory);
+        foreach (var file in trainingFiles)
+        {
+            var currentPath = Path.GetFullPath(file);
+            var fileName = Path.GetFileName(file);
+            var newPath = Path.Join(profile.TrainingDataDirectory, fileName);
+            
+            File.Copy(currentPath, newPath);
+        }
+        
+        // Create schema.json file 
+        var schemaPath = Path.Join(profilePath, "schema.json");
+        WriteJson(profile, schemaPath);
     }
 
     /// <summary>
-    /// Load a profile from the profile manager
+    /// Retrieve a profile from the profile manager
     /// </summary>
     /// <param name="name">The name of the profile to search for</param>
     /// <returns>The queried profile if it exists, otherwise null</returns>
-    public Profile? LoadProfile(string name)
+    public Profile? GetProfile(string name)
     {
         return _profiles.TryGetValue(name, out var profile) ? profile : null;
     }
     
+    /// <summary>
+    /// Read a JSON file
+    /// </summary>
+    /// <param name="path">Path to JSON file</param>
+    /// <typeparam name="T">Model class type to store the data</typeparam>
     private T ReadJson<T>(string path)
     {
         var str = File.ReadAllText(path);
         return JsonSerializer.Deserialize<T>(str);
     }
     
+    /// <summary>
+    /// Write to A JSON file
+    /// </summary>
+    /// <param name="obj">The object you want to write the data from</param>
+    /// <param name="path">The path to the JSON file</param>
+    /// <typeparam name="T">The class type which you are writing the data from</typeparam>
     private void WriteJson<T>(T obj, string path)
     {
         var jsonString = JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
