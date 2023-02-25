@@ -7,8 +7,22 @@
       mc:Ignorable="d"
       Title="SettingsPage" Height="700.83" Width="1171"
       Background="Transparent">
-    <Grid>
-        <Label Content="NOT YET IMPLEMENTED" VerticalAlignment="Center" HorizontalAlignment="Center"
-               FontSize="75" FontFamily="Cinzel Decorative" Foreground="#eaf205" FontWeight="Bold"/>
+    <Grid Margin="50 25 50 50" ShowGridLines="True">
+        <Grid.RowDefinitions>
+            
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <ComboBox Grid.Column="0" Grid.Row="0"
+                  Height="50" Width="500" 
+                  VerticalAlignment="Center" HorizontalAlignment="Right"
+                  Name="ProfileComboBox"
+                  SelectionChanged="OnProfileSelected">
+        </ComboBox>
+        <Button Grid.Column="1" Grid.Row="0"
+                Content="Create new Profile"
+                Click="OnCreateButtonClicked"/> 
     </Grid>
 </Page>

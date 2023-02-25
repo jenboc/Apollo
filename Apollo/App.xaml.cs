@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Apollo.IO;
+using Apollo.MatrixMaths;
+using Apollo.NeuralNet;
 
 namespace Apollo
 {
@@ -15,9 +17,19 @@ namespace Apollo
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Objects used across all parts of the application
+        /// </summary>
+        public ProfileManager ProfileManagement { get; set; }
+
+        public StoredSettings Settings { get; set; }
+        public Random R { get; set; }
+        public NeuralNetwork Network { get; set; }
+        
         public App()
         {
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+            ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
         }
         
         /// <summary>

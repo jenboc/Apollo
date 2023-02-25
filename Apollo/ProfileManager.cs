@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Input;
 using Apollo.IO;
 using Microsoft.Win32;
 
@@ -15,6 +17,9 @@ public class ProfileManager
 {
     private readonly Dictionary<string, Profile> _profiles;
     private string ProfilesPath { get; set; }
+
+    public string[] ProfileNames => _profiles.Keys.ToArray();
+    public bool ProfileExists(string name) => _profiles.ContainsKey(name);
 
     /// <summary>
     /// Instantiate a ProfileManager object
@@ -61,6 +66,7 @@ public class ProfileManager
 
         if (profileDirectories.Length == 0)
         {
+            MessageBox.Show("No training profiles found. Please close this box to create one.");
             CreateProfile("default", mandatory: true);
             profileDirectories = Directory.GetDirectories(ProfilesPath);
         }
@@ -76,7 +82,7 @@ public class ProfileManager
             // Read the schema + add to dictionary
             var profile = ReadJson<Profile>(schemaPath);
             LogManager.WriteLine(profile.TrainingDataDirectory);
-            _profiles.Add(dir, profile);
+            _profiles.Add(Path.GetFileName(dir), profile);
         }
     }
 
@@ -85,6 +91,7 @@ public class ProfileManager
     /// </summary>
     public void CreateProfile(string name, bool mandatory=false)
     {
+        Mouse.SetCursor(Cursors.Wait);
         // Get user to select training files
         var trainingFiles = SelectTrainingFiles(mandatory);
         
@@ -117,6 +124,7 @@ public class ProfileManager
         // Create schema.json file 
         var schemaPath = Path.Join(profilePath, "schema.json");
         WriteJson(profile, schemaPath);
+        Mouse.SetCursor(null);
     }
 
     /// <summary>

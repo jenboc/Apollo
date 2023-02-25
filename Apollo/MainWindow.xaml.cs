@@ -19,7 +19,7 @@ public partial class MainWindow : Window
     // Model for storing the settings in the network
     private StoredSettings Settings { get; set; }
 
-    private ProfileManager ProfileManagement { get; set; }
+    public ProfileManager ProfileManagement { get; set; }
 
     // Random instance used by the majority of the application 
     private Random R { get; }
@@ -39,7 +39,7 @@ public partial class MainWindow : Window
             SaveSettings();
         }
 
-        ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
+        ProfileManagement = (Application.Current as App).ProfileManagement;
         
         // Initialise Neural Network
         InitialiseNetwork();

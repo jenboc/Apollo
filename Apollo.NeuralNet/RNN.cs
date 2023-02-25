@@ -13,7 +13,7 @@ public class Rnn
     public Rnn(Profile profile, int vocabSize, int hiddenSize, 
         int batchSize, Random r)
     {
-        StateProfile = profile;
+        _stateProfile = profile;
 
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
@@ -26,10 +26,19 @@ public class Rnn
 
     public Rnn(Profile profile)
     {
-        StateProfile = profile;
+        _stateProfile = profile;
     }
 
-    private Profile StateProfile { get; set; }
+    private Profile _stateProfile;
+    public Profile StateProfile
+    {
+        get => _stateProfile;
+        set
+        {
+            _stateProfile = value; 
+            LoadState(_stateProfile.AfterStateFile);
+        }
+    }
 
     // General Parameters
     private int VocabSize { get; set; }
