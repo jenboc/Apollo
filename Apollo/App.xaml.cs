@@ -17,6 +17,9 @@ namespace Apollo
     /// </summary>
     public partial class App : Application
     {
+        private const int BATCH_SIZE = 4;
+        private const int HIDDEN_SIZE = 32;
+
         /// <summary>
         /// Objects used across all parts of the application
         /// </summary>
@@ -25,13 +28,33 @@ namespace Apollo
         public StoredSettings Settings { get; set; }
         public Random R { get; set; }
         public NeuralNetwork Network { get; set; }
-        
+
         public App()
         {
+            // Add unhandled exception handler 
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+            
+            // Load settings from settings.json if it exists and is valid 
+            try
+            {
+                Settings = StoredSettings.Load();
+            }
+            // If it does not exist or it isn't valid, start with fresh settings
+            catch
+            {
+                Settings = StoredSettings.Default();
+                Settings.Save();
+            }
+
             ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
+            var initialProfile = ProfileManagement.GetProfile(Settings.SelectedProfileName);
+
+            if (initialProfile == null)
+                initialProfile = ProfileManagement.Any();
+            
+            Network = new NeuralNetwork(initialProfile, HIDDEN_SIZE, BATCH_SIZE);
         }
-        
+
         /// <summary>
         /// Handling unhandled exceptions
         /// </summary>

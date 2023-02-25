@@ -33,6 +33,15 @@ public class ProfileManager
     }
 
     /// <summary>
+    /// Returns a profile from the dictionary 
+    /// </summary>
+    /// <returns></returns>
+    public Profile Any()
+    {
+        return _profiles.Values.ToArray()[0];
+    }
+
+    /// <summary>
     /// Opens a file dialog for the user to select multiple files
     /// </summary>
     /// <returns>A list of the paths to the selected training files</returns>
@@ -55,7 +64,8 @@ public class ProfileManager
     }
     
     /// <summary>
-    /// Loads existing profiles from the file system and adds them to the dictionary
+    /// Loads existing profiles from the file system and adds them to the dictionary.
+    /// If no profiles are found, then it will create one.
     /// </summary>
     private void LoadFromFileSystem()
     {
