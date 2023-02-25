@@ -26,13 +26,15 @@ namespace Apollo
         public ProfileManager ProfileManagement { get; set; }
 
         public StoredSettings Settings { get; set; }
-        public Random R { get; set; }
-        public NeuralNetwork Network { get; set; }
+        public Random R { get; }
+        public NeuralNetwork Network { get; }
 
         public App()
         {
             // Add unhandled exception handler 
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
+
+            R = new Random();
             
             // Load settings from settings.json if it exists and is valid 
             try
@@ -52,7 +54,7 @@ namespace Apollo
             if (initialProfile == null)
                 initialProfile = ProfileManagement.Any();
             
-            Network = new NeuralNetwork(initialProfile, HIDDEN_SIZE, BATCH_SIZE);
+            Network = new NeuralNetwork(initialProfile, HIDDEN_SIZE, BATCH_SIZE, R);
         }
 
         /// <summary>

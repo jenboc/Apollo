@@ -32,7 +32,6 @@ public partial class TrainingPage : Page
         var maxError = (float)MaxEpochSlider.Value;
         var batchesPerEpoch = Convert.ToInt32(BatchesPerEpochSlider.Value);
 
-        var window = (MainWindow)Window.GetWindow(this); // Page is only ever contained in MainWindow 
-        window.StartTraining(minEpochs, maxEpochs, maxError, batchesPerEpoch);
+        (Application.Current as App).Network.Train(minEpochs, maxEpochs, maxError, batchesPerEpoch);
     }
 }

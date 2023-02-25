@@ -35,7 +35,7 @@ public class Rnn
         get => _stateProfile;
         set
         {
-            _stateProfile = value; 
+            _stateProfile = value;
             LoadState(_stateProfile.AfterStateFile);
         }
     }

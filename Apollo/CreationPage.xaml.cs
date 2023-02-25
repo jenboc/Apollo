@@ -44,7 +44,6 @@ public partial class CreationPage : Page
             return;
         
         // Start generating with the provided parameters
-        var window = (MainWindow)Window.GetWindow(this); 
-        window.StartCreating(generationLength, bpm, savePath);
+        (Application.Current as App).Network.Generate(generationLength, bpm, savePath);
     }
 }

@@ -13,14 +13,17 @@ public class NeuralNetwork
     private Matrix[][] TrainingData { get; set; }
     private int HiddenSize { get; }
     private int BatchSize { get; }
+    private Random R { get; }
 
     public Profile CurrentProfile => Network.StateProfile;
 
-    public NeuralNetwork(Profile initialProfile, int hiddenSize, int batchSize)
+    public NeuralNetwork(Profile initialProfile, int hiddenSize, int batchSize, Random r)
     {
         HiddenSize = hiddenSize;
-        BatchSize = batchSize; 
+        BatchSize = batchSize;
+        R = r;
         ChangeProfile(initialProfile);
+        PopulateVocabList();
     }
 
     private void PopulateTrainingArray()
@@ -56,24 +59,24 @@ public class NeuralNetwork
     /// <summary>
     /// Train the network
     /// </summary>
-    public void Train(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch, Random r)
+    public void Train(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
     {
         if (TrainingData?.GetLength(0) == null) 
             PopulateTrainingArray();
 
         foreach (var file in TrainingData)
         {
-            Network.Train(file, minEpochs, maxEpochs, maxError, batchesPerEpoch, r);
+            Network.Train(file, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
         }
     }
 
-    private Matrix CreateGenerationSeed(Random r)
+    private Matrix CreateGenerationSeed()
     {
         var rows = new Matrix[Network.BatchSize];
 
         for (var i = 0; i < rows.Length; i++)
         {
-            var charId = r.Next(VocabList.Size);
+            var charId = R.Next(VocabList.Size);
             rows[i] = VocabList.CreateOneHot(VocabList[charId]);
         }
 
@@ -88,9 +91,9 @@ public class NeuralNetwork
     /// <summary>
     /// Use the network to generate, outputting the created data to a MIDI file  
     /// </summary>
-    public void Generate(int genLength, int bpm, string savePath, Random r)
+    public void Generate(int genLength, int bpm, string savePath)
     {
-        var seed = CreateGenerationSeed(r);
+        var seed = CreateGenerationSeed();
         var networkOutputs = Network.Forward(seed, genLength);
         var stringOutput = InterpretVectorOutput(networkOutputs); 
         
