@@ -10,18 +10,19 @@ public class NeuralNetwork
 {
     private Rnn Network { get; set; }
     public Vocab VocabList { get; set; }
-    private Matrix[][] TrainingData { get; set; }
+    private Matrix[][]? TrainingData { get; set; }
     private int HiddenSize { get; }
     private int BatchSize { get; }
     private Random R { get; }
-
-    public Profile CurrentProfile => Network.StateProfile;
+    public Profile CurrentProfile { get; private set; }
+    
 
     public NeuralNetwork(Profile initialProfile, int hiddenSize, int batchSize, Random r)
     {
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
         R = r;
+        TrainingData = null;
         ChangeProfile(initialProfile);
         PopulateVocabList();
     }
@@ -61,12 +62,13 @@ public class NeuralNetwork
     /// </summary>
     public void Train(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
     {
-        if (TrainingData?.GetLength(0) == null) 
+        if (TrainingData == null) 
             PopulateTrainingArray();
 
-        foreach (var file in TrainingData)
+        foreach (var vectorisedFile in TrainingData)
         {
-            Network.Train(file, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
+            Network.Train(vectorisedFile, minEpochs, maxEpochs, maxError, batchesPerEpoch,
+                CurrentProfile.BeforeStateFile, CurrentProfile.AfterStateFile, R);
         }
     }
 
@@ -106,6 +108,12 @@ public class NeuralNetwork
     /// <param name="profile">The profile to change to</param>
     public void ChangeProfile(Profile profile)
     {
-        Network.StateProfile = profile;
+        CurrentProfile = profile;
+        PopulateVocabList();
+        TrainingData = null;
+
+        Network = File.Exists(CurrentProfile.AfterStateFile)
+            ? new Rnn(CurrentProfile.AfterStateFile)
+            : new Rnn(VocabList.Size, HiddenSize, BatchSize, R);
     }
 }

@@ -10,11 +10,9 @@ public class Rnn
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="r">Random Instance to instantiate weights</param>
-    public Rnn(Profile profile, int vocabSize, int hiddenSize, 
+    public Rnn(int vocabSize, int hiddenSize, 
         int batchSize, Random r)
     {
-        _stateProfile = profile;
-
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
@@ -24,22 +22,15 @@ public class Rnn
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
 
-    public Rnn(Profile profile)
+    /// <summary>
+    /// Create an RNN object from a state file
+    /// </summary>
+    /// <param name="stateFileToLoad">Path to the state file to load from</param>
+    public Rnn(string stateFileToLoad)
     {
-        _stateProfile = profile;
+        LoadState(stateFileToLoad);
     }
-
-    private Profile _stateProfile;
-    public Profile StateProfile
-    {
-        get => _stateProfile;
-        set
-        {
-            _stateProfile = value;
-            LoadState(_stateProfile.AfterStateFile);
-        }
-    }
-
+    
     // General Parameters
     private int VocabSize { get; set; }
     public int BatchSize { get; private set; } // Accessed when generating seeds for forward prop
@@ -249,12 +240,14 @@ public class Rnn
     /// <param name="maximumEpochs">The maximum number of epochs to perform before stopping</param>
     /// <param name="maximumError">The maximum error, training will stop early if the average error is below this</param>
     /// <param name="batchesPerEpoch">The amount of batches per epoch, do not put to high or risk NaNs</param>
+    /// <param name="beforeStatePath">The path at which to write the before-training state file</param>
+    /// <param name="afterStatePath">The path at which to write the after-training state file</param>
     /// <param name="r">An instance of random, to randomly select batches</param>
     public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, float maximumError,
-        int batchesPerEpoch, Random r)
+        int batchesPerEpoch, string beforeStatePath, string afterStatePath, Random r)
     {
         // Save before state
-        SaveState(StateProfile.BeforeStateFile);
+        SaveState(beforeStatePath);
         
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
         LogManager.WriteLine($"Training input data length: {inputData.Count}");
@@ -338,7 +331,7 @@ public class Rnn
         } 
         
         // Save after state
-        SaveState(StateProfile.AfterStateFile);
+        SaveState(afterStatePath);
     }
 
     /// <summary>
