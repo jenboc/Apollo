@@ -16,10 +16,16 @@ namespace Apollo;
 public class ProfileManager
 {
     private readonly Dictionary<string, Profile> _profiles;
-    private string ProfilesPath { get; set; }
-
-    public string[] ProfileNames => _profiles.Keys.ToArray();
-    public bool ProfileExists(string name) => _profiles.ContainsKey(name);
+    private string ProfilesPath { get; set; } // The path where all profiles will be found 
+    
+    public string[] ProfileNames => _profiles.Keys.ToArray(); // Getter for array of dictionary keys
+    
+    /// <summary>
+    /// Check if a profile with a name exists
+    /// </summary>
+    /// <param name="name">The name to check</param>
+    /// <returns>Boolean depicting whether a profile with the passed name exists</returns>
+    public bool ProfileExists(string name) => _profiles.ContainsKey(name); 
 
     /// <summary>
     /// Instantiate a ProfileManager object
@@ -69,11 +75,13 @@ public class ProfileManager
     /// </summary>
     private void LoadFromFileSystem()
     {
+        // If the root profile path doesn't exist, create it 
         if (!Directory.Exists(ProfilesPath))
             Directory.CreateDirectory(ProfilesPath);
         
         var profileDirectories = Directory.GetDirectories(ProfilesPath);
 
+        // Create default profile if no profiles exist
         if (profileDirectories.Length == 0)
         {
             MessageBox.Show("No training profiles found. Please close this box to create one.");
@@ -93,6 +101,8 @@ public class ProfileManager
             var profile = ReadJson<Profile>(schemaPath);
             LogManager.WriteLine(profile.TrainingDataDirectory);
             
+            // Add to dictionary if it doesn't already exist
+            // Necessary since if default directory is created here, then it will already be in dictionary 
             if (!_profiles.ContainsKey(Path.GetFileName(dir)))
                 _profiles.Add(Path.GetFileName(dir), profile);
         }
