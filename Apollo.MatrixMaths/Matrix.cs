@@ -181,7 +181,8 @@ public class Matrix
         // This matrix is multiplicatively conformable to otherMat if and only if:
         // this.columns = otherMat.rows 
         if (Columns != otherMat.Rows)
-            throw new MatrixArithmeticException("First matrix isn't multiplicatively conformable to the other");
+            throw new InvalidShapeException("First matrix isn't multiplicatively conformable to the other",
+                this, otherMat);
 
         var newContents = new float[Rows, otherMat.Columns];
 
@@ -268,7 +269,8 @@ public class Matrix
     {
         // Must have same amount of rows 
         if (otherMat.Rows != Rows)
-            throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
+            throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows",
+                this, otherMat);
 
         // New shape = (same rows, sum of columns)
         var newContents = new float[Rows, Columns + otherMat.Columns];
@@ -297,7 +299,8 @@ public class Matrix
     {
         // Must have same amount of columns 
         if (otherMat.Columns != Columns)
-            throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows");
+            throw new InvalidShapeException("You can only horizontally stack matrices with the same amount of rows",
+                this, otherMat);
 
         // New shape = (same rows, sum of columns)
         var newContents = new float[Rows + otherMat.Rows, Columns];
@@ -418,8 +421,8 @@ public class Matrix
     public void HadamardProd(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
-            throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication " +
-                                            $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
+            throw new InvalidShapeException("Matrices must be the same shape for Hadamard multiplication",
+                this, otherMat);
 
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)
@@ -439,8 +442,7 @@ public class Matrix
     public void HadamardDiv(Matrix otherMat)
     {
         if (otherMat.Rows != Rows || otherMat.Columns != Columns)
-            throw new InvalidShapeException("Matrices must be the same shape for Hadamard division " +
-                                            $"one matrix is {Rows}x{Columns} and the other is {otherMat.Rows}x{otherMat.Columns}");
+            throw new InvalidShapeException("Matrices must be the same shape for Hadamard division", this, otherMat);
 
         for (var i = 0; i < Rows; i++)
         for (var j = 0; j < Columns; j++)

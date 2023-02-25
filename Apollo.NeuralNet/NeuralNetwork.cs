@@ -156,6 +156,8 @@ public class NeuralNetwork
         PopulateVocabList();
         // Wipe TrainingData since new profile may use different data
         TrainingData = null;
+        
+        Console.WriteLine(VocabList.Size);
 
         // Create RNN with the data in the after state file (if it exists) 
         // Otherwise, create it from scratch
