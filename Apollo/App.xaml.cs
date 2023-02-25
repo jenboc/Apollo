@@ -51,7 +51,7 @@ namespace Apollo
             ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
             var initialProfile = ProfileManagement.GetProfile(Settings.SelectedProfileName);
 
-            if (initialProfile == null)
+            if (object.ReferenceEquals(initialProfile, null))
                 initialProfile = ProfileManagement.Any();
             
             Network = new NeuralNetwork(initialProfile, HIDDEN_SIZE, BATCH_SIZE, R);

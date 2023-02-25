@@ -50,7 +50,7 @@ public class ProfileManager
         var fileDialog = new OpenFileDialog();
         fileDialog.Multiselect = true;
         fileDialog.Title = "Select multiple training files";
-        fileDialog.Filter = "MIDI File|*.mid";
+        fileDialog.Filter = "MIDI File|*.mid;*.midi";
 
         if (fileDialog.ShowDialog() == true)
         {
@@ -92,7 +92,9 @@ public class ProfileManager
             // Read the schema + add to dictionary
             var profile = ReadJson<Profile>(schemaPath);
             LogManager.WriteLine(profile.TrainingDataDirectory);
-            _profiles.Add(Path.GetFileName(dir), profile);
+            
+            if (!_profiles.ContainsKey(Path.GetFileName(dir)))
+                _profiles.Add(Path.GetFileName(dir), profile);
         }
     }
 

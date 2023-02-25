@@ -1,4 +1,5 @@
-﻿using Apollo.IO;
+﻿using System.Text;
+using Apollo.IO;
 using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
@@ -87,7 +88,17 @@ public class NeuralNetwork
 
     private string InterpretVectorOutput(Matrix[] outputs)
     {
-        return string.Empty;
+        var stringOutput = new StringBuilder();
+
+        foreach (var output in outputs)
+        {
+            var rowContents = new float[1, output.Columns];
+            for (var j = 0; j < output.Columns; j++) rowContents[0, j] = output[output.Rows - 1, j];
+            var mat = new Matrix(rowContents);
+            stringOutput.Append(VocabList.InterpretOneHot(mat)); 
+        }
+
+        return stringOutput.ToString();
     }
     
     /// <summary>
@@ -95,10 +106,12 @@ public class NeuralNetwork
     /// </summary>
     public void Generate(int genLength, int bpm, string savePath)
     {
+        var logBuffer = $"Generating with:\nGeneration Length: {genLength}\nBPM: {bpm}\nSave Path: {savePath}";
         var seed = CreateGenerationSeed();
         var networkOutputs = Network.Forward(seed, genLength);
-        var stringOutput = InterpretVectorOutput(networkOutputs); 
-        
+        var stringOutput = InterpretVectorOutput(networkOutputs);
+        logBuffer += $"\nGenerated Text:\n{stringOutput}";
+        LogManager.WriteLine(logBuffer);
         MidiManager.WriteFile(stringOutput, savePath, bpm);
     }
     
