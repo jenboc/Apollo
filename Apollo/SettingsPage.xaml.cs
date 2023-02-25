@@ -16,8 +16,16 @@ public partial class SettingsPage : Page
 
     private void AddProfilesToComboBox()
     {
-        foreach (var profileName in _profileManager.ProfileNames)
+        var network = (Application.Current as App).Network;
+
+        for (var i = 0; i < _profileManager.ProfileNames.Length; i++)
+        {
+            var profileName = _profileManager.ProfileNames[i];
             ProfileComboBox.Items.Add(profileName);
+
+            if (network.CurrentProfile == _profileManager.GetProfile(profileName))
+                ProfileComboBox.SelectedIndex = i;
+        }
     }
 
     private void OnCreateButtonClicked(object sender, RoutedEventArgs e)

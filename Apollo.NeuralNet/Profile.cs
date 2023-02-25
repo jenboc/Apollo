@@ -20,4 +20,17 @@ public class Profile
 
         return profile;
     }
+
+    public static bool operator ==(Profile a, Profile b)
+    {
+        return a.BeforeStateFile == b.BeforeStateFile
+               && a.AfterStateFile == b.AfterStateFile
+               && a.TrainingDataDirectory == b.TrainingDataDirectory
+               && a.Vocab == b.Vocab; 
+    }
+
+    public static bool operator !=(Profile a, Profile b)
+    {
+        return !(a == b);
+    }
 }
