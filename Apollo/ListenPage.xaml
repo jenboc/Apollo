@@ -41,12 +41,18 @@
             <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <ProgressBar Width="600" Height="25"></ProgressBar>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Width="100" Height="100" Content="Previous"/>
-                    <Button Width="100" Height="100" Content="-5"/>
-                    <Button Width="100" Height="100" Content="Play"/>
-                    <Button Width="100" Height="100" Content="Stop"/>
-                    <Button Width="100" Height="100" Content="+5"/>
-                    <Button Width="100" Height="100" Content="Skip"/>
+                    <Button Width="100" Height="100" Content="Previous"
+                            Click="OnPreviousButtonPress"/>
+                    <Button Width="100" Height="100" Content="-5"
+                            Click="OnBack5ButtonPress"/>
+                    <Button Name="PlayPauseButton" Width="100" Height="100" Content="Play"
+                            Click="OnPlayPauseButtonPress"/>
+                    <Button Width="100" Height="100" Content="Stop"
+                            Click="OnStopButtonPress"/>
+                    <Button Width="100" Height="100" Content="+5"
+                            Click="OnSkip5ButtonPress"/>
+                    <Button Width="100" Height="100" Content="Skip"
+                            Click="OnNextButtonPress"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
