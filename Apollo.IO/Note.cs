@@ -9,6 +9,11 @@ struct Note
     public char Modifier;
     public char NoteName;
 
+    public override string ToString()
+    {
+        return $"{NoteName}{Octave}{Modifier}";
+    }
+
     public Note()
     {
         Clear();

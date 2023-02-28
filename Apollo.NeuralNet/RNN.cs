@@ -266,6 +266,10 @@ public class Rnn
         float totalLoss;
         for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
+            SaveState("temp_state.state");
+            if (batchesPerEpoch <= 0) // Stop if training with 0 batches per epoch
+                break;
+            
             // Clear stored values on each epoch 
             usedInputs.Clear();
             usedOutputs.Clear(); 
@@ -320,6 +324,13 @@ public class Rnn
             var averageLoss = totalLoss / batchesPerEpoch;
             LogManager.WriteLine($"Epoch: {epoch}\nLoss: {averageLoss}");
 
+            if (float.IsNaN(averageLoss))
+            {
+                batchesPerEpoch -= 5;
+                LoadState(beforeStatePath);
+                continue;
+            }
+            
             // Break if training can stop
             // i.e. the loss is lower than the maximum error, and we've done the minimum amount of epochs
             if (averageLoss < maximumError && epoch >= minimumEpochs)
@@ -328,6 +339,8 @@ public class Rnn
             // Backprop to reduce error
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
+            
+            File.Delete("temp_state.state"); // Delete temp state file
         } 
         
         // Save after state

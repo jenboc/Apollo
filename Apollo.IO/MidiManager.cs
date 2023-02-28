@@ -99,7 +99,7 @@ public static class MidiManager
     private const int VELOCITY = 100;
     
     // How each note offsets the pitch
-    private static readonly Dictionary<char, int> _pitchOffsets = new Dictionary<char, int>()
+    private static readonly Dictionary<char, int>_pitchOffsets = new Dictionary<char, int>()
     {
         { 'C', 0 },
         { 'D', 2 },
@@ -143,16 +143,16 @@ public static class MidiManager
             if (c == ' ')
             {
                 absoluteTime++;
-                currentNote.Clear();
+                currentNote.Clear(); // Note components must be one "unit" 
                 continue; 
             }
             
             // Add information to note
             if (char.IsUpper(c) && currentNote.NoteName == ' ')
                 currentNote.NoteName = c;
-            else if (_pitchModifiers.ContainsKey(c) && currentNote.Modifier == ' ')
+            else if (_pitchModifiers.ContainsKey(c) && currentNote.Modifier == ' ' && currentNote.NoteName == ' ')
                 currentNote.Modifier = c;
-            else if (char.IsNumber(c) && currentNote.Octave == -1)
+            else if (char.IsNumber(c) && currentNote.Octave == -1 && currentNote.NoteName == ' ')
                 currentNote.Octave = (int)char.GetNumericValue(c);
             
             // If the information about the note isn't complete then continue
@@ -161,8 +161,8 @@ public static class MidiManager
 
             // Gets here when enough information was gathered for a complete note
             // Add note to collection 
-            var pitch = ParseNote(currentNote);
-
+            var pitch = GetPitchFromNote(currentNote);
+            
             var onEvent = new NoteOnEvent(absoluteTime, 1, pitch, VELOCITY, noteDur);
             var offEvent = new NoteEvent(absoluteTime + noteDur, 1, MidiCommandCode.NoteOff, pitch, 0);
             
@@ -223,7 +223,7 @@ public static class MidiManager
     /// </summary>
     /// <param name="note">String representation of note</param>
     /// <returns>Integer of the MIDI representation of the note</returns>
-    private static int ParseNote(Note note)
+    private static int GetPitchFromNote(Note note)
     {
         // Start at the offsetted pitch for the letter (if there is one) 
         var noteValue = (_pitchOffsets.ContainsKey(note.NoteName)) ? _pitchOffsets[note.NoteName] : 0;
@@ -235,7 +235,7 @@ public static class MidiManager
         // -1 is used to state that there is no octave in the Note struct
         if (note.Octave != -1)
             noteValue += SEMITONES_IN_OCTAVE * note.Octave;
-        
+
         return noteValue;
     }
 
