@@ -143,6 +143,7 @@ public static class MidiManager
             if (c == ' ')
             {
                 absoluteTime++;
+                currentNote.Clear();
                 continue; 
             }
             

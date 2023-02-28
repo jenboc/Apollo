@@ -46,9 +46,9 @@ public class NeuralNetwork
                 i => { TrainingData[i] = VocabList.PrepareTrainingData(midiStrings[i]); });
             
             // Save the just-converted training data into training data files
-            for (var i = 0; i < TrainingData.GetLength(0); i++)
+            for (var i = 0; i < midiStrings.Count; i++)
             {
-                var fileName = $"file{i}.td";
+                var fileName = Path.Join(CurrentProfile.TrainingDataDirectory, $"file{i}.td");
                 TrainingFileManager.Write(TrainingData[i], fileName);
             }
             
@@ -66,21 +66,15 @@ public class NeuralNetwork
     /// </summary>
     private void PopulateVocabList()
     {
-        if (CurrentProfile.Vocab.Length > 0)
+        if (CurrentProfile.Vocab.Length == 0)
         {
-            VocabList = new Vocab(CurrentProfile.Vocab);
-            return;
+            var directory = Path.GetDirectoryName(CurrentProfile.AfterStateFile);
+            Directory.Delete(directory, true);
+            throw new Exception("The profile you are using is corrupted, please reopen the program and select a" +
+                                "different profile");
         }
 
-        VocabList = new Vocab();
-        var stringReps = MidiManager.ReadDir(CurrentProfile.TrainingDataDirectory);
-
-        Parallel.ForEach(stringReps, stringRep =>
-        {
-            VocabList.AddCharacters(stringRep.ToCharArray());
-        });
-
-        CurrentProfile.Vocab = VocabList.AsString(); 
+        VocabList = new Vocab(CurrentProfile.Vocab); 
     }
     
     /// <summary>

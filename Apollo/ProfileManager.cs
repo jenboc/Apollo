@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Apollo.IO;
+using Apollo.NeuralNet;
 using Microsoft.Win32;
 
 namespace Apollo;
@@ -144,9 +146,24 @@ public class ProfileManager
         }
         
         // Create schema.json file 
+        profile.Vocab = GetVocabList(profile);
         var schemaPath = Path.Join(profilePath, "schema.json");
         WriteJson(profile, schemaPath);
         Mouse.SetCursor(null);
+    }
+
+    private string GetVocabList(Profile profile)
+    {
+        var vocabList = new Vocab();
+
+        var stringReps = MidiManager.ReadDir(profile.TrainingDataDirectory);
+
+        Parallel.ForEach(stringReps, rep =>
+        {
+            vocabList.AddCharacters(rep.ToCharArray());
+        });
+        
+        return vocabList.AsString();
     }
 
     /// <summary>
