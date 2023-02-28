@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Media;
 using System.Windows;
@@ -34,6 +35,7 @@ public partial class ListenPage : Page
         {
             NextSongLabel.Content = "No song in playlist";
             PlaylistPanel.Children.Clear();
+            return;
         }
         
         // If the next song label is already correct, then nothing needs to be changed
@@ -58,8 +60,7 @@ public partial class ListenPage : Page
         var nextSong = Playlist.Dequeue();
         MusicPlayer.Source = new Uri(nextSong);
         MusicPlayer.Play();
-        CurrentSongLabel.Content = Path.GetFileName(nextSong);
-        
+
         // Ensure play/pause button says pause
         PlayPauseButton.Content = "Pause";
     }
@@ -175,9 +176,22 @@ public partial class ListenPage : Page
     /// </summary>
     private void OnSkip5ButtonPress(object sender, RoutedEventArgs e)
     {
-        var timespanChange = TimeSpan.FromSeconds(5);
-        var newPos = timespanChange.Add(MusicPlayer.Position);
-        MusicPlayer.Position = newPos;
+        if (!MusicPlayer.NaturalDuration.HasTimeSpan)
+            return;
+
+        var secondsUntilEnd = MusicPlayer.NaturalDuration.TimeSpan.Subtract(MusicPlayer.Position).TotalSeconds;
+
+        if (secondsUntilEnd > 5)
+        {
+            var timespanChange = TimeSpan.FromSeconds(5);
+            var newPos = timespanChange.Add(MusicPlayer.Position);
+            MusicPlayer.Position = newPos;
+        }
+        else
+        {
+            PlayNextSong();
+            UpdateQueueUI();
+        }
     }
     
     /// <summary>
@@ -199,7 +213,7 @@ public partial class ListenPage : Page
     {
         // Update currently playing variable and label
         CurrentlyPlaying = MusicPlayer.Source.ToString();
-        CurrentSongLabel.Content = CurrentlyPlaying;
+        CurrentSongLabel.Content = Path.GetFileName(CurrentlyPlaying);
     }
 
     /// <summary>
@@ -209,6 +223,8 @@ public partial class ListenPage : Page
     {
         // Push what was played to the last played stack
         LastPlayed.Push(CurrentlyPlaying);
+
+        CurrentSongLabel.Content = ""; 
         
         // Start playing next song and update the UI 
         PlayNextSong();
@@ -239,106 +255,10 @@ public partial class ListenPage : Page
         if (string.IsNullOrEmpty(CurrentlyPlaying))
         {
             PlayNextSong();
-            UpdateQueueUI();
         }
+        
+        // Update the UI in case it needs updating
+        UpdateQueueUI();
     }
     #endregion
-}
-
-internal class Stack<T>
-{
-    private List<T> _contents;
-    private int _pointer;
-    private int _maxItems;
-
-    public Stack(int maxItems)
-    {
-        _contents = new List<T>();
-        _pointer = -1;
-        _maxItems = maxItems;
-    }
-
-    public void Push(T item)
-    {
-        _contents.Add(item);
-        _pointer++;
-        
-        // If there is more than the maximum amount of items in the stack, remove the last item in the stack
-        if (_contents.Count > _maxItems)
-        {
-            _contents.RemoveAt(0);
-        }
-    }
-
-    public T Peek()
-    {
-        if (IsEmpty())
-            return default;
-        
-        return _contents[_pointer];
-    }
-
-    public T Pop()
-    {
-        if (IsEmpty())
-            return default;
-
-        var popped = Peek(); 
-        _contents.RemoveAt(_pointer);
-        _pointer--;
-        return popped;
-    }
-
-    public bool IsEmpty()
-    {
-        return _contents.Count == 0;
-    }
-
-    public void Clear()
-    {
-        _contents.Clear();
-    }
-}
-
-internal class Queue<T>
-{
-    private List<T> _contents;
-
-    public Queue()
-    {
-        _contents = new List<T>();
-    }
-
-    public void Enqueue(T item)
-    {
-        _contents.Add(item);
-    }
-
-    public T Peek()
-    {
-        if (IsEmpty())
-            return default;
-
-        return _contents[0];
-    }
-
-    public T Dequeue()
-    {
-        if (IsEmpty())
-            return default;
-
-        var dequeued = Peek();
-        _contents.RemoveAt(0);
-        return dequeued;
-    }
-
-    public bool IsEmpty()
-    {
-        return _contents.Count == 0;
-    }
-
-    public void Clear()
-    {
-        _contents.Clear();
-    }
 }

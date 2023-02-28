@@ -74,7 +74,8 @@
             
             <Button Grid.Row="2" Content="Add to Playlist" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Width="200" Height="75" FontSize="25" FontFamily="Roboto" FontWeight="Bold" 
-                    Foreground="#044bd9" Background="#eaf205"/>
+                    Foreground="#044bd9" Background="#eaf205"
+                    Click="OnAddButtonPress"/>
         </Grid>
     </Grid>
 </Page>
