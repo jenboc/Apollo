@@ -256,6 +256,7 @@ public partial class ListenPage : Page
         if (CurrentlyPlaying == null)
         {
             ProgressUpdateTimer.Stop();
+            MediaProgressBar.Value = 0;
             return;
         }
 
