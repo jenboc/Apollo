@@ -48,7 +48,7 @@ public partial class ListenPage : Page
     }
 
     /// <summary>
-    /// Begin playing the next song 
+    /// Begin playing the next song 3
     /// </summary>
     private void PlayNextSong()
     {
@@ -164,7 +164,11 @@ public partial class ListenPage : Page
     private void OnStopButtonPress(object sender, RoutedEventArgs e)
     {
         // Stop playback
-        MusicPlayer.Stop(); 
+        MusicPlayer.Stop();
+        MusicPlayer.Close();
+
+        CurrentlyPlaying = null;
+        CurrentSongLabel.Content = "";
         
         // Wipe playlist 
         Playlist.Clear(); 
