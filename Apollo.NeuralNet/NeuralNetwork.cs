@@ -33,13 +33,32 @@ public class NeuralNetwork
     /// </summary>
     private void PopulateTrainingArray()
     {
-        var midiStrings = MidiManager.ReadDir(CurrentProfile.TrainingDataDirectory);
-        TrainingData = new Matrix[midiStrings.Count][];
+        var trainingDataFiles = Directory.GetFiles(CurrentProfile.TrainingDataDirectory)
+            .Where(filePath => filePath.EndsWith(".td")).ToArray();
 
-        Parallel.For(0, midiStrings.Count, i =>
+        if (trainingDataFiles.Length == 0) // If the folder doesn't have any training data files  
         {
-            TrainingData[i] = VocabList.PrepareTrainingData(midiStrings[i]);
-        });
+            // Convert the midi files into training data
+            var midiStrings = MidiManager.ReadDir(CurrentProfile.TrainingDataDirectory);
+            TrainingData = new Matrix[midiStrings.Count][];
+
+            Parallel.For(0, midiStrings.Count,
+                i => { TrainingData[i] = VocabList.PrepareTrainingData(midiStrings[i]); });
+            
+            // Save the just-converted training data into training data files
+            for (var i = 0; i < TrainingData.GetLength(0); i++)
+            {
+                var fileName = $"file{i}.td";
+                TrainingFileManager.Write(TrainingData[i], fileName);
+            }
+            
+            // Delete the MIDI files
+            MidiManager.PurgeDir(CurrentProfile.TrainingDataDirectory);
+        }
+        else // If training data files exist, use them instead 
+        {
+            TrainingData = TrainingFileManager.ReadDir(CurrentProfile.TrainingDataDirectory);
+        }
     }
 
     /// <summary>

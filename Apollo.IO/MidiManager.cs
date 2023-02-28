@@ -177,7 +177,20 @@ public static class MidiManager
 
 
     #endregion
-    
+
+    /// <summary>
+    /// Delete all MIDI files in a directory
+    /// </summary>
+    /// <param name="dirPath">The directory to delete from</param>
+    public static void PurgeDir(string dirPath)
+    {
+        foreach (var filePath in Directory.GetFiles(dirPath))
+        {
+            if (filePath.EndsWith(".mid") || filePath.EndsWith(".midi"))
+                File.Delete(filePath);
+        }
+    }
+
     /// <summary>
     /// Add a variable number of spaces to a string
     /// </summary>
