@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         
         <MediaElement Name="MusicPlayer" LoadedBehavior="Manual" MediaOpened="OnMediaOpened"
-                      MediaEnded="OnMediaEnded" MaxHeight="0" MaxWidth="0"></MediaElement>
+                      MediaEnded="OnMediaEnded" MaxHeight="0" MaxWidth="0"/>
         
         <!-- Music Player --> 
         <Grid Grid.Column="0" ShowGridLines="True">

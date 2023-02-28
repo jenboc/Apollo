@@ -47,6 +47,19 @@ public partial class ListenPage : Page
         NextSongLabel.Content = Path.GetFileName(Playlist.Peek());
     }
 
+    private void PlaySong(string songPath)
+    {
+        LastPlayed.Push(songPath);
+        CurrentlyPlaying = songPath;
+        
+        // Set music player source to the stored path
+        MusicPlayer.Source = new Uri(songPath);
+        MusicPlayer.Play();
+
+        // Ensure play/pause button says pause
+        PlayPauseButton.Content = "Pause";
+    }
+
     /// <summary>
     /// Begin playing the next song 3
     /// </summary>
@@ -55,14 +68,9 @@ public partial class ListenPage : Page
         // Return if there is nothing to play
         if (Playlist.IsEmpty())
             return;
-        
-        // Set music player source to the stored path
-        var nextSong = Playlist.Dequeue();
-        MusicPlayer.Source = new Uri(nextSong);
-        MusicPlayer.Play();
 
-        // Ensure play/pause button says pause
-        PlayPauseButton.Content = "Pause";
+        var nextSong = Playlist.Dequeue();
+        PlaySong(nextSong);
     }
 
     /// <summary>
@@ -115,12 +123,8 @@ public partial class ListenPage : Page
         MusicPlayer.Stop();
         
         var song = LastPlayed.Pop();
-        MusicPlayer.Source = new Uri(song);
-        MusicPlayer.Play();
-        CurrentSongLabel.Content = Path.GetFileName(song);
-        PlayPauseButton.Content = "Pause";
-        
-        // Do not need to update queue UI as nothing was taken from there
+        PlaySong(song);
+        // Do not need to update queue UI as nothing was taken from the queue
     }
     
     /// <summary>
@@ -225,10 +229,8 @@ public partial class ListenPage : Page
     /// </summary>
     private void OnMediaEnded(object sender, RoutedEventArgs e)
     {
-        // Push what was played to the last played stack
-        LastPlayed.Push(CurrentlyPlaying);
-
-        CurrentSongLabel.Content = ""; 
+        CurrentSongLabel.Content = "";
+        CurrentlyPlaying = null;
         
         // Start playing next song and update the UI 
         PlayNextSong();
