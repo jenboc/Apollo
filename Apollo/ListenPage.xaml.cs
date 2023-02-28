@@ -6,6 +6,7 @@ using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Effects;
+using System.Windows.Threading;
 using Microsoft.Win32;
 
 namespace Apollo;
@@ -15,6 +16,7 @@ public partial class ListenPage : Page
     private Stack<string> LastPlayed { get; } // Stores last 15 songs that have been played
     private Queue<string> Playlist { get; } // Stores songs that are upcoming 
     private string? CurrentlyPlaying { get; set; } // Stores path to media which is currently playing 
+    private DispatcherTimer? ProgressUpdateTimer { get; set; }
     
     public ListenPage()
     {
@@ -222,6 +224,15 @@ public partial class ListenPage : Page
         // Update currently playing variable and label
         CurrentlyPlaying = MusicPlayer.Source.ToString();
         CurrentSongLabel.Content = Path.GetFileName(CurrentlyPlaying);
+        
+        // Set up maximum 
+        MediaProgressBar.Maximum = MusicPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+        
+        // Set up timer 
+        ProgressUpdateTimer = new DispatcherTimer();
+        ProgressUpdateTimer.Interval = TimeSpan.FromSeconds(1);
+        ProgressUpdateTimer.Tick += new EventHandler(UpdateBarEvent);
+        ProgressUpdateTimer.Start();
     }
 
     /// <summary>
@@ -235,6 +246,20 @@ public partial class ListenPage : Page
         // Start playing next song and update the UI 
         PlayNextSong();
         UpdateQueueUI();
+    }
+
+    /// <summary>
+    /// Event which is called by the DispatcherTimer to update the progress bar
+    /// </summary>
+    private void UpdateBarEvent(object? sender, EventArgs e)
+    {
+        if (CurrentlyPlaying == null)
+        {
+            ProgressUpdateTimer.Stop();
+            return;
+        }
+
+        MediaProgressBar.Value = MusicPlayer.Position.TotalMilliseconds;
     }
     #endregion
     
