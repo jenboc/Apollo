@@ -32,4 +32,9 @@
       </Resource>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+      <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    </ItemGroup>
+
 </Project>

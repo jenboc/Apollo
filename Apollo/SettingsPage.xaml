@@ -84,7 +84,7 @@
             <Button Width="100" Height="50"
                     Background="#eaf205" Foreground="#044bd9"
                     FontFamily="Roboto" FontWeight="Bold" FontSize="25"
-                    Content="Change" Click="OnLogChangeClick"/>
+                    Content="Change" Click="OnProfilePathChangeClick"/>
         </StackPanel>
         
         <!-- Minimum Epochs --> 

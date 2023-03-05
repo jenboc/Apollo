@@ -48,6 +48,11 @@ public class ProfileManager
     {
         return _profiles.Values.ToArray()[0];
     }
+    
+    public void ChangeProfilesPath(string newPath)
+    {
+        ProfilesPath = newPath;
+    }
 
     /// <summary>
     /// Opens a file dialog for the user to select multiple files
@@ -174,6 +179,23 @@ public class ProfileManager
     public Profile? GetProfile(string name)
     {
         return _profiles.TryGetValue(name, out var profile) ? profile : null;
+    }
+
+    /// <summary>
+    /// Delete a profile
+    /// </summary>
+    /// <param name="name">Name of the profile to delete</param>
+    public void DeleteProfile(string name)
+    {
+        // Do not continue if the profile does not exist
+        if (!ProfileExists(name))
+            return; 
+        
+        // Get the directory of the profile 
+        var profilePath = Path.Join(ProfilesPath, name);
+        
+        // Delete directory and its contents
+        Directory.Delete(profilePath, recursive: true);
     }
     
     /// <summary>

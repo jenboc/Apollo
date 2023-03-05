@@ -8,14 +8,13 @@ namespace Apollo.IO;
 public static class LogManager
 {
     private static string LogPath { get; set; }
-    private static int DayThreshold { get; set; }
+    private const int DAY_THRESHOLD = 2;
 
     // Run on first use of log manager
     static LogManager()
     {
         // Read from settings
         LogPath = "logs";
-        DayThreshold = 2;
 
         // Create path for logs if it doesn't exist
         if (!Directory.Exists(LogPath))
@@ -26,6 +25,15 @@ public static class LogManager
         
         // Get name for log file of current session 
         DetermineFileName(); 
+    }
+
+    /// <summary>
+    /// Change log path
+    /// </summary>
+    public static void ChangeLogPath(string newPath)
+    {
+        var logName = Path.GetFileName(LogPath);
+        LogPath = Path.Join(newPath, logName);
     }
     
     /// <summary>
@@ -127,7 +135,7 @@ public static class LogManager
             // Check if created before threshold 
             var difference = DateTime.Now.Subtract(logDate);
 
-            if (difference.TotalDays >= DayThreshold)
+            if (difference.TotalDays >= DAY_THRESHOLD)
             {
                 // Delete if needed
                 File.Delete(logPath);
