@@ -13,12 +13,18 @@ public static class LogManager
     // Run on first use of log manager
     static LogManager()
     {
+        // Read from settings
         LogPath = "logs";
         DayThreshold = 2;
 
+        // Create path for logs if it doesn't exist
         if (!Directory.Exists(LogPath))
             Directory.CreateDirectory(LogPath);
         
+        // Delete any old logs first
+        DeleteOldLogs();
+        
+        // Get name for log file of current session 
         DetermineFileName(); 
     }
     
