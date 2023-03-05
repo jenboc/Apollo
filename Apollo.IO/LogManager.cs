@@ -1,4 +1,6 @@
-﻿namespace Apollo.IO;
+﻿using System.Globalization;
+
+namespace Apollo.IO;
 
 /// <summary>
 /// Class for managing and writing to a log text file 
@@ -6,11 +8,13 @@
 public static class LogManager
 {
     private static string LogPath { get; set; }
-    
+    private static int DayThreshold { get; set; }
+
     // Run on first use of log manager
     static LogManager()
     {
         LogPath = "logs";
+        DayThreshold = 2;
 
         if (!Directory.Exists(LogPath))
             Directory.CreateDirectory(LogPath);
@@ -83,5 +87,45 @@ public static class LogManager
         writer.WriteLine(data);
         writer.Flush();
         writer.Close();
+    }
+    
+    /// <summary>
+    /// Get the date from the name of the log file
+    /// </summary>
+    /// <param name="logName">The name of the log file</param>
+    /// <returns>A DateTime object of the date in the log file name</returns>
+    private static DateTime DateFromLogName(string logName)
+    {
+        // Example name: apollo_logs_2023-02-28_8.log
+        // Splitting at _'s will mean it is at index 2
+        var splitName = logName.Split('_');
+        var stringDate = splitName[2];
+        
+        return DateTime.ParseExact(stringDate, "yyyy-MM-dd", CultureInfo.CurrentCulture);
+    }
+
+    /// <summary>
+    /// Delete all old logs in the directory
+    /// </summary>
+    private static void DeleteOldLogs()
+    {
+        // Get all logs in the directory
+        var logFiles = Directory.GetFiles(LogPath).Where(fileName => fileName.EndsWith(".log"));
+
+        // Iterate through logs
+        foreach (var logPath in logFiles)
+        {
+            // Get date from filename 
+            var logDate = DateFromLogName(Path.GetFileName(logPath)); 
+
+            // Check if created before threshold 
+            var difference = DateTime.Now.Subtract(logDate);
+
+            if (difference.TotalDays >= DayThreshold)
+            {
+                // Delete if needed
+                File.Delete(logPath);
+            }
+        } 
     }
 }
