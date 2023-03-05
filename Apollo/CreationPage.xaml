@@ -31,7 +31,7 @@
         <Label Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
                FontFamily="Roboto" FontWeight="Bold" FontSize="35"
-               Foreground="#f25c05" Content="No. Characters to Generate:" />
+               Foreground="#f25c05" Content="Generation Length:" />
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="GenerationLenSlider" VerticalAlignment="Center" Width="450"
                     Minimum="5000" Maximum="50000" IsSnapToTickEnabled="True"

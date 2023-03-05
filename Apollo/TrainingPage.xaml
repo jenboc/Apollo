@@ -76,7 +76,7 @@
                Foreground="#f25c05" Content="Batches per Epoch:" />
         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="BatchesPerEpochSlider" VerticalAlignment="Center" Width="450"
-                    Minimum="10" Maximum="1000" IsSnapToTickEnabled="True"
+                    Minimum="10" Maximum="150" IsSnapToTickEnabled="True"
                     SmallChange="1"/>
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontFamily="Roboto" Foreground="#eaf205" FontSize="35"

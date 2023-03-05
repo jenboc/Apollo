@@ -25,6 +25,8 @@ public partial class SettingsPage : Page
         AddProfilesToComboBox(); 
     }
 
+    #region Helper Subroutines 
+    
     /// <summary>
     /// Procedure which adds profiles already in the ProfileManager to the combo box 
     /// </summary>
@@ -70,6 +72,10 @@ public partial class SettingsPage : Page
         Settings.SelectedProfileName = profileName;
         Settings.Save();
     }
+    
+    #endregion
+    
+    #region Events
 
     /// <summary>
     /// Event which is called when the Create Profile button is clicked
@@ -103,6 +109,70 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
+    /// Event which is called when the Delete Profile button is clicked
+    /// </summary>
+    private void OnDeleteButtonClicked(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the Logs Save Path change button is clicked
+    /// </summary>
+    private void OnLogChangeClick(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the min epochs slider is changed
+    /// </summary>
+    private void OnMinEpochChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the max epoch slider is changed
+    /// </summary>
+    private void OnMaxEpochChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the max error slider is changed
+    /// </summary>
+    private void OnMaxErrorChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the batches per epoch slider is changed
+    /// </summary>
+    private void OnBatchesPerEpochChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the characters to generate slider is changed
+    /// </summary>
+    private void OnGenLengthChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    /// Event which is called when the bpm slider is changed
+    /// </summary>
+    private void OnBpmChange(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
     /// Event which is called when the combo box's selected value changed
     /// </summary>
     private void OnProfileSelected(object sender, RoutedEventArgs e)
@@ -112,7 +182,11 @@ public partial class SettingsPage : Page
 
         ChangeProfile(selectedName);
     }
+    
+    #endregion
 
+    #region Prompts + Dialogs
+    
     /// <summary>
     /// Function which opens a text dialog and returns the entered value 
     /// </summary>
@@ -126,4 +200,6 @@ public partial class SettingsPage : Page
 
         return "";
     }
+    
+    #endregion
 }
