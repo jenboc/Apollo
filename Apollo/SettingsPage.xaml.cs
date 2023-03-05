@@ -96,6 +96,8 @@ public partial class SettingsPage : Page
         // Go through necessary steps to create the profile 
         ProfileManagement.CreateProfile(name);
 
+        ProfileComboBox.Items.Add(name);
+
         // Change the profile and value in the combo box (since it was not selected from the combo box) 
         ChangeProfile(name, changeComboBox: true); 
     }
