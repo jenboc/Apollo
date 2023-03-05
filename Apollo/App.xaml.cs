@@ -48,7 +48,7 @@ namespace Apollo
                 Settings.Save();
             }
 
-            ProfileManagement = new ProfileManager(StoredSettings.ProfilesPath);
+            ProfileManagement = new ProfileManager(Settings.ProfilesPath);
             var initialProfile = ProfileManagement.GetProfile(Settings.SelectedProfileName);
 
             if (object.ReferenceEquals(initialProfile, null))
@@ -74,6 +74,22 @@ namespace Apollo
 
             e.Handled = true;
             Shutdown(); // Close the app since the exception may have an effect on how the app runs.
+        }
+
+        /// <summary>
+        /// Is called when the application is closed
+        /// </summary>
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try 
+            {
+                // Save settings
+                Settings.Save();
+            }
+            finally
+            { 
+                base.OnExit(e);    
+            }
         }
     }
 }
