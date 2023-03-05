@@ -25,8 +25,18 @@ public partial class SettingsPage : Page
         Network = (Application.Current as App).Network;
         Settings = (Application.Current as App).Settings;
         
-        // Load the existing profiles as options in the combo box
+        // Load the existing profiles as options in the combo box and select the currently selected one 
         AddProfilesToComboBox(); 
+        
+        // Change all labels/sliders to current settings
+        LogPathLabel.Content = Settings.LogsPath;
+        ProfilePathLabel.Content = Settings.ProfilesPath;
+        MinEpochSlider.Value = Settings.MinEpochs;
+        MaxEpochSlider.Value = Settings.MaxEpochs;
+        MaxErrorSlider.Value = Settings.MaxError;
+        BatchesPerEpochSlider.Value = Settings.BatchesPerEpoch;
+        GenerationLenSlider.Value = Settings.GenerationLength;
+        BpmSlider.Value = Settings.Bpm;
     }
 
     #region Helper Subroutines 
