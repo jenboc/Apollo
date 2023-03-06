@@ -40,10 +40,12 @@ namespace Apollo
             try
             {
                 Settings = StoredSettings.Load();
+                Console.WriteLine(Settings.MinEpochs);
             }
             // If it does not exist or it isn't valid, start with fresh settings
-            catch
+            catch (Exception e)
             {
+                LogManager.WriteLine($"Settings set to default:\n{e}");
                 Settings = StoredSettings.Default();
                 Settings.Save();
             }
@@ -55,6 +57,8 @@ namespace Apollo
                 initialProfile = ProfileManagement.Any();
             
             Network = new NeuralNetwork(initialProfile, HIDDEN_SIZE, BATCH_SIZE, R);
+            
+            Console.WriteLine(Settings.MinEpochs);
         }
 
         /// <summary>

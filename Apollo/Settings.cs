@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 using Apollo.IO;
 
@@ -20,6 +21,15 @@ public class StoredSettings
     public int GenerationLength { get; set; } // Default Generation Length [GENERATION SETTINGS]
     public int Bpm { get; set; } // Default Beats per Minute [GENERATION SETTINGS]
 
+    /// <summary>
+    /// Blank Constructor for JsonSerializer
+    /// </summary>
+    public StoredSettings()
+    { }
+    
+    /// <summary>
+    /// Constructor used in StoredSettings.Default()
+    /// </summary>
     public StoredSettings(string selectedProfile, string profilesPath, string logsPath, int minEpochs, int maxEpochs,
         float maxError, int batchesPerEpoch, int generationLength, int bpm)
     {
@@ -50,6 +60,7 @@ public class StoredSettings
     public static StoredSettings Load()
     {
         var str = File.ReadAllText(SETTINGS_PATH);
+        Console.WriteLine(str);
         return JsonSerializer.Deserialize<StoredSettings>(str);
     }
 
