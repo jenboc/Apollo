@@ -9,12 +9,19 @@ namespace Apollo;
 public partial class TrainingPage : Page
 {
     private NeuralNetwork Network { get; }
+    private StoredSettings Settings { get; }
     
     public TrainingPage()
     {
-        Network = (Application.Current as App).Network; 
+        Network = (Application.Current as App).Network;
+        Settings = (Application.Current as App).Settings;
         
         InitializeComponent();
+
+        MinEpochSlider.Value = Settings.MinEpochs;
+        MaxEpochSlider.Value = Settings.MaxEpochs;
+        MaxErrorSlider.Value = Settings.MaxError;
+        BatchesPerEpochSlider.Value = Settings.BatchesPerEpoch;
     }
 
     /// <summary>

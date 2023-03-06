@@ -8,9 +8,16 @@ namespace Apollo;
 
 public partial class CreationPage : Page
 {
+    private StoredSettings Settings { get; }
+    
     public CreationPage()
     {
+        Settings = (Application.Current as App).Settings;
+
         InitializeComponent();
+
+        GenerationLenSlider.Value = Settings.GenerationLength;
+        BpmSlider.Value = Settings.Bpm;
     }
 
     /// <summary>
