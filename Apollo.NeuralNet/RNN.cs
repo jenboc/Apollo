@@ -31,6 +31,8 @@ public class Rnn
         LoadState(stateFileToLoad);
     }
 
+    private const string TEMP_STATE_PATH = "temp_state.state";
+    
     // General Parameters
     private int VocabSize { get; set; }
     public int BatchSize { get; private set; } // Accessed when generating seeds for forward prop
@@ -67,7 +69,7 @@ public class Rnn
     /// <summary>
     ///     Save the network to a binary file
     /// </summary>
-    private void SaveState(string name)
+    public void SaveState(string name)
     {
         using (var stream = File.Open(name, FileMode.Create))
         {
@@ -239,15 +241,11 @@ public class Rnn
     /// <param name="maximumEpochs">The maximum number of epochs to perform before stopping</param>
     /// <param name="maximumError">The maximum error, training will stop early if the average error is below this</param>
     /// <param name="batchesPerEpoch">The amount of batches per epoch, do not put to high or risk NaNs</param>
-    /// <param name="beforeStatePath">The path at which to write the before-training state file</param>
     /// <param name="afterStatePath">The path at which to write the after-training state file</param>
     /// <param name="r">An instance of random, to randomly select batches</param>
     public void Train(Matrix[] trainingData, int minimumEpochs, int maximumEpochs, float maximumError,
-        int batchesPerEpoch, string beforeStatePath, string afterStatePath, Random r)
+        int batchesPerEpoch, Random r)
     {
-        // Save before state
-        SaveState(beforeStatePath);
-
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
         LogManager.WriteLine($"Training input data length: {inputData.Count}");
 
@@ -265,7 +263,7 @@ public class Rnn
         float totalLoss;
         for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
-            SaveState("temp_state.state");
+            SaveState(TEMP_STATE_PATH);
             if (batchesPerEpoch <= 0) // Stop if training with 0 batches per epoch
                 break;
 
@@ -326,7 +324,7 @@ public class Rnn
             if (float.IsNaN(averageLoss))
             {
                 batchesPerEpoch -= 5;
-                LoadState(beforeStatePath);
+                LoadState(TEMP_STATE_PATH);
                 continue;
             }
 
@@ -339,11 +337,8 @@ public class Rnn
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
 
-            File.Delete("temp_state.state"); // Delete temp state file
+            File.Delete(TEMP_STATE_PATH); // Delete temp state file
         }
-
-        // Save after state
-        SaveState(afterStatePath);
     }
 
     /// <summary>

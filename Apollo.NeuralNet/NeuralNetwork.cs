@@ -84,9 +84,14 @@ public class NeuralNetwork
         if (TrainingData == null)
             PopulateTrainingArray();
 
+        // Save before state
+        Network.SaveState(CurrentProfile.BeforeStateFile);
+        
         foreach (var vectorisedFile in TrainingData)
-            Network.Train(vectorisedFile, minEpochs, maxEpochs, maxError, batchesPerEpoch,
-                CurrentProfile.BeforeStateFile, CurrentProfile.AfterStateFile, R);
+            Network.Train(vectorisedFile, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
+        
+        // Save after state
+        Network.SaveState(CurrentProfile.AfterStateFile);
     }
 
     /// <summary>
