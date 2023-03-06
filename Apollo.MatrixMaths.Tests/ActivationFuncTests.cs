@@ -3,15 +3,16 @@
 public class ActivationFuncTests
 {
     /// <summary>
-    /// Test data used for the unit tests
+    ///     Test data used for the unit tests
     /// </summary>
-    
+
     // Boundary Data
     private readonly float _sigmoidBoundary = 6.0001f;
+
     private readonly float _tanhBoundary = 4.0001f;
-    
+
     // Normal Data
-    private readonly float _testData = 3; 
+    private readonly float _testData = 3;
 
 
     [Fact]

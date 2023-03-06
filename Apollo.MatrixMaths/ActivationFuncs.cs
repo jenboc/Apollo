@@ -10,7 +10,7 @@ public class ActivationFuncs
     private static readonly int SigmoidClip = 6; // 1 / (1 + e^-x)
 
     /// <summary>
-    /// Clipped Tanh (in order to avoid NaN) 
+    ///     Clipped Tanh (in order to avoid NaN)
     /// </summary>
     public static float Tanh(float x)
     {
@@ -24,7 +24,7 @@ public class ActivationFuncs
     }
 
     /// <summary>
-    /// Derivative of hyperbolic tangent
+    ///     Derivative of hyperbolic tangent
     /// </summary>
     public static float DTanh(float x)
     {
@@ -36,7 +36,7 @@ public class ActivationFuncs
     }
 
     /// <summary>
-    /// Clipped Sigmoid function (in order to avoid NaN)
+    ///     Clipped Sigmoid function (in order to avoid NaN)
     /// </summary>
     public static float Sigmoid(float x)
     {
@@ -50,7 +50,7 @@ public class ActivationFuncs
     }
 
     /// <summary>
-    /// Derivative of the sigmoid function
+    ///     Derivative of the sigmoid function
     /// </summary>
     public static float DSigmoid(float x)
     {

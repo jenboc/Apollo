@@ -4,7 +4,7 @@ namespace Apollo;
 
 internal class Queue<T>
 {
-    private List<T> _contents;
+    private readonly List<T> _contents;
 
     public Queue()
     {

@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Apollo.IO;
-using Apollo.NeuralNet;
-using Microsoft.Win32;
-using Matrix = Apollo.MatrixMaths.Matrix;
 
 namespace Apollo;
 
@@ -22,8 +14,8 @@ public partial class MainWindow : Window
 
         // Open on the correct page
         CurrentlySelected = TrainButton;
-        
-        var buttonToHighlight = TrainButton; 
+
+        var buttonToHighlight = TrainButton;
         switch (startingPage.ToLower())
         {
             case "train":
@@ -39,24 +31,27 @@ public partial class MainWindow : Window
                 buttonToHighlight = SettingsButton;
                 break;
         }
+
         ChangePage(buttonToHighlight);
 
         Mouse.OverrideCursor = null; // Change the mouse back to default
     }
-    
-    #region Page Selection 
-    
+
+    #region Page Selection
+
     private Button CurrentlySelected { get; set; }
+
     private readonly SolidColorBrush _selectedColour =
-        new ((Color)ColorConverter.ConvertFromString("#f25c05"));
-    private readonly SolidColorBrush _unselectedColour = 
-        new ((Color)ColorConverter.ConvertFromString("#eaf205"));
-    
+        new((Color)ColorConverter.ConvertFromString("#f25c05"));
+
+    private readonly SolidColorBrush _unselectedColour =
+        new((Color)ColorConverter.ConvertFromString("#eaf205"));
+
     private void ChangePage(Button newSelected)
     {
         // Change window title
         Title = $"Apollo - {newSelected.Content}";
-        
+
         // Highlight text
         CurrentlySelected.Foreground = _unselectedColour;
         newSelected.Foreground = _selectedColour;
@@ -85,6 +80,6 @@ public partial class MainWindow : Window
         var clickedButton = (Button)sender;
         ChangePage(clickedButton);
     }
-    
+
     #endregion
 }

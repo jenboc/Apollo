@@ -1,14 +1,14 @@
-﻿using Apollo.MatrixMaths; 
+﻿using Apollo.MatrixMaths;
 
 namespace Apollo.IO;
 
 /// <summary>
-/// Static class responsible for reading and writing Training Data files 
+///     Static class responsible for reading and writing Training Data files
 /// </summary>
 public static class TrainingFileManager
 {
     /// <summary>
-    /// Write training data to a file 
+    ///     Write training data to a file
     /// </summary>
     /// <param name="trainingData">The training data to write to the file</param>
     /// <param name="filePath">The path of the file to write it to</param>
@@ -25,9 +25,9 @@ public static class TrainingFileManager
             }
         }
     }
-    
+
     /// <summary>
-    /// Read training data from a file
+    ///     Read training data from a file
     /// </summary>
     /// <param name="filePath">The path of the file to read from</param>
     /// <returns>The training data contained in the file</returns>
@@ -35,9 +35,9 @@ public static class TrainingFileManager
     {
         if (!File.Exists(filePath) || !filePath.EndsWith(".td"))
             throw new FileNotFoundException($"{filePath} is not a valid file");
-        
-        Matrix[] trainingData; 
-        
+
+        Matrix[] trainingData;
+
         using (var stream = File.Open(filePath, FileMode.Open))
         {
             using (var reader = new BinaryReader(stream))
@@ -47,10 +47,7 @@ public static class TrainingFileManager
 
                 trainingData = new Matrix[arrayLength];
 
-                for (var i = 0; i < arrayLength; i++)
-                {
-                    trainingData[i] = Matrix.ReadFromFile(reader, 1, vocabSize);
-                }
+                for (var i = 0; i < arrayLength; i++) trainingData[i] = Matrix.ReadFromFile(reader, 1, vocabSize);
             }
         }
 

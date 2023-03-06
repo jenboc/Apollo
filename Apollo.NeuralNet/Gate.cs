@@ -3,7 +3,7 @@
 namespace Apollo.NeuralNet;
 
 /// <summary>
-/// Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
+///     Gate class responsible for optimising associated weight matrices and calculations in the LSTM cell
 /// </summary>
 public class Gate
 {
@@ -21,7 +21,7 @@ public class Gate
     }
 
     /// <summary>
-    /// Create an LSTM gate using the state file
+    ///     Create an LSTM gate using the state file
     /// </summary>
     /// <param name="vocabSize">Vocab size (already read)</param>
     /// <param name="hiddenSize">Hidden size (already read)</param>
@@ -67,7 +67,7 @@ public class Gate
     }
 
     /// <summary>
-    /// Update the gate's weights
+    ///     Update the gate's weights
     /// </summary>
     /// <param name="t">Backpropagation timestep</param>
     public void Update(int t)

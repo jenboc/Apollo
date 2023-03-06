@@ -3,41 +3,40 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:Apollo"
         mc:Ignorable="d"
         Title="Apollo - Train" Height="822" Width="1171" ResizeMode="CanMinimize">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="121.17"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="121.17" />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        
-        <!-- Navigation Bar (Row 0) --> 
-        <Rectangle Grid.Row="0" Fill="#044bd9"></Rectangle>
-        
+
+        <!-- Navigation Bar (Row 0) -->
+        <Rectangle Grid.Row="0" Fill="#044bd9" />
+
         <Label Grid.Row="0" Width="100" Content="A" FontFamily="Cinzel Decorative" FontWeight="Bold" FontSize="75"
-               Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left" 
-               HorizontalContentAlignment="Center"></Label>
-        
+               Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left"
+               HorizontalContentAlignment="Center" />
+
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Button Name="TrainButton" Content="Train" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                   Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
-            <Separator Width="50" Opacity="0"></Separator>
+                    Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick" />
+            <Separator Width="50" Opacity="0" />
             <Button Name="CreateButton" Content="Create" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
-            <Separator Width="50" Opacity="0"></Separator>
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick" />
+            <Separator Width="50" Opacity="0" />
             <Button Name="ListenButton" Content="Listen" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
-            <Separator Width="50" Opacity="0"></Separator>
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick" />
+            <Separator Width="50" Opacity="0" />
             <Button Name="SettingsButton" Content="Settings" FontFamily="Roboto" FontWeight="Bold" FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Background="Transparent" BorderThickness="0" Click="ButtonClick"></Button>
+                    Background="Transparent" BorderThickness="0" Click="ButtonClick" />
         </StackPanel>
-        
-        <!-- Frame for showing the different pages of the application --> 
-        <Frame Name="PageFrame" Grid.Row="1" Background="#0b2126" NavigationUIVisibility="Hidden"></Frame>
+
+        <!-- Frame for showing the different pages of the application -->
+        <Frame Name="PageFrame" Grid.Row="1" Background="#0b2126" NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>

@@ -1,7 +1,7 @@
 ﻿namespace Apollo;
 
 /// <summary>
-/// Model for containing data about a network state profile (read from and written to a JSON file) 
+///     Model for containing data about a network state profile (read from and written to a JSON file)
 /// </summary>
 public class Profile
 {
@@ -26,7 +26,7 @@ public class Profile
         return a.BeforeStateFile == b.BeforeStateFile
                && a.AfterStateFile == b.AfterStateFile
                && a.TrainingDataDirectory == b.TrainingDataDirectory
-               && a.Vocab == b.Vocab; 
+               && a.Vocab == b.Vocab;
     }
 
     public static bool operator !=(Profile a, Profile b)

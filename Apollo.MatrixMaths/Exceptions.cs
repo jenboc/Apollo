@@ -5,13 +5,16 @@ namespace Apollo.MatrixMaths;
 internal class MatrixArithmeticException : Exception
 {
     public MatrixArithmeticException()
-    { }
+    {
+    }
 
     public MatrixArithmeticException(string message) : base(message)
-    { }
+    {
+    }
 
     public MatrixArithmeticException(string message, Exception inner) : base(message, inner)
-    { }
+    {
+    }
 }
 
 internal class InvalidShapeException : Exception

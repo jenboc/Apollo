@@ -95,7 +95,7 @@ public class Lstm
     }
 
     /// <summary>
-    /// Update the gates of the LSTM
+    ///     Update the gates of the LSTM
     /// </summary>
     /// <param name="t">Backpropagation timestep</param>
     public void Update(int t)

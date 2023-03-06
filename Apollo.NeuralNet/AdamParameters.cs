@@ -1,9 +1,9 @@
 ﻿namespace Apollo.NeuralNet;
 
 /// <summary>
-/// Static class for storing the recommended ADAM optimiser hyperparameters
+///     Static class for storing the recommended ADAM optimiser hyperparameters
 /// </summary>
-static class AdamParameters
+internal static class AdamParameters
 {
     // Recommended parameters.
     public const float ALPHA = 0.001f;

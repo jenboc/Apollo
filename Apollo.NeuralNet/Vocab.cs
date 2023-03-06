@@ -10,7 +10,7 @@ public class Vocab
     }
 
     /// <summary>
-    /// Create a vocab list from a pre-existing list
+    ///     Create a vocab list from a pre-existing list
     /// </summary>
     public Vocab(List<char> vocabList)
     {
@@ -21,7 +21,7 @@ public class Vocab
     }
 
     /// <summary>
-    /// Create vocab list from a string of data
+    ///     Create vocab list from a string of data
     /// </summary>
     public Vocab(string data)
     {
@@ -121,7 +121,7 @@ public class Vocab
     }
 
     /// <summary>
-    /// Prepare training data
+    ///     Prepare training data
     /// </summary>
     /// <param name="midiString">String representation to convert into a series of one-hot vectors</param>
     /// <returns>An array of one hot vectors</returns>
@@ -134,7 +134,7 @@ public class Vocab
     }
 
     /// <summary>
-    /// Get all characters in the list as a string
+    ///     Get all characters in the list as a string
     /// </summary>
     public string AsString()
     {

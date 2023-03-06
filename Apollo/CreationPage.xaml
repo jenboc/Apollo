@@ -3,31 +3,30 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:Apollo"
       mc:Ignorable="d"
       Title="CreationPage" Height="700.83" Width="1171"
       Background="Transparent">
     <Grid Margin="50 25 50 50">
         <Grid.RowDefinitions>
-            <RowDefinition Height="150"></RowDefinition>
-            <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="150" />
+            <RowDefinition Height="100" />
+            <RowDefinition Height="100" />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="500" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
+
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
                    Foreground="#0476d9" FontFamily="Roboto" FontSize="35">
-            Create music with Apollo. Apollo creates music by generating <LineBreak/>
-            characters. So increasing the number of characters generated will <LineBreak/>
+            Create music with Apollo. Apollo creates music by generating <LineBreak />
+            characters. So increasing the number of characters generated will <LineBreak />
             increase the length of the generated piece of music.
         </TextBlock>
-        
-        <!-- Generation Length --> 
+
+        <!-- Generation Length -->
         <Label Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
                FontFamily="Roboto" FontWeight="Bold" FontSize="35"
@@ -35,13 +34,13 @@
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="GenerationLenSlider" VerticalAlignment="Center" Width="450"
                     Minimum="5000" Maximum="50000" IsSnapToTickEnabled="True"
-                    SmallChange="100"/>
+                    SmallChange="100" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
-                   Content="{Binding ElementName=GenerationLenSlider, Path=Value}"/> 
+                   Content="{Binding ElementName=GenerationLenSlider, Path=Value}" />
         </StackPanel>
-        
-        <!-- Beats per Minute --> 
+
+        <!-- Beats per Minute -->
         <Label Grid.Row="2" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
                FontFamily="Roboto" FontWeight="Bold" FontSize="35"
@@ -49,13 +48,13 @@
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="BpmSlider" VerticalAlignment="Center" Width="450"
                     Minimum="30" Maximum="120" IsSnapToTickEnabled="True"
-                    SmallChange="100"/>
+                    SmallChange="100" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
-                   Content="{Binding ElementName=BpmSlider, Path=Value}"/> 
+                   Content="{Binding ElementName=BpmSlider, Path=Value}" />
         </StackPanel>
-        
-        <!-- Create Button --> 
+
+        <!-- Create Button -->
         <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 Width="200" Height="200"
@@ -64,7 +63,7 @@
                 Content="Create" Click="CreateButtonClicked">
             <Button.Resources>
                 <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="100"/>
+                    <Setter Property="CornerRadius" Value="100" />
                 </Style>
             </Button.Resources>
         </Button>

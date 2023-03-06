@@ -3,7 +3,7 @@ namespace Apollo.MatrixMaths.Tests;
 public class MatrixTests
 {
     /// <summary>
-    /// Test data used in the majority of the unit tests
+    ///     Test data used in the majority of the unit tests
     /// </summary>
     private readonly float[,] defaultData =
     {

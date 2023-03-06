@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Media;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
@@ -13,11 +9,6 @@ namespace Apollo;
 
 public partial class ListenPage : Page
 {
-    private Stack<string> LastPlayed { get; } // Stores last 15 songs that have been played
-    private Queue<string> Playlist { get; } // Stores songs that are upcoming 
-    private string? CurrentlyPlaying { get; set; } // Stores path to media which is currently playing 
-    private DispatcherTimer? ProgressUpdateTimer { get; set; }
-    
     public ListenPage()
     {
         InitializeComponent();
@@ -26,9 +17,14 @@ public partial class ListenPage : Page
         CurrentlyPlaying = null;
     }
 
+    private Stack<string> LastPlayed { get; } // Stores last 15 songs that have been played
+    private Queue<string> Playlist { get; } // Stores songs that are upcoming 
+    private string? CurrentlyPlaying { get; set; } // Stores path to media which is currently playing 
+    private DispatcherTimer? ProgressUpdateTimer { get; set; }
+
     /// <summary>
-    /// Update the UI elements associated with the playlist queue
-    /// (The Playlist Stack Panel and the Next Song Label)
+    ///     Update the UI elements associated with the playlist queue
+    ///     (The Playlist Stack Panel and the Next Song Label)
     /// </summary>
     private void UpdateQueueUI()
     {
@@ -39,11 +35,11 @@ public partial class ListenPage : Page
             PlaylistPanel.Children.Clear();
             return;
         }
-        
+
         // If the next song label is already correct, then nothing needs to be changed
         if (Path.GetFileName(Playlist.Peek()) == NextSongLabel.Content.ToString())
             return;
-        
+
         // Otherwise remove top child of stack panel and change next song label 
         PlaylistPanel.Children.RemoveAt(0);
         NextSongLabel.Content = Path.GetFileName(Playlist.Peek());
@@ -53,7 +49,7 @@ public partial class ListenPage : Page
     {
         LastPlayed.Push(songPath);
         CurrentlyPlaying = songPath;
-        
+
         // Set music player source to the stored path
         MusicPlayer.Source = new Uri(songPath);
         MusicPlayer.Play();
@@ -63,7 +59,7 @@ public partial class ListenPage : Page
     }
 
     /// <summary>
-    /// Begin playing the next song 3
+    ///     Begin playing the next song 3
     /// </summary>
     private void PlayNextSong()
     {
@@ -76,7 +72,7 @@ public partial class ListenPage : Page
     }
 
     /// <summary>
-    /// Adds a song to the stack panel 
+    ///     Adds a song to the stack panel
     /// </summary>
     private void AddSongToStackPanel(string filePath)
     {
@@ -94,7 +90,7 @@ public partial class ListenPage : Page
     }
 
     /// <summary>
-    /// Opens a File Dialog for the user to select a file to play
+    ///     Opens a File Dialog for the user to select a file to play
     /// </summary>
     /// <returns>The path to the file to play</returns>
     private string GetFile()
@@ -108,11 +104,39 @@ public partial class ListenPage : Page
 
         return string.Empty;
     }
-    
+
+    #region Playlist Events
+
+    /// <summary>
+    ///     Event which is called when the "Add to Playlist" button is pressed
+    /// </summary>
+    private void OnAddButtonPress(object sender, RoutedEventArgs e)
+    {
+        var filePath = GetFile();
+
+        // Do not continue if no file is provided
+        if (string.IsNullOrEmpty(filePath))
+            return;
+
+        // Add to Playlist Queue 
+        Playlist.Enqueue(filePath);
+
+        // Add file name to stack panel
+        AddSongToStackPanel(filePath);
+
+        // Play if nothing is playing 
+        if (string.IsNullOrEmpty(CurrentlyPlaying)) PlayNextSong();
+
+        // Update the UI in case it needs updating
+        UpdateQueueUI();
+    }
+
+    #endregion
+
     #region Playback Button Events
 
     /// <summary>
-    /// Event which is called when previous song button is pressed
+    ///     Event which is called when previous song button is pressed
     /// </summary>
     private void OnPreviousButtonPress(object sender, RoutedEventArgs e)
     {
@@ -123,14 +147,14 @@ public partial class ListenPage : Page
         }
 
         MusicPlayer.Stop();
-        
+
         var song = LastPlayed.Pop();
         PlaySong(song);
         // Do not need to update queue UI as nothing was taken from the queue
     }
-    
+
     /// <summary>
-    /// Event which is called when rewind 5 seconds button is pressed
+    ///     Event which is called when rewind 5 seconds button is pressed
     /// </summary>
     private void OnBack5ButtonPress(object sender, RoutedEventArgs e)
     {
@@ -138,18 +162,18 @@ public partial class ListenPage : Page
         var newPos = timespanChange.Add(MusicPlayer.Position);
         MusicPlayer.Position = newPos;
     }
-    
+
     /// <summary>
-    /// Event which is called when the play/pause button is pressed
+    ///     Event which is called when the play/pause button is pressed
     /// </summary>
     private void OnPlayPauseButtonPress(object sender, RoutedEventArgs e)
     {
         // Do not handle event if nothing is playing
         if (string.IsNullOrEmpty(CurrentlyPlaying))
             return;
-        
+
         var button = (Button)sender;
-        
+
         // If the button says play, play
         if (button.Content.ToString() == "Play")
         {
@@ -163,9 +187,9 @@ public partial class ListenPage : Page
             MusicPlayer.Pause();
         }
     }
-    
+
     /// <summary>
-    /// Event which is called when stop playback button is pressed
+    ///     Event which is called when stop playback button is pressed
     /// </summary>
     private void OnStopButtonPress(object sender, RoutedEventArgs e)
     {
@@ -175,14 +199,14 @@ public partial class ListenPage : Page
 
         CurrentlyPlaying = null;
         CurrentSongLabel.Content = "";
-        
+
         // Wipe playlist 
-        Playlist.Clear(); 
+        Playlist.Clear();
         UpdateQueueUI();
     }
-    
+
     /// <summary>
-    /// Event which is called when the fast forward 5 seconds button is pressed 
+    ///     Event which is called when the fast forward 5 seconds button is pressed
     /// </summary>
     private void OnSkip5ButtonPress(object sender, RoutedEventArgs e)
     {
@@ -203,9 +227,9 @@ public partial class ListenPage : Page
             UpdateQueueUI();
         }
     }
-    
+
     /// <summary>
-    /// Event which is called when the next song button is pressed
+    ///     Event which is called when the next song button is pressed
     /// </summary>
     private void OnNextButtonPress(object sender, RoutedEventArgs e)
     {
@@ -213,43 +237,45 @@ public partial class ListenPage : Page
         PlayNextSong();
         UpdateQueueUI();
     }
+
     #endregion
 
     #region MediaElement Events
+
     /// <summary>
-    /// Event which is called when the MediaElement has opened and loaded a piece of media
+    ///     Event which is called when the MediaElement has opened and loaded a piece of media
     /// </summary>
     private void OnMediaOpened(object sender, RoutedEventArgs e)
     {
         // Update currently playing variable and label
         CurrentlyPlaying = MusicPlayer.Source.ToString();
         CurrentSongLabel.Content = Path.GetFileName(CurrentlyPlaying);
-        
+
         // Set up maximum 
         MediaProgressBar.Maximum = MusicPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-        
+
         // Set up timer 
         ProgressUpdateTimer = new DispatcherTimer();
         ProgressUpdateTimer.Interval = TimeSpan.FromSeconds(1);
-        ProgressUpdateTimer.Tick += new EventHandler(UpdateBarEvent);
+        ProgressUpdateTimer.Tick += UpdateBarEvent;
         ProgressUpdateTimer.Start();
     }
 
     /// <summary>
-    /// Event which is called when the MediaElement has finished playing a piece of media
+    ///     Event which is called when the MediaElement has finished playing a piece of media
     /// </summary>
     private void OnMediaEnded(object sender, RoutedEventArgs e)
     {
         CurrentSongLabel.Content = "";
         CurrentlyPlaying = null;
-        
+
         // Start playing next song and update the UI 
         PlayNextSong();
         UpdateQueueUI();
     }
 
     /// <summary>
-    /// Event which is called by the DispatcherTimer to update the progress bar
+    ///     Event which is called by the DispatcherTimer to update the progress bar
     /// </summary>
     private void UpdateBarEvent(object? sender, EventArgs e)
     {
@@ -262,35 +288,6 @@ public partial class ListenPage : Page
 
         MediaProgressBar.Value = MusicPlayer.Position.TotalMilliseconds;
     }
-    #endregion
-    
-    #region Playlist Events
 
-    /// <summary>
-    /// Event which is called when the "Add to Playlist" button is pressed
-    /// </summary>
-    private void OnAddButtonPress(object sender, RoutedEventArgs e)
-    {
-        var filePath = GetFile();
-
-        // Do not continue if no file is provided
-        if (string.IsNullOrEmpty(filePath))
-            return; 
-        
-        // Add to Playlist Queue 
-        Playlist.Enqueue(filePath);
-        
-        // Add file name to stack panel
-        AddSongToStackPanel(filePath);
-        
-        // Play if nothing is playing 
-        if (string.IsNullOrEmpty(CurrentlyPlaying))
-        {
-            PlayNextSong();
-        }
-        
-        // Update the UI in case it needs updating
-        UpdateQueueUI();
-    }
     #endregion
 }

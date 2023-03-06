@@ -1,5 +1,5 @@
-﻿using Apollo.MatrixMaths;
-using Apollo.IO;
+﻿using Apollo.IO;
+using Apollo.MatrixMaths;
 
 namespace Apollo.NeuralNet;
 
@@ -10,27 +10,27 @@ public class Rnn
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
     /// <param name="batchSize">The amount of words (from the vocab) passed in a single input</param>
     /// <param name="r">Random Instance to instantiate weights</param>
-    public Rnn(int vocabSize, int hiddenSize, 
+    public Rnn(int vocabSize, int hiddenSize,
         int batchSize, Random r)
     {
         VocabSize = vocabSize;
         HiddenSize = hiddenSize;
         BatchSize = batchSize;
-        
+
         LstmCell = new Lstm(VocabSize, HiddenSize, BatchSize, r);
 
         SoftmaxWeight = new Weight(HiddenSize, VocabSize, r);
     }
 
     /// <summary>
-    /// Create an RNN object from a state file
+    ///     Create an RNN object from a state file
     /// </summary>
     /// <param name="stateFileToLoad">Path to the state file to load from</param>
     public Rnn(string stateFileToLoad)
     {
         LoadState(stateFileToLoad);
     }
-    
+
     // General Parameters
     private int VocabSize { get; set; }
     public int BatchSize { get; private set; } // Accessed when generating seeds for forward prop
@@ -100,13 +100,13 @@ public class Rnn
         {
             hiddenState = LstmCell.Forward(lstmInput, hiddenState);
             outputs[i] = hiddenState.Clone();
-            
+
             // Softmax layer
             // Apply softmax to LSTM output and interpret
             outputs[i] *= SoftmaxWeight;
             outputs[i].Softmax();
             outputs[i] = InterpretOutput(outputs[i]);
-            
+
             // Output = next input
             lstmInput = outputs[i];
         }
@@ -200,15 +200,14 @@ public class Rnn
 
             // Increment gradient for weights 
             SoftmaxWeight.Gradient += Matrix.Transpose(lstmOutputs[t]) * (predictedOutputs[t] - expectedOutputs[t]);
-            
+
             // Backprop through LSTM cell
             LstmCell.Backprop(inputs[t], dF, forgetGates[t], dI, inputGates[t], dO, outputGates[t],
                 dG, candidateStates[t], lstmOutputs[t - 1]);
-            
+
             // Update network parameters
             Update(t);
         }
-
     }
 
     /// <summary>
@@ -233,7 +232,7 @@ public class Rnn
     }
 
     /// <summary>
-    /// Train the neural network on a single file
+    ///     Train the neural network on a single file
     /// </summary>
     /// <param name="trainingData">The one-hot vector representation of the file</param>
     /// <param name="minimumEpochs">The minimum number of epochs to perform</param>
@@ -248,10 +247,10 @@ public class Rnn
     {
         // Save before state
         SaveState(beforeStatePath);
-        
+
         var (inputData, expectedOutputs) = CreateBatches(trainingData);
         LogManager.WriteLine($"Training input data length: {inputData.Count}");
-        
+
         // Previous gate/state values to be used in backpropagation
         var usedInputs = new List<Matrix>();
         var usedOutputs = new List<Matrix>();
@@ -262,17 +261,17 @@ public class Rnn
         var outputGateValues = new List<Matrix>();
         var hiddenStateValues = new List<Matrix>();
         var actualOutputValues = new List<Matrix>();
-        
+
         float totalLoss;
         for (var epoch = 0; epoch < maximumEpochs; epoch++)
         {
             SaveState("temp_state.state");
             if (batchesPerEpoch <= 0) // Stop if training with 0 batches per epoch
                 break;
-            
+
             // Clear stored values on each epoch 
             usedInputs.Clear();
-            usedOutputs.Clear(); 
+            usedOutputs.Clear();
             forgetGateValues.Clear();
             candidateStateValues.Clear();
             cellStateValues.Clear();
@@ -280,9 +279,9 @@ public class Rnn
             outputGateValues.Clear();
             hiddenStateValues.Clear();
             actualOutputValues.Clear();
-            
+
             LstmCell.Clear();
-            
+
             // Create new matrix to store the hidden state (LSTM output) 
             // Instantiated as 0s since there is no outputted hidden state at t=0
             var hiddenState = new Matrix(BatchSize, HiddenSize);
@@ -295,7 +294,7 @@ public class Rnn
             {
                 var input = inputData[i];
                 var expected = expectedOutputs[i];
-                
+
                 usedInputs.Add(input);
                 usedOutputs.Add(expected);
 
@@ -330,7 +329,7 @@ public class Rnn
                 LoadState(beforeStatePath);
                 continue;
             }
-            
+
             // Break if training can stop
             // i.e. the loss is lower than the maximum error, and we've done the minimum amount of epochs
             if (averageLoss < maximumError && epoch >= minimumEpochs)
@@ -339,10 +338,10 @@ public class Rnn
             // Backprop to reduce error
             Backprop(forgetGateValues, candidateStateValues, cellStateValues, inputGateValues, outputGateValues,
                 usedInputs, hiddenStateValues, actualOutputValues, usedOutputs);
-            
+
             File.Delete("temp_state.state"); // Delete temp state file
-        } 
-        
+        }
+
         // Save after state
         SaveState(afterStatePath);
     }

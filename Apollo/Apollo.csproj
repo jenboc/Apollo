@@ -8,33 +8,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj" />
-      <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj" />
-      <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj" />
+        <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj"/>
+        <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj"/>
+        <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Fonts\CinzelDecorative-Regular.ttf" />
-      <Resource Include="Fonts\CinzelDecorative-Regular.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <None Remove="Fonts\CinzelDecorative-Bold.ttf" />
-      <Resource Include="Fonts\CinzelDecorative-Bold.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <None Remove="Fonts\Roboto-Regular.ttf" />
-      <Resource Include="Fonts\Roboto-Regular.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
-      <None Remove="Fonts\Roboto-Bold.ttf" />
-      <Resource Include="Fonts\Roboto-Bold.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Resource>
+        <None Remove="Fonts\CinzelDecorative-Regular.ttf"/>
+        <Resource Include="Fonts\CinzelDecorative-Regular.ttf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Fonts\CinzelDecorative-Bold.ttf"/>
+        <Resource Include="Fonts\CinzelDecorative-Bold.ttf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Fonts\Roboto-Regular.ttf"/>
+        <Resource Include="Fonts\Roboto-Regular.ttf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Fonts\Roboto-Bold.ttf"/>
+        <Resource Include="Fonts\Roboto-Bold.ttf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Resource>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
-      <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4"/>
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4"/>
     </ItemGroup>
 
 </Project>

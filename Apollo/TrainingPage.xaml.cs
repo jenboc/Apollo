@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,7 +12,7 @@ public partial class TrainingPage : Page
     }
 
     /// <summary>
-    /// Collect values from slider and send them to neural network
+    ///     Collect values from slider and send them to neural network
     /// </summary>
     private void TrainButtonClicked(object sender, RoutedEventArgs e)
     {
@@ -28,7 +27,7 @@ public partial class TrainingPage : Page
                 MessageBoxButton.OK, MessageBoxImage.Exclamation);
             return;
         }
-        
+
         var maxError = (float)MaxEpochSlider.Value;
         var batchesPerEpoch = Convert.ToInt32(BatchesPerEpochSlider.Value);
 

@@ -4,9 +4,9 @@ namespace Apollo;
 
 internal class Stack<T>
 {
-    private List<T> _contents;
+    private readonly List<T> _contents;
+    private readonly int _maxItems;
     private int _pointer;
-    private int _maxItems;
 
     public Stack(int maxItems)
     {
@@ -19,19 +19,16 @@ internal class Stack<T>
     {
         _contents.Add(item);
         _pointer++;
-        
+
         // If there is more than the maximum amount of items in the stack, remove the last item in the stack
-        if (_contents.Count > _maxItems)
-        {
-            _contents.RemoveAt(0);
-        }
+        if (_contents.Count > _maxItems) _contents.RemoveAt(0);
     }
 
     public T Peek()
     {
         if (IsEmpty())
             return default;
-        
+
         return _contents[_pointer];
     }
 
@@ -40,7 +37,7 @@ internal class Stack<T>
         if (IsEmpty())
             return default;
 
-        var popped = Peek(); 
+        var popped = Peek();
         _contents.RemoveAt(_pointer);
         _pointer--;
         return popped;

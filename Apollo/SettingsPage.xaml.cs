@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Apollo.IO;
 using Apollo.NeuralNet;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -10,15 +9,8 @@ namespace Apollo;
 
 public partial class SettingsPage : Page
 {
-    /// <summary>
-    /// Objects which are used throughout the page
-    /// </summary>
-    private ProfileManager ProfileManagement { get; }
-    private NeuralNetwork Network { get; }
-    private StoredSettings Settings { get; }
+    private readonly bool _isInitialising;
 
-    private bool _isInitialising;
-    
     public SettingsPage()
     {
         // Retrieve objects from App.xaml.cs (AGGREGATION) 
@@ -29,10 +21,10 @@ public partial class SettingsPage : Page
         _isInitialising = true;
         InitializeComponent();
         _isInitialising = false;
-        
+
         // // Load the existing profiles as options in the combo box and select the currently selected one 
-        AddProfilesToComboBox(); 
-        
+        AddProfilesToComboBox();
+
         // Change all labels/sliders to current settings
         LogPathLabel.Content = Settings.LogsPath;
         ProfilePathLabel.Content = Settings.ProfilesPath;
@@ -44,10 +36,18 @@ public partial class SettingsPage : Page
         BpmSlider.Value = Settings.Bpm;
     }
 
-    #region Helper Subroutines 
-    
     /// <summary>
-    /// Procedure which adds profiles already in the ProfileManager to the combo box 
+    ///     Objects which are used throughout the page
+    /// </summary>
+    private ProfileManager ProfileManagement { get; }
+
+    private NeuralNetwork Network { get; }
+    private StoredSettings Settings { get; }
+
+    #region Helper Subroutines
+
+    /// <summary>
+    ///     Procedure which adds profiles already in the ProfileManager to the combo box
     /// </summary>
     private void AddProfilesToComboBox()
     {
@@ -55,7 +55,7 @@ public partial class SettingsPage : Page
         {
             var profileName = ProfileManagement.ProfileNames[i];
             ProfileComboBox.Items.Add(profileName);
-            
+
             // Will never be a null reference, we are retrieving profileName from the list of keys of the dictionary
             // If it is the selected profile, set it as the selected option in the combo box
             if (Network.CurrentProfile == ProfileManagement.GetProfile(profileName))
@@ -64,19 +64,19 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
-    /// Change the profile across all objects used in the application
+    ///     Change the profile across all objects used in the application
     /// </summary>
     /// <param name="profileName">The name of the profile that was selected</param>
     /// <param name="changeComboBox">Whether to change the currently selected value of the combo box</param>
-    private void ChangeProfile(string profileName, bool changeComboBox=false)
+    private void ChangeProfile(string profileName, bool changeComboBox = false)
     {
         // Retrieve profile from ProfileManager
         var profile = ProfileManagement.GetProfile(profileName);
 
         // Do not continue if the profile is not found 
-        if (object.ReferenceEquals(profile, null))
-            return; 
-        
+        if (ReferenceEquals(profile, null))
+            return;
+
         // Change the profile used in the NeuralNetwork object
         Network.ChangeProfile(profile);
 
@@ -92,9 +92,9 @@ public partial class SettingsPage : Page
         Settings.Save();
     }
 
-    
+
     /// <summary>
-    /// Delete a profile from the file system
+    ///     Delete a profile from the file system
     /// </summary>
     private void DeleteProfile(string profileName)
     {
@@ -103,21 +103,21 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
-    /// Move a folder to a new destination
+    ///     Move a folder to a new destination
     /// </summary>
     /// <param name="oldPath">The path to the directory you wish to move</param>
     /// <param name="newPath">The path to where you wish to move the directory</param>
     private void MoveFolder(string oldPath, string newPath)
     {
         Directory.CreateDirectory(newPath);
-        
+
         var files = Directory.GetFiles(oldPath);
 
         foreach (var file in files)
         {
             var filename = Path.GetFileName(file);
             var newFilePath = Path.Join(newPath, filename);
-            
+
             File.Copy(file, newFilePath);
             File.Delete(file);
         }
@@ -130,13 +130,13 @@ public partial class SettingsPage : Page
             MoveFolder(dir, newDir);
         }
     }
-    
+
     #endregion
-    
+
     #region Events
 
     /// <summary>
-    /// Event which is called when the Create Profile button is clicked
+    ///     Event which is called when the Create Profile button is clicked
     /// </summary>
     private void OnCreateButtonClicked(object sender, RoutedEventArgs e)
     {
@@ -163,11 +163,11 @@ public partial class SettingsPage : Page
         ProfileComboBox.Items.Add(name);
 
         // Change the profile and value in the combo box (since it was not selected from the combo box) 
-        ChangeProfile(name, changeComboBox: true); 
+        ChangeProfile(name, true);
     }
 
     /// <summary>
-    /// Event which is called when the Delete Profile button is clicked
+    ///     Event which is called when the Delete Profile button is clicked
     /// </summary>
     private void OnDeleteButtonClicked(object sender, RoutedEventArgs e)
     {
@@ -176,7 +176,7 @@ public partial class SettingsPage : Page
             MessageBox.Show("You cannot delete the only profile");
             return;
         }
-        
+
         var selectedIndex = ProfileComboBox.SelectedIndex;
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
@@ -186,7 +186,7 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
-    /// Event which is called when the Logs Save Path change button is clicked
+    ///     Event which is called when the Logs Save Path change button is clicked
     /// </summary>
     private void OnLogChangeClick(object sender, RoutedEventArgs e)
     {
@@ -195,17 +195,17 @@ public partial class SettingsPage : Page
 
         if (string.IsNullOrEmpty(path))
             return;
-        
+
         // Move logs that are already there
         MoveFolder(Settings.LogsPath, path);
-        
+
         // Change the path 
         Settings.LogsPath = path;
         LogManager.ChangeLogPath(Settings.LogsPath);
     }
-    
+
     /// <summary>
-    /// Event which is called when the Logs Save Path change button is clicked
+    ///     Event which is called when the Logs Save Path change button is clicked
     /// </summary>
     private void OnProfilePathChangeClick(object sender, RoutedEventArgs e)
     {
@@ -214,39 +214,39 @@ public partial class SettingsPage : Page
 
         if (string.IsNullOrEmpty(path))
             return;
-        
+
         // Move existent profiles to new location
         MoveFolder(Settings.ProfilesPath, path);
-        
+
         // Change the path
         Settings.ProfilesPath = path;
         ProfileManagement.ChangeProfilesPath(Settings.ProfilesPath);
     }
 
     /// <summary>
-    /// Event which is called when the min epochs slider is changed
+    ///     Event which is called when the min epochs slider is changed
     /// </summary>
     private void OnMinEpochChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newEpochs = (int)MinEpochSlider.Value;
         Settings.MinEpochs = newEpochs;
-        
+
         // Adjust minimum of max epochs so that min epochs > max epochs 
         // Max Epochs minimum can never be lower than 100
-        MaxEpochSlider.Minimum = (newEpochs + 1 > 100) ? newEpochs + 1 : 100; 
+        MaxEpochSlider.Minimum = newEpochs + 1 > 100 ? newEpochs + 1 : 100;
     }
 
     /// <summary>
-    /// Event which is called when the max epoch slider is changed
+    ///     Event which is called when the max epoch slider is changed
     /// </summary>
     private void OnMaxEpochChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newEpochs = (int)MaxEpochSlider.Value;
         Settings.MaxEpochs = newEpochs;
 
@@ -254,55 +254,55 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
-    /// Event which is called when the max error slider is changed
+    ///     Event which is called when the max error slider is changed
     /// </summary>
     private void OnMaxErrorChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newError = (float)MaxErrorSlider.Value;
         Settings.MaxError = newError;
     }
 
     /// <summary>
-    /// Event which is called when the batches per epoch slider is changed
+    ///     Event which is called when the batches per epoch slider is changed
     /// </summary>
     private void OnBatchesPerEpochChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newBatches = (int)BatchesPerEpochSlider.Value;
         Settings.BatchesPerEpoch = newBatches;
     }
 
     /// <summary>
-    /// Event which is called when the characters to generate slider is changed
+    ///     Event which is called when the characters to generate slider is changed
     /// </summary>
     private void OnGenLengthChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newLength = (int)GenerationLenSlider.Value;
         Settings.GenerationLength = newLength;
     }
 
     /// <summary>
-    /// Event which is called when the bpm slider is changed
+    ///     Event which is called when the bpm slider is changed
     /// </summary>
     private void OnBpmChange(object sender, RoutedEventArgs e)
     {
         if (_isInitialising)
             return;
-        
+
         var newBpm = (int)BpmSlider.Value;
         Settings.Bpm = newBpm;
     }
 
     /// <summary>
-    /// Event which is called when the combo box's selected value changed
+    ///     Event which is called when the combo box's selected value changed
     /// </summary>
     private void OnProfileSelected(object sender, RoutedEventArgs e)
     {
@@ -310,18 +310,18 @@ public partial class SettingsPage : Page
 
         if (selectedIndex == -1)
             return;
-        
+
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
         ChangeProfile(selectedName);
     }
-    
+
     #endregion
 
     #region Prompts + Dialogs
-    
+
     /// <summary>
-    /// Function which opens a text dialog and returns the entered value 
+    ///     Function which opens a text dialog and returns the entered value
     /// </summary>
     /// <returns>The value entered into the prompt</returns>
     private string OpenNamePrompt()
@@ -335,7 +335,7 @@ public partial class SettingsPage : Page
     }
 
     /// <summary>
-    /// Open a File Dialog for the user to select a directory path
+    ///     Open a File Dialog for the user to select a directory path
     /// </summary>
     /// <returns>The path selected</returns>
     private string GetPath(string currentDirectory)
@@ -344,13 +344,10 @@ public partial class SettingsPage : Page
         dialog.InitialDirectory = currentDirectory;
         dialog.IsFolderPicker = true;
 
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-        {
-            return dialog.FileName;
-        }
+        if (dialog.ShowDialog() == CommonFileDialogResult.Ok) return dialog.FileName;
 
         return string.Empty;
     }
-    
+
     #endregion
 }

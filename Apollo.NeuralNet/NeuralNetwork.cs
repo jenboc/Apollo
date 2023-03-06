@@ -5,19 +5,10 @@ using Apollo.MatrixMaths;
 namespace Apollo.NeuralNet;
 
 /// <summary>
-/// Wrapper class containing all necessary objects and methods for high level control of RNN 
+///     Wrapper class containing all necessary objects and methods for high level control of RNN
 /// </summary>
 public class NeuralNetwork
 {
-    private Rnn Network { get; set; } // RNN itself
-    public Vocab VocabList { get; set; } // The vocab used by the RNN 
-    private Matrix[][]? TrainingData { get; set; } // TrainingData used during training 
-    private int HiddenSize { get; } // The hidden size of the network
-    private int BatchSize { get; } // The batch size of the network
-    private Random R { get; } // Random instance used for ALL RNG in the network
-    public Profile CurrentProfile { get; private set; } // The profile currently being used by the network
-    
-
     public NeuralNetwork(Profile initialProfile, int hiddenSize, int batchSize, Random r)
     {
         HiddenSize = hiddenSize;
@@ -28,8 +19,16 @@ public class NeuralNetwork
         PopulateVocabList();
     }
 
+    private Rnn Network { get; set; } // RNN itself
+    public Vocab VocabList { get; set; } // The vocab used by the RNN 
+    private Matrix[][]? TrainingData { get; set; } // TrainingData used during training 
+    private int HiddenSize { get; } // The hidden size of the network
+    private int BatchSize { get; } // The batch size of the network
+    private Random R { get; } // Random instance used for ALL RNG in the network
+    public Profile CurrentProfile { get; private set; } // The profile currently being used by the network
+
     /// <summary>
-    /// Populate the training data jagged array with the profile's training data
+    ///     Populate the training data jagged array with the profile's training data
     /// </summary>
     private void PopulateTrainingArray()
     {
@@ -44,14 +43,14 @@ public class NeuralNetwork
 
             Parallel.For(0, midiStrings.Count,
                 i => { TrainingData[i] = VocabList.PrepareTrainingData(midiStrings[i]); });
-            
+
             // Save the just-converted training data into training data files
             for (var i = 0; i < midiStrings.Count; i++)
             {
                 var fileName = Path.Join(CurrentProfile.TrainingDataDirectory, $"file{i}.td");
                 TrainingFileManager.Write(TrainingData[i], fileName);
             }
-            
+
             // Delete the MIDI files
             MidiManager.PurgeDir(CurrentProfile.TrainingDataDirectory);
         }
@@ -62,7 +61,7 @@ public class NeuralNetwork
     }
 
     /// <summary>
-    /// Populate the Vocab object with the different characters used in the training data
+    ///     Populate the Vocab object with the different characters used in the training data
     /// </summary>
     private void PopulateVocabList()
     {
@@ -74,26 +73,24 @@ public class NeuralNetwork
                                 "different profile");
         }
 
-        VocabList = new Vocab(CurrentProfile.Vocab); 
+        VocabList = new Vocab(CurrentProfile.Vocab);
     }
-    
+
     /// <summary>
-    /// Train the network
+    ///     Train the network
     /// </summary>
     public void Train(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
     {
-        if (TrainingData == null) 
+        if (TrainingData == null)
             PopulateTrainingArray();
 
         foreach (var vectorisedFile in TrainingData)
-        {
             Network.Train(vectorisedFile, minEpochs, maxEpochs, maxError, batchesPerEpoch,
                 CurrentProfile.BeforeStateFile, CurrentProfile.AfterStateFile, R);
-        }
     }
 
     /// <summary>
-    /// Create a generation seed 
+    ///     Create a generation seed
     /// </summary>
     /// <returns>A matrix representing the initial input into the RNN when generating</returns>
     private Matrix CreateGenerationSeed()
@@ -110,30 +107,30 @@ public class NeuralNetwork
     }
 
     /// <summary>
-    /// Interpret a matrix which was outputted from the RNN during generation
+    ///     Interpret a matrix which was outputted from the RNN during generation
     /// </summary>
     /// <param name="outputs">What the RNN outputted during generation</param>
     /// <returns>A string representation of the RNN output which can be passed to MidiManager</returns>
     private string InterpretVectorOutput(Matrix[] outputs)
     {
         var stringOutput = new StringBuilder();
-        
+
         foreach (var output in outputs)
         {
             // The next character to be written is always the last row. 
             var rowContents = new float[1, output.Columns];
             for (var j = 0; j < output.Columns; j++) rowContents[0, j] = output[output.Rows - 1, j];
             var mat = new Matrix(rowContents);
-            
+
             // Interpret the last row of the output matrix, and add it to the string builder
-            stringOutput.Append(VocabList.InterpretOneHot(mat)); 
+            stringOutput.Append(VocabList.InterpretOneHot(mat));
         }
 
         return stringOutput.ToString();
     }
-    
+
     /// <summary>
-    /// Use the network to generate, outputting the created data to a MIDI file
+    ///     Use the network to generate, outputting the created data to a MIDI file
     /// </summary>
     /// <param name="genLength">The amount of iterations of the RNN to do</param>
     /// <param name="bpm">The beats per minute of the MIDI file</param>
@@ -142,22 +139,22 @@ public class NeuralNetwork
     {
         // Create generation seed 
         var seed = CreateGenerationSeed();
-        
+
         // Pass seed to RNN and interpret the output as a string 
         var networkOutputs = Network.Forward(seed, genLength);
         var stringOutput = InterpretVectorOutput(networkOutputs);
-        
+
         // Log generation details and string representation 
         var logBuffer = $"Generating with:\nGeneration Length: {genLength}\nBPM: {bpm}\nSave Path: {savePath}" +
                         $"\nGenerated Text:\n{stringOutput}";
         LogManager.WriteLine(logBuffer);
-        
+
         // Write and save the MIDI file using string representation
         MidiManager.WriteFile(stringOutput, savePath, bpm);
     }
-    
+
     /// <summary>
-    /// Change the state profile that the network is using
+    ///     Change the state profile that the network is using
     /// </summary>
     /// <param name="profile">The profile to change to</param>
     public void ChangeProfile(Profile profile)
@@ -165,11 +162,11 @@ public class NeuralNetwork
         // Change profile object here
         CurrentProfile = profile;
         // Wipe vocab list and populate it with relevant characters
-        VocabList = new Vocab(); 
+        VocabList = new Vocab();
         PopulateVocabList();
         // Wipe TrainingData since new profile may use different data
         TrainingData = null;
-        
+
         Console.WriteLine(VocabList.Size);
 
         // Create RNN with the data in the after state file (if it exists) 

@@ -3,11 +3,10 @@
 namespace Apollo.IO;
 
 /// <summary>
-/// Class for managing and writing to a log text file 
+///     Class for managing and writing to a log text file
 /// </summary>
 public static class LogManager
 {
-    private static string LogPath { get; set; }
     private const int DAY_THRESHOLD = 2;
 
     // Run on first use of log manager
@@ -19,25 +18,27 @@ public static class LogManager
         // Create path for logs if it doesn't exist
         if (!Directory.Exists(LogPath))
             Directory.CreateDirectory(LogPath);
-        
+
         // Delete any old logs first
         DeleteOldLogs();
-        
+
         // Get name for log file of current session 
-        DetermineFileName(); 
+        DetermineFileName();
     }
 
+    private static string LogPath { get; set; }
+
     /// <summary>
-    /// Change log path
+    ///     Change log path
     /// </summary>
     public static void ChangeLogPath(string newPath)
     {
         var logName = Path.GetFileName(LogPath);
         LogPath = Path.Join(newPath, logName);
     }
-    
+
     /// <summary>
-    /// Creates a filename which does not exist in the current log path 
+    ///     Creates a filename which does not exist in the current log path
     /// </summary>
     /// <returns></returns>
     private static void DetermineFileName()
@@ -59,9 +60,9 @@ public static class LogManager
 
         LogPath = Path.Join(LogPath, $"{fileName}{currentId}.log");
     }
-    
+
     /// <summary>
-    /// Change the path of the log files
+    ///     Change the path of the log files
     /// </summary>
     /// <param name="newPath">New path to directory where files will be located</param>
     /// <param name="transferCurrent">Whether to transfer the content of the current log</param>
@@ -70,10 +71,10 @@ public static class LogManager
         // Change root directory
         var oldPath = LogPath;
         LogPath = newPath;
-        
+
         // Determine the file name 
         DetermineFileName();
-        
+
         // Transfer the current log if required
         if (transferCurrent)
         {
@@ -83,7 +84,7 @@ public static class LogManager
     }
 
     /// <summary>
-    /// Log some data
+    ///     Log some data
     /// </summary>
     /// <param name="data">The data to log</param>
     public static void WriteLine(object data)
@@ -93,18 +94,18 @@ public static class LogManager
 
         // Create writer that does not overwrite the file
         var writer = new StreamWriter(LogPath, true);
-        
+
         // Append the time (hours:minutes:seconds:miliseconds) to the data
         var time = DateTime.Now.ToString("HH:mm:ss:fff");
         data = $"[{time}]\n{data}";
-        
+
         writer.WriteLine(data);
         writer.Flush();
         writer.Close();
     }
-    
+
     /// <summary>
-    /// Get the date from the name of the log file
+    ///     Get the date from the name of the log file
     /// </summary>
     /// <param name="logName">The name of the log file</param>
     /// <returns>A DateTime object of the date in the log file name</returns>
@@ -114,12 +115,12 @@ public static class LogManager
         // Splitting at _'s will mean it is at index 2
         var splitName = logName.Split('_');
         var stringDate = splitName[2];
-        
+
         return DateTime.ParseExact(stringDate, "yyyy-MM-dd", CultureInfo.CurrentCulture);
     }
 
     /// <summary>
-    /// Delete all old logs in the directory
+    ///     Delete all old logs in the directory
     /// </summary>
     private static void DeleteOldLogs()
     {
@@ -130,16 +131,14 @@ public static class LogManager
         foreach (var logPath in logFiles)
         {
             // Get date from filename 
-            var logDate = DateFromLogName(Path.GetFileName(logPath)); 
+            var logDate = DateFromLogName(Path.GetFileName(logPath));
 
             // Check if created before threshold 
             var difference = DateTime.Now.Subtract(logDate);
 
             if (difference.TotalDays >= DAY_THRESHOLD)
-            {
                 // Delete if needed
                 File.Delete(logPath);
-            }
-        } 
+        }
     }
 }
