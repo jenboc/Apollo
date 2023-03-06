@@ -83,12 +83,20 @@
                    Content="{Binding ElementName=BatchesPerEpochSlider, Path=Value}" />
         </StackPanel>
 
-        <!-- Train Button -->
-        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                Width="150" Height="75"
-                Background="#eaf205" Foreground="#044bd9"
-                FontFamily="Roboto" FontWeight="Bold" FontSize="50"
-                Content="Train" Click="TrainButtonClicked" />
+        <!-- Train and Revert Training Buttons -->
+        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
+                    HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="375" Height="75"
+                    Background="#eaf205" Foreground="#044bd9"
+                    FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    Content="Revert Training" Click="RevertButtonClicked" />
+            <Separator Opacity="0" Width="5"></Separator>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="150" Height="75"
+                    Background="#eaf205" Foreground="#044bd9"
+                    FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    Content="Train" Click="TrainButtonClicked" />
+        </StackPanel>
     </Grid>
 </Page>

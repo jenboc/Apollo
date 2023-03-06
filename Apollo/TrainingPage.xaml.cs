@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using Apollo.NeuralNet;
 
 namespace Apollo;
 
 public partial class TrainingPage : Page
 {
+    private NeuralNetwork Network { get; }
+    
     public TrainingPage()
     {
+        Network = (Application.Current as App).Network; 
+        
         InitializeComponent();
     }
 
@@ -31,6 +37,20 @@ public partial class TrainingPage : Page
         var maxError = (float)MaxEpochSlider.Value;
         var batchesPerEpoch = Convert.ToInt32(BatchesPerEpochSlider.Value);
 
-        (Application.Current as App).Network.Train(minEpochs, maxEpochs, maxError, batchesPerEpoch);
+        Network.Train(minEpochs, maxEpochs, maxError, batchesPerEpoch);
+    }
+
+    private void RevertButtonClicked(object sender, RoutedEventArgs e)
+    {
+        var confirmation = MessageBox.Show("Are you sure?", "Revert Training Confirmation",
+            MessageBoxButton.YesNo);
+
+        if (confirmation == MessageBoxResult.No)
+            return;
+
+        var reverted = Network.TryRevertTraining();
+
+        if (!reverted)
+            MessageBox.Show("The attempt to revert training failed");
     }
 }

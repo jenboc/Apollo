@@ -180,4 +180,18 @@ public class NeuralNetwork
             ? new Rnn(CurrentProfile.AfterStateFile)
             : new Rnn(VocabList.Size, HiddenSize, BatchSize, R);
     }
+
+    /// <summary>
+    ///     Try to revert the training done to the network
+    /// </summary>
+    public bool TryRevertTraining()
+    {
+        if (!File.Exists(CurrentProfile.BeforeStateFile))
+            return false;
+        
+        Network.LoadState(CurrentProfile.BeforeStateFile);
+        Network.SaveState(CurrentProfile.AfterStateFile);
+
+        return true;
+    }
 }
