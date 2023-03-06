@@ -16,16 +16,21 @@ public partial class SettingsPage : Page
     private ProfileManager ProfileManagement { get; }
     private NeuralNetwork Network { get; }
     private StoredSettings Settings { get; }
+
+    private bool _isInitialising;
+    
     public SettingsPage()
     {
-        InitializeComponent();
-        
         // Retrieve objects from App.xaml.cs (AGGREGATION) 
         ProfileManagement = (Application.Current as App).ProfileManagement;
         Network = (Application.Current as App).Network;
         Settings = (Application.Current as App).Settings;
+
+        _isInitialising = true;
+        InitializeComponent();
+        _isInitialising = false;
         
-        // Load the existing profiles as options in the combo box and select the currently selected one 
+        // // Load the existing profiles as options in the combo box and select the currently selected one 
         AddProfilesToComboBox(); 
         
         // Change all labels/sliders to current settings
@@ -166,10 +171,18 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnDeleteButtonClicked(object sender, RoutedEventArgs e)
     {
+        if (ProfileComboBox.Items.Count == 1)
+        {
+            MessageBox.Show("You cannot delete the only profile");
+            return;
+        }
+        
         var selectedIndex = ProfileComboBox.SelectedIndex;
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
         DeleteProfile(selectedName);
+
+        ProfileComboBox.SelectedIndex = 0;
     }
 
     /// <summary>
@@ -215,6 +228,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnMinEpochChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newEpochs = (int)MinEpochSlider.Value;
         Settings.MinEpochs = newEpochs;
         
@@ -228,6 +244,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnMaxEpochChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newEpochs = (int)MaxEpochSlider.Value;
         Settings.MaxEpochs = newEpochs;
 
@@ -239,6 +258,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnMaxErrorChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newError = (float)MaxErrorSlider.Value;
         Settings.MaxError = newError;
     }
@@ -248,6 +270,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnBatchesPerEpochChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newBatches = (int)BatchesPerEpochSlider.Value;
         Settings.BatchesPerEpoch = newBatches;
     }
@@ -257,6 +282,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnGenLengthChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newLength = (int)GenerationLenSlider.Value;
         Settings.GenerationLength = newLength;
     }
@@ -266,6 +294,9 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnBpmChange(object sender, RoutedEventArgs e)
     {
+        if (_isInitialising)
+            return;
+        
         var newBpm = (int)BpmSlider.Value;
         Settings.Bpm = newBpm;
     }
@@ -276,6 +307,10 @@ public partial class SettingsPage : Page
     private void OnProfileSelected(object sender, RoutedEventArgs e)
     {
         var selectedIndex = ProfileComboBox.SelectedIndex;
+
+        if (selectedIndex == -1)
+            return;
+        
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
         ChangeProfile(selectedName);
