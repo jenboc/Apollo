@@ -218,4 +218,16 @@ public class ProfileManager
         var jsonString = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(path, jsonString);
     }
+
+    /// <summary>
+    ///     Delete all "before training" state files [across all profiles]
+    /// </summary>
+    public void DeleteBeforeStates()
+    {
+        foreach (var profile in _profiles.Values)
+        {
+            if (File.Exists(profile.BeforeStateFile)) 
+                File.Delete(profile.BeforeStateFile);
+        }
+    }
 }

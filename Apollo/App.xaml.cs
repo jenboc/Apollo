@@ -83,6 +83,9 @@ public partial class App : Application
         {
             // Save settings
             Settings.Save();
+            
+            // Delete before states
+            ProfileManagement.DeleteBeforeStates();
         }
         finally
         {
