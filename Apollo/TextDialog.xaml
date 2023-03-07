@@ -1,10 +1,18 @@
 ﻿<Window x:Class="Apollo.TextDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="User Action Required">
-    <StackPanel>
-        <Label Name="PromptLabel" Content="Hello There" />
-        <TextBox Name="ResponseBox" />
-        <Button Content="Ok" Click="OnButtonClicked" />
+        Title="User Action Required"
+        Width="500"
+        Height="200"
+        ResizeMode="NoResize"
+        Background="#0b2126">
+    <StackPanel VerticalAlignment="Center">
+        <Label Name="PromptLabel" Content="Hello There" HorizontalAlignment="Center"
+               FontSize="30" FontFamily="Roboto" FontWeight="Bold" Foreground="#eaf205"/>
+        <TextBox Name="ResponseBox" FontFamily="Roboto" FontSize="20" Width="450"/>
+        <Separator Opacity="0" Height="2"></Separator>
+        <Button Content="Submit" Click="OnButtonClicked" HorizontalAlignment="Center"
+                FontFamily="Roboto" Foreground="#044bd9" Background="#eaf205"
+                FontSize="20" Height="30" Width="75" FontWeight="Bold"/>
     </StackPanel>
 </Window>
