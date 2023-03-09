@@ -14,25 +14,25 @@
         <!-- Column 0 -->
         <Rectangle Grid.Column="0" Fill="#044bd9" />
         <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="Apollo" FontFamily="Cinzel Decorative" FontSize="50pt" Foreground="#eaf205"
+            <Label Content="Apollo" FontFamily="{StaticResource CinzelDecorative}" FontSize="50pt" Foreground="#eaf205"
                    FontWeight="Bold" HorizontalAlignment="Center" />
-            <Label Content="generate music with ai" FontFamily="Cinzel Decorative" FontSize="20pt"
+            <Label Content="generate music with ai" FontFamily="{StaticResource CinzelDecorative}" FontSize="20pt"
                    FontWeight="Bold" HorizontalAlignment="Center" Foreground="#f25c05" />
         </StackPanel>
 
         <!-- Column 1 -->
         <Rectangle Grid.Column="1" Fill="#0b2126" />
         <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="Roboto" FontWeight="Bold"
+            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
         </StackPanel>
     </Grid>

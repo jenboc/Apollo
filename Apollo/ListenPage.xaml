@@ -25,16 +25,16 @@
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <Label Content="Next Song:" VerticalAlignment="Center"
-                       FontFamily="Roboto" FontSize="40" FontWeight="Bold" Foreground="#0476d9" />
+                       FontFamily="{StaticResource Roboto}" FontSize="40" FontWeight="Bold" Foreground="#0476d9" />
                 <Label Name="NextSongLabel" Content="No song in playlist" VerticalAlignment="Center"
-                       FontFamily="Roboto" FontSize="40" Foreground="#eaf205" />
+                       FontFamily="{StaticResource Roboto}" FontSize="40" Foreground="#eaf205" />
             </StackPanel>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <Label Content="Current Song:" VerticalAlignment="Center"
-                       FontFamily="Roboto" FontSize="40" FontWeight="Bold" Foreground="#0476d9" />
+                       FontFamily="{StaticResource Roboto}" FontSize="40" FontWeight="Bold" Foreground="#0476d9" />
                 <Label Name="CurrentSongLabel" Content="" VerticalAlignment="Center"
-                       FontFamily="Roboto" FontSize="40" Foreground="#eaf205" />
+                       FontFamily="{StaticResource Roboto}" FontSize="40" Foreground="#eaf205" />
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
@@ -84,12 +84,12 @@
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0" Content="Playlist" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" FontSize="50" FontWeight="Bold" Foreground="#f25c05" />
+                   FontFamily="{StaticResource Roboto}" FontSize="50" FontWeight="Bold" Foreground="#f25c05" />
 
             <StackPanel Grid.Row="1" Name="PlaylistPanel" Orientation="Vertical" CanVerticallyScroll="True" />
 
             <Button Grid.Row="2" Content="Add to Playlist" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Width="200" Height="75" FontSize="25" FontFamily="Roboto" FontWeight="Bold"
+                    Width="200" Height="75" FontSize="25" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
                     Foreground="#044bd9" Background="#eaf205"
                     Click="OnAddButtonPress" />
         </Grid>

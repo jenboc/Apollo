@@ -22,7 +22,7 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
-                   Foreground="#0476d9" FontFamily="Roboto" FontSize="35">
+                   Foreground="#0476d9" FontFamily="{StaticResource Roboto}" FontSize="35">
             Train the neural network. Be warned that this process can also hinder the <LineBreak />
             performance of the network.
         </TextBlock>
@@ -30,41 +30,41 @@
         <!-- Minimum Epochs -->
         <Label Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Minimum Epochs:" />
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="MinEpochSlider" VerticalAlignment="Center" Width="450"
                     Minimum="10" Maximum="500" IsSnapToTickEnabled="True"
                     SmallChange="1" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="35"
                    Content="{Binding ElementName=MinEpochSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Maximum Epochs -->
         <Label Grid.Row="2" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Maximum Epochs:" />
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="MaxEpochSlider" VerticalAlignment="Center" Width="450"
                     Minimum="100" Maximum="2000" IsSnapToTickEnabled="True"
                     SmallChange="1" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="35"
                    Content="{Binding ElementName=MaxEpochSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Maximum Error -->
         <Label Grid.Row="3" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Maximum Error:" />
         <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="MaxErrorSlider" VerticalAlignment="Center" Width="450"
                     Minimum="0" Maximum="0.5" SmallChange="0.001" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="35"
                    Content="{Binding ElementName=MaxErrorSlider, Path=Value}"
                    ContentStringFormat="{}{0:N4}" />
         </StackPanel>
@@ -72,14 +72,14 @@
         <!-- Batches per Epoch -->
         <Label Grid.Row="4" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Batches per Epoch:" />
         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="BatchesPerEpochSlider" VerticalAlignment="Center" Width="450"
                     Minimum="10" Maximum="150" IsSnapToTickEnabled="True"
                     SmallChange="1" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="35"
                    Content="{Binding ElementName=BatchesPerEpochSlider, Path=Value}" />
         </StackPanel>
 
@@ -89,13 +89,13 @@
             <Button HorizontalAlignment="Center" VerticalAlignment="Center"
                     Width="375" Height="75"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
                     Content="Revert Training" Click="RevertButtonClicked" />
             <Separator Opacity="0" Width="5"></Separator>
             <Button HorizontalAlignment="Center" VerticalAlignment="Center"
                     Width="150" Height="75"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
                     Content="Train" Click="TrainButtonClicked" />
         </StackPanel>
     </Grid>

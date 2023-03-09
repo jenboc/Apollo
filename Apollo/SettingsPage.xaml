@@ -26,14 +26,14 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
-                   Foreground="#0476d9" FontFamily="Roboto" FontSize="25">
+                   Foreground="#0476d9" FontFamily="{StaticResource Roboto}" FontSize="25">
             Apollo's Settings. Do not mess with these unless you know what you are doing.
         </TextBlock>
 
         <!-- Profile Selection -->
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label VerticalAlignment="Center" HorizontalAlignment="Right"
-                   FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                    Foreground="#f25c05" Content="Selected Profile: " />
             <ComboBox Height="50" Width="225"
                       VerticalAlignment="Center" HorizontalAlignment="Right"
@@ -44,51 +44,51 @@
             <Separator Opacity="0" Width="5" />
             <Button Width="225" Height="50"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="25"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="25"
                     Content="Create New Profile" Click="OnCreateButtonClicked" />
             <Separator Opacity="0" Width="5" />
             <Button Width="175" Height="50"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="25"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="25"
                     Content="Delete Profile" Click="OnDeleteButtonClicked" />
         </StackPanel>
 
         <!-- Logs File Path -->
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label VerticalAlignment="Center" HorizontalAlignment="Right"
-                   FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                    Foreground="#f25c05" Content="Logs Save Path: " />
             <Label Name="LogPathLabel" Content="logs/" VerticalAlignment="Center"
-                   FontFamily="Roboto" FontSize="25" Foreground="#eaf205" />
+                   FontFamily="{StaticResource Roboto}" FontSize="25" Foreground="#eaf205" />
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left">
             <Separator Opacity="0" Width="5" />
             <Button Width="100" Height="50"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="25"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="25"
                     Content="Change" Click="OnLogChangeClick" />
         </StackPanel>
 
         <!-- Profile Save Path -->
         <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label VerticalAlignment="Center" HorizontalAlignment="Right"
-                   FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+                   FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                    Foreground="#f25c05" Content="Profiles Save Path: " />
             <Label Name="ProfilePathLabel" Content="logs/" VerticalAlignment="Center"
-                   FontFamily="Roboto" FontSize="25" Foreground="#eaf205" />
+                   FontFamily="{StaticResource Roboto}" FontSize="25" Foreground="#eaf205" />
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
             <Separator Opacity="0" Width="5" />
             <Button Width="100" Height="50"
                     Background="#eaf205" Foreground="#044bd9"
-                    FontFamily="Roboto" FontWeight="Bold" FontSize="25"
+                    FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="25"
                     Content="Change" Click="OnProfilePathChangeClick" />
         </StackPanel>
 
         <!-- Minimum Epochs -->
         <Label Grid.Row="4" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Minimum Epochs:" />
         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -96,14 +96,14 @@
                     Minimum="10" Maximum="500" IsSnapToTickEnabled="True"
                     SmallChange="1" ValueChanged="OnMinEpochChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=MinEpochSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Maximum Epochs -->
         <Label Grid.Row="5" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Maximum Epochs:" />
         <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -111,14 +111,14 @@
                     Minimum="100" Maximum="2000" IsSnapToTickEnabled="True"
                     SmallChange="1" ValueChanged="OnMaxEpochChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=MaxEpochSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Maximum Error -->
         <Label Grid.Row="6" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Maximum Error:" />
         <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -126,7 +126,7 @@
                     Minimum="0" Maximum="0.5" SmallChange="0.001"
                     ValueChanged="OnMaxErrorChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=MaxErrorSlider, Path=Value}"
                    ContentStringFormat="{}{0:N4}" />
         </StackPanel>
@@ -134,7 +134,7 @@
         <!-- Batches per Epoch -->
         <Label Grid.Row="7" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Batches per Epoch:" />
         <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -142,14 +142,14 @@
                     Minimum="10" Maximum="150" IsSnapToTickEnabled="True"
                     SmallChange="1" ValueChanged="OnBatchesPerEpochChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=BatchesPerEpochSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Generation Length -->
         <Label Grid.Row="8" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Generation Length: " />
         <StackPanel Grid.Row="8" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -157,14 +157,14 @@
                     Minimum="5000" Maximum="50000" IsSnapToTickEnabled="True"
                     SmallChange="100" ValueChanged="OnGenLengthChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=GenerationLenSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Beats per Minute -->
         <Label Grid.Row="9" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Default Beats per Minute:" />
         <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Horizontal">
             <Separator Opacity="0" Width="5" />
@@ -172,7 +172,7 @@
                     Minimum="30" Maximum="120" IsSnapToTickEnabled="True"
                     SmallChange="100" ValueChanged="OnBpmChange" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="25"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=BpmSlider, Path=Value}" />
         </StackPanel>
     </Grid>

@@ -20,7 +20,7 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                    VerticalAlignment="Center"
-                   Foreground="#0476d9" FontFamily="Roboto" FontSize="35">
+                   Foreground="#0476d9" FontFamily="{StaticResource Roboto}" FontSize="35">
             Create music with Apollo. Apollo creates music by generating <LineBreak />
             characters. So increasing the number of characters generated will <LineBreak />
             increase the length of the generated piece of music.
@@ -29,28 +29,28 @@
         <!-- Generation Length -->
         <Label Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Generation Length:" />
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="GenerationLenSlider" VerticalAlignment="Center" Width="450"
                     Minimum="5000" Maximum="50000" IsSnapToTickEnabled="True"
                     SmallChange="100" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="30"
                    Content="{Binding ElementName=GenerationLenSlider, Path=Value}" />
         </StackPanel>
 
         <!-- Beats per Minute -->
         <Label Grid.Row="2" Grid.Column="0"
                VerticalAlignment="Center" HorizontalAlignment="Right"
-               FontFamily="Roboto" FontWeight="Bold" FontSize="35"
+               FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="35"
                Foreground="#f25c05" Content="Beats per Minute:" />
         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
             <Slider Name="BpmSlider" VerticalAlignment="Center" Width="450"
                     Minimum="30" Maximum="120" IsSnapToTickEnabled="True"
                     SmallChange="100" />
             <Label VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontFamily="Roboto" Foreground="#eaf205" FontSize="30"
+                   FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="30"
                    Content="{Binding ElementName=BpmSlider, Path=Value}" />
         </StackPanel>
 
@@ -59,7 +59,7 @@
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 Width="200" Height="200"
                 Background="#ff0000" Foreground="#000000"
-                FontFamily="Roboto" FontWeight="Bold" FontSize="50"
+                FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
                 Content="Create" Click="CreateButtonClicked">
             <Button.Resources>
                 <Style TargetType="Border">
