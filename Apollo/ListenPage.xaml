@@ -40,18 +40,37 @@
             <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <ProgressBar Name="MediaProgressBar" Width="600" Height="25" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Width="100" Height="100" Content="Previous"
-                            Click="OnPreviousButtonPress" />
-                    <Button Width="100" Height="100" Content="-5"
-                            Click="OnBack5ButtonPress" />
-                    <Button Name="PlayPauseButton" Width="100" Height="100" Content="Play"
-                            Click="OnPlayPauseButtonPress" />
-                    <Button Width="100" Height="100" Content="Stop"
-                            Click="OnStopButtonPress" />
-                    <Button Width="100" Height="100" Content="+5"
-                            Click="OnSkip5ButtonPress" />
-                    <Button Width="100" Height="100" Content="Skip"
-                            Click="OnNextButtonPress" />
+                    
+                    <Button Width="100" Height="100" Click="OnPreviousButtonPress" 
+                            Background="Transparent" BorderThickness="0"> 
+                        <Image Source="Images/PrevSong.png"/>  
+                    </Button>
+                    
+                    <Button Width="100" Height="100" Click="OnBack5ButtonPress"
+                            Background="Transparent" BorderThickness="0">
+                        <Image Source="Images/Prev5Sec.png"/>
+                    </Button>
+                    
+                    <Button Width="100" Height="100" Click="OnPlayPauseButtonPress"
+                            Background="Transparent" BorderThickness="0">
+                        <Image Name="PlayPauseImage" Source="Images/Play.png"/>
+                    </Button>
+                    
+                    <Button Width="100" Height="100" Click="OnStopButtonPress"
+                            Background="Transparent" BorderThickness="0">
+                        <Image Source="Images/Stop.png"/> 
+                    </Button>
+                    
+                    <Button Width="100" Height="100" Click="OnSkip5ButtonPress"
+                            Background="Transparent" BorderThickness="0">
+                        <Image Source="Images/Skip5Sec.png"/>
+                    </Button>
+                    
+                    <Button Width="100" Height="100" Click="OnNextButtonPress"
+                            Background="Transparent" BorderThickness="0">
+                        <Image Source="Images/SkipSong.png"/>
+                    </Button>
+                    
                 </StackPanel>
             </StackPanel>
         </Grid>

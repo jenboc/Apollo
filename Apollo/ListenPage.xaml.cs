@@ -2,6 +2,8 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
@@ -21,6 +23,9 @@ public partial class ListenPage : Page
     private Queue<string> Playlist { get; } // Stores songs that are upcoming 
     private string? CurrentlyPlaying { get; set; } // Stores path to media which is currently playing 
     private DispatcherTimer? ProgressUpdateTimer { get; set; }
+
+    private const string PLAY_IMAGE = "Images/Play.png";
+    private const string PAUSE_IMAGE = "Images/Pause.png";
 
     /// <summary>
     ///     Update the UI elements associated with the playlist queue
@@ -55,7 +60,7 @@ public partial class ListenPage : Page
         MusicPlayer.Play();
 
         // Ensure play/pause button says pause
-        PlayPauseButton.Content = "Pause";
+        PlayPauseImage.Source = new BitmapImage(new Uri(PAUSE_IMAGE, UriKind.Relative));
     }
 
     /// <summary>
@@ -172,18 +177,19 @@ public partial class ListenPage : Page
         if (string.IsNullOrEmpty(CurrentlyPlaying))
             return;
 
-        var button = (Button)sender;
+        var displayedImageUri = (PlayPauseImage.Source as BitmapImage).UriSource.OriginalString;
+        Console.WriteLine(displayedImageUri);
 
         // If the button says play, play
-        if (button.Content.ToString() == "Play")
+        if (displayedImageUri == PLAY_IMAGE)
         {
-            button.Content = "Pause";
+            PlayPauseImage.Source = new BitmapImage(new Uri(PAUSE_IMAGE, UriKind.Relative));
             MusicPlayer.Play();
         }
         // Otherwise pause
         else
         {
-            button.Content = "Play";
+            PlayPauseImage.Source = new BitmapImage(new Uri(PLAY_IMAGE, UriKind.Relative));
             MusicPlayer.Pause();
         }
     }
