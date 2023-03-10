@@ -25,14 +25,15 @@ public partial class App : Application
         try
         {
             Settings = StoredSettings.Load();
-            Console.WriteLine(Settings.MinEpochs);
+            LogManager.Init(Settings.LogsPath); // Initialise LogManager to use correct path 
         }
         // If it does not exist or it isn't valid, start with fresh settings
         catch (Exception e)
         {
-            LogManager.WriteLine($"Settings set to default:\n{e}");
             Settings = StoredSettings.Default();
             Settings.Save();
+            LogManager.Init(Settings.LogsPath); // Initialise LogManager to use correct path 
+            LogManager.WriteLine($"Settings set to default:\n{e}");
         }
 
         ProfileManagement = new ProfileManager(Settings.ProfilesPath);

@@ -5,15 +5,15 @@ namespace Apollo.IO;
 /// <summary>
 ///     Class for managing and writing to a log text file
 /// </summary>
-public static class LogManager
+public static class LogManager // Static class used so it is easily accessible across all libraries in the application
 {
     private const int DAY_THRESHOLD = 2;
-
-    // Run on first use of log manager
-    static LogManager()
+    public static void Init(string logPath) 
     {
+        Initialised = true; 
+        
         // Read from settings
-        LogPath = "logs";
+        LogPath = logPath;
 
         // Create path for logs if it doesn't exist
         if (!Directory.Exists(LogPath))
@@ -27,12 +27,19 @@ public static class LogManager
     }
 
     private static string LogPath { get; set; }
+    private static bool Initialised { get; set; }
 
     /// <summary>
     ///     Change log path
     /// </summary>
     public static void ChangeLogPath(string newPath)
     {
+        if (!Initialised)
+        {
+            Init(newPath);
+            return;
+        }
+        
         var logName = Path.GetFileName(LogPath);
         LogPath = Path.Join(newPath, logName);
     }
@@ -43,6 +50,9 @@ public static class LogManager
     /// <returns></returns>
     private static void DetermineFileName()
     {
+        if (!Initialised)
+            return;
+        
         // Do not continue if the LogPath is already to a file. 
         if (LogPath.EndsWith(".log")) return;
 
@@ -62,33 +72,14 @@ public static class LogManager
     }
 
     /// <summary>
-    ///     Change the path of the log files
-    /// </summary>
-    /// <param name="newPath">New path to directory where files will be located</param>
-    /// <param name="transferCurrent">Whether to transfer the content of the current log</param>
-    public static void SetPath(string newPath, bool transferCurrent)
-    {
-        // Change root directory
-        var oldPath = LogPath;
-        LogPath = newPath;
-
-        // Determine the file name 
-        DetermineFileName();
-
-        // Transfer the current log if required
-        if (transferCurrent)
-        {
-            var currentLogContents = File.ReadAllText(oldPath);
-            File.WriteAllText(LogPath, currentLogContents);
-        }
-    }
-
-    /// <summary>
     ///     Log some data
     /// </summary>
     /// <param name="data">The data to log</param>
     public static void WriteLine(object data)
     {
+        if (!Initialised)
+            return;
+        
         // Write the data to the console (if there is one) 
         Console.WriteLine(data);
 
@@ -124,6 +115,9 @@ public static class LogManager
     /// </summary>
     private static void DeleteOldLogs()
     {
+        if (!Initialised)
+            return;
+        
         // Get all logs in the directory
         var logFiles = Directory.GetFiles(LogPath).Where(fileName => fileName.EndsWith(".log"));
 

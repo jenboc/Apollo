@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using Apollo.IO;
 using Apollo.NeuralNet;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Apollo;
 
@@ -22,10 +25,27 @@ public partial class SettingsPage : Page
         InitializeComponent();
         _isInitialising = false;
 
-        // // Load the existing profiles as options in the combo box and select the currently selected one 
+        // Load the existing profiles as options in the combo box and select the currently selected one 
         AddProfilesToComboBox();
 
-        // Change all labels/sliders to current settings
+        ShowSavedSettings(); 
+    }
+
+    /// <summary>
+    ///     Objects which are used throughout the page
+    /// </summary>
+    private ProfileManager ProfileManagement { get; }
+
+    private NeuralNetwork Network { get; }
+    private StoredSettings Settings { get; set; }
+
+    #region Helper Subroutines
+
+    /// <summary>
+    /// Change all labels/sliders to current settings
+    /// </summary>
+    private void ShowSavedSettings()
+    {
         LogPathLabel.Content = Settings.LogsPath;
         ProfilePathLabel.Content = Settings.ProfilesPath;
         MinEpochSlider.Value = Settings.MinEpochs;
@@ -35,17 +55,7 @@ public partial class SettingsPage : Page
         GenerationLenSlider.Value = Settings.GenerationLength;
         BpmSlider.Value = Settings.Bpm;
     }
-
-    /// <summary>
-    ///     Objects which are used throughout the page
-    /// </summary>
-    private ProfileManager ProfileManagement { get; }
-
-    private NeuralNetwork Network { get; }
-    private StoredSettings Settings { get; }
-
-    #region Helper Subroutines
-
+    
     /// <summary>
     ///     Procedure which adds profiles already in the ProfileManager to the combo box
     /// </summary>
@@ -202,6 +212,9 @@ public partial class SettingsPage : Page
         // Change the path 
         Settings.LogsPath = path;
         LogManager.ChangeLogPath(Settings.LogsPath);
+        
+        // Change log path in the UI
+        LogPathLabel.Content = path;
     }
 
     /// <summary>
@@ -221,6 +234,9 @@ public partial class SettingsPage : Page
         // Change the path
         Settings.ProfilesPath = path;
         ProfileManagement.ChangeProfilesPath(Settings.ProfilesPath);
+        
+        // Change profile path in the UI 
+        LogPathLabel.Content = path;
     }
 
     /// <summary>
@@ -232,11 +248,15 @@ public partial class SettingsPage : Page
             return;
 
         var newEpochs = (int)MinEpochSlider.Value;
-        Settings.MinEpochs = newEpochs;
 
-        // Adjust minimum of max epochs so that min epochs > max epochs 
-        // Max Epochs minimum can never be lower than 100
-        MaxEpochSlider.Minimum = newEpochs + 1 > 100 ? newEpochs + 1 : 100;
+        if (newEpochs >= Settings.MaxEpochs)
+        {
+            MessageBox.Show("Minimum epochs must be less than maximum epochs");
+            MinEpochSlider.Value = Settings.MinEpochs;
+            return; 
+        }
+        
+        Settings.MinEpochs = newEpochs;
     }
 
     /// <summary>
@@ -248,9 +268,15 @@ public partial class SettingsPage : Page
             return;
 
         var newEpochs = (int)MaxEpochSlider.Value;
-        Settings.MaxEpochs = newEpochs;
 
-        MinEpochSlider.Maximum = newEpochs - 1;
+        if (newEpochs <= Settings.MinEpochs)
+        {
+            MessageBox.Show("Maximum epochs must be less than minimum epochs");
+            MaxEpochSlider.Value = Settings.MaxEpochs;
+            return;
+        }
+        
+        Settings.MaxEpochs = newEpochs;
     }
 
     /// <summary>
@@ -314,6 +340,15 @@ public partial class SettingsPage : Page
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
         ChangeProfile(selectedName);
+    }
+    
+    /// <summary>
+    /// Event which is called when the Reset to Defaults button is clicked
+    /// </summary>
+    private void OnResetSettingsClicked(object sender, RoutedEventArgs e)
+    {
+        Settings = StoredSettings.Default();
+        ShowSavedSettings();
     }
 
     #endregion
