@@ -41,10 +41,6 @@ public partial class ListenPage : Page
             return;
         }
 
-        // If the next song label is already correct, then nothing needs to be changed
-        if (Path.GetFileName(Playlist.Peek()) == NextSongLabel.Content.ToString())
-            return;
-
         // Otherwise remove top child of stack panel and change next song label 
         PlaylistPanel.Children.RemoveAt(0);
         NextSongLabel.Content = Path.GetFileName(Playlist.Peek());
@@ -84,8 +80,8 @@ public partial class ListenPage : Page
         // Create label to add to stack panel
         var label = new Label();
         label.Content = Path.GetFileName(filePath);
-        // label.Foreground = yellow 
-        // label.FontFamily = Roboto
+        label.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#eaf205"));
+        label.FontFamily = new FontFamily("file:///Fonts/Roboto");
         label.FontWeight = FontWeights.Bold;
         label.FontSize = 25;
         label.HorizontalAlignment = HorizontalAlignment.Left;
@@ -130,10 +126,12 @@ public partial class ListenPage : Page
         AddSongToStackPanel(filePath);
 
         // Play if nothing is playing 
-        if (string.IsNullOrEmpty(CurrentlyPlaying)) PlayNextSong();
-
-        // Update the UI in case it needs updating
-        UpdateQueueUI();
+        if (string.IsNullOrEmpty(CurrentlyPlaying))
+        {
+            PlayNextSong();
+            // Update the UI in case it needs updating
+            UpdateQueueUI();
+        }
     }
 
     #endregion

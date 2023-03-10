@@ -6,7 +6,7 @@
       mc:Ignorable="d"
       Title="ListenPage" Height="700.83" Width="1171"
       Background="Transparent">
-    <Grid Margin="50 25 50 50" ShowGridLines="True">
+    <Grid Margin="50 25 50 50">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="300" />
@@ -16,7 +16,7 @@
                       MediaEnded="OnMediaEnded" MaxHeight="0" MaxWidth="0" />
 
         <!-- Music Player -->
-        <Grid Grid.Column="0" ShowGridLines="True">
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="150" />
                 <RowDefinition Height="150" />
