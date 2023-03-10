@@ -41,6 +41,10 @@ public partial class ListenPage : Page
             return;
         }
 
+        // Nothing to update if the length of the queue at least 1 more than the number of children
+        if (Playlist.Length >= PlaylistPanel.Children.Count + 1)
+            return;
+
         // Otherwise remove top child of stack panel and change next song label 
         PlaylistPanel.Children.RemoveAt(0);
         NextSongLabel.Content = Path.GetFileName(Playlist.Peek());
@@ -129,9 +133,10 @@ public partial class ListenPage : Page
         if (string.IsNullOrEmpty(CurrentlyPlaying))
         {
             PlayNextSong();
-            // Update the UI in case it needs updating
-            UpdateQueueUI();
         }
+        
+        // Update the UI in case it needs updating
+        UpdateQueueUI();
     }
 
     #endregion
@@ -230,6 +235,7 @@ public partial class ListenPage : Page
             PlayNextSong();
             UpdateQueueUI();
         }
+        
     }
 
     /// <summary>
@@ -239,6 +245,10 @@ public partial class ListenPage : Page
     {
         MusicPlayer.Stop();
         PlayNextSong();
+
+        if (Playlist.IsEmpty())
+            CurrentSongLabel.Content = "";
+
         UpdateQueueUI();
     }
 
