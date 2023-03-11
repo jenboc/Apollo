@@ -18,9 +18,14 @@ public partial class App : Application
     {
         // Add unhandled exception handler 
         Dispatcher.UnhandledException += OnDispatcherUnhandledException;
-
+        
         R = new Random();
+    }
 
+    protected override void OnStartup(StartupEventArgs e) 
+    {
+        base.OnStartup(e);
+        
         // Load settings from settings.json if it exists and is valid 
         try
         {
@@ -28,7 +33,7 @@ public partial class App : Application
             LogManager.Init(Settings.LogsPath); // Initialise LogManager to use correct path 
         }
         // If it does not exist or it isn't valid, start with fresh settings
-        catch (Exception e)
+        catch (Exception exception)
         {
             Settings = StoredSettings.Default();
             Settings.Save();
@@ -50,11 +55,11 @@ public partial class App : Application
     /// <summary>
     ///     Objects used across all parts of the application
     /// </summary>
-    public ProfileManager ProfileManagement { get; set; }
+    public ProfileManager ProfileManagement { get; private set; }
 
     public StoredSettings Settings { get; set; }
     public Random R { get; }
-    public NeuralNetwork Network { get; }
+    public NeuralNetwork Network { get; private set; }
 
     /// <summary>
     ///     Handling unhandled exceptions

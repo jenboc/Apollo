@@ -28,8 +28,17 @@ public class ProfileManager
         _profiles = new Dictionary<string, Profile>();
         ProfilesPath = profilesPath;
         LoadFromFileSystem(); // Fill the dictionary with already existing profiles 
+        
+        if (ProfileNames.Length == 0) 
+            CreateDefaultProfile();
     }
 
+    private void CreateDefaultProfile()
+    {
+        MessageBox.Show("No training profiles found. Please close this box to create one.");
+        CreateProfile("default", true);
+    }
+    
     private string ProfilesPath { get; set; } // The path where all profiles will be found 
 
     public string[] ProfileNames => _profiles.Keys.ToArray(); // Getter for array of dictionary keys
@@ -89,13 +98,9 @@ public class ProfileManager
 
         var profileDirectories = Directory.GetDirectories(ProfilesPath);
 
-        // Create default profile if no profiles exist
+        // Stop if no profiles exist
         if (profileDirectories.Length == 0)
-        {
-            MessageBox.Show("No training profiles found. Please close this box to create one.");
-            CreateProfile("default", true);
-            profileDirectories = Directory.GetDirectories(ProfilesPath);
-        }
+            return;
 
         // Check for valid profiles (profiles with a schema.json file) 
         foreach (var dir in profileDirectories)
@@ -107,12 +112,8 @@ public class ProfileManager
 
             // Read the schema + add to dictionary
             var profile = ReadJson<Profile>(schemaPath);
-            LogManager.WriteLine(profile.TrainingDataDirectory);
 
-            // Add to dictionary if it doesn't already exist
-            // Necessary since if default directory is created here, then it will already be in dictionary 
-            if (!_profiles.ContainsKey(Path.GetFileName(dir)))
-                _profiles.Add(Path.GetFileName(dir), profile);
+            _profiles.TryAdd(Path.GetFileName(dir), profile);
         }
     }
 
@@ -138,7 +139,7 @@ public class ProfileManager
 
         // Create the profile and add it to the dictionary
         var profile = Profile.Default(profilePath);
-        _profiles.Add(name, profile);
+        _profiles.TryAdd(name, profile);
 
         // Copy the training data into the profile training data directory
         Directory.CreateDirectory(profile.TrainingDataDirectory);
