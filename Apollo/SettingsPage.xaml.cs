@@ -347,7 +347,12 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnResetSettingsClicked(object sender, RoutedEventArgs e)
     {
-        Settings = StoredSettings.Default();
+        var defaultSettings = StoredSettings.Default();
+        
+        MoveFolder(Settings.LogsPath, defaultSettings.LogsPath);
+        MoveFolder(Settings.ProfilesPath, defaultSettings.ProfilesPath);
+        
+        (Application.Current as App).Settings = defaultSettings;
         ShowSavedSettings();
     }
 
