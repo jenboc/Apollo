@@ -5,6 +5,7 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>Images\icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -44,6 +45,9 @@
         <Resource Include="Images\SkipSong.png" />
         <None Remove="Images\Stop.png" />
         <Resource Include="Images\Stop.png" />
+        <None Remove="Images\icon.png" />
+        <None Remove="Images\icon.ico" />
+        <Resource Include="Images\icon.ico" />
     </ItemGroup>
 
     <ItemGroup>
