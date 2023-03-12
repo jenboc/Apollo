@@ -45,6 +45,8 @@ public partial class TrainingPage : Page
         var batchesPerEpoch = Convert.ToInt32(BatchesPerEpochSlider.Value);
 
         Network.Train(minEpochs, maxEpochs, maxError, batchesPerEpoch);
+
+        MessageBox.Show("Training is complete.");
     }
 
     private void RevertButtonClicked(object sender, RoutedEventArgs e)

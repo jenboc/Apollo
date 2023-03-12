@@ -52,5 +52,6 @@ public partial class CreationPage : Page
 
         // Start generating with the provided parameters
         (Application.Current as App).Network.Generate(generationLength, bpm, savePath);
+        MessageBox.Show("Creation Complete.");
     }
 }
