@@ -1,4 +1,6 @@
 .idea/
 bin/
 obj/
+**/Debug
+**/Release
 Apollo.sln.DotSettings.user
