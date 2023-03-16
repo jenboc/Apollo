@@ -2,7 +2,7 @@
 
 namespace Apollo;
 
-internal class Queue<T>
+public class Queue<T>
 {
     private readonly List<T> _contents;
 

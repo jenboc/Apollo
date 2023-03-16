@@ -2,7 +2,7 @@
 
 namespace Apollo;
 
-internal class Stack<T>
+public class Stack<T>
 {
     private readonly List<T> _contents;
     private readonly int _maxItems;
@@ -17,11 +17,12 @@ internal class Stack<T>
 
     public void Push(T item)
     {
+        // Do not add item if it is at capacity 
+        if (_contents.Count == _maxItems)
+            return;
+        
         _contents.Add(item);
         _pointer++;
-
-        // If there is more than the maximum amount of items in the stack, remove the last item in the stack
-        if (_contents.Count > _maxItems) _contents.RemoveAt(0);
     }
 
     public T Peek()
