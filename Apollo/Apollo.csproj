@@ -9,49 +9,49 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj" />
-        <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj" />
-        <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj" />
+        <ProjectReference Include="..\Apollo.IO\Apollo.IO.csproj"/>
+        <ProjectReference Include="..\Apollo.MatrixMaths\Apollo.MatrixMaths.csproj"/>
+        <ProjectReference Include="..\Apollo.NeuralNet\Apollo.NeuralNet.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Fonts\CinzelDecorative-Regular.ttf" />
+        <None Remove="Fonts\CinzelDecorative-Regular.ttf"/>
         <Resource Include="Fonts\CinzelDecorative-Regular.ttf">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
-        <None Remove="Fonts\CinzelDecorative-Bold.ttf" />
+        <None Remove="Fonts\CinzelDecorative-Bold.ttf"/>
         <Resource Include="Fonts\CinzelDecorative-Bold.ttf">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
-        <None Remove="Fonts\Roboto-Regular.ttf" />
+        <None Remove="Fonts\Roboto-Regular.ttf"/>
         <Resource Include="Fonts\Roboto-Regular.ttf">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
-        <None Remove="Fonts\Roboto-Bold.ttf" />
+        <None Remove="Fonts\Roboto-Bold.ttf"/>
         <Resource Include="Fonts\Roboto-Bold.ttf">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Resource>
-        <None Remove="Images\Pause.png" />
-        <Resource Include="Images\Pause.png" />
-        <None Remove="Images\Play.png" />
-        <Resource Include="Images\Play.png" />
-        <None Remove="Images\Prev5Sec.png" />
-        <Resource Include="Images\Prev5Sec.png" />
-        <None Remove="Images\PrevSong.png" />
-        <Resource Include="Images\PrevSong.png" />
-        <None Remove="Images\Skip5Sec.png" />
-        <Resource Include="Images\Skip5Sec.png" />
-        <None Remove="Images\SkipSong.png" />
-        <Resource Include="Images\SkipSong.png" />
-        <None Remove="Images\Stop.png" />
-        <Resource Include="Images\Stop.png" />
-        <None Remove="Images\icon.png" />
-        <None Remove="Images\icon.ico" />
+        <None Remove="Images\Pause.png"/>
+        <Resource Include="Images\Pause.png"/>
+        <None Remove="Images\Play.png"/>
+        <Resource Include="Images\Play.png"/>
+        <None Remove="Images\Prev5Sec.png"/>
+        <Resource Include="Images\Prev5Sec.png"/>
+        <None Remove="Images\PrevSong.png"/>
+        <Resource Include="Images\PrevSong.png"/>
+        <None Remove="Images\Skip5Sec.png"/>
+        <Resource Include="Images\Skip5Sec.png"/>
+        <None Remove="Images\SkipSong.png"/>
+        <Resource Include="Images\SkipSong.png"/>
+        <None Remove="Images\Stop.png"/>
+        <Resource Include="Images\Stop.png"/>
+        <None Remove="Images\icon.png"/>
+        <None Remove="Images\icon.ico"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
-        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4"/>
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4"/>
     </ItemGroup>
 
 </Project>

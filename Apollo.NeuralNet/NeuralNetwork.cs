@@ -65,7 +65,9 @@ public class NeuralNetwork
     /// </summary>
     private void PopulateVocabList()
     {
-        if (CurrentProfile.Vocab.Length == 0)
+        // If the profile does not already have a vocab list saved, then it cannot be used
+        // This is because the original MIDI files will have been replaced with the training data files before this point
+        if (CurrentProfile.Vocab.Length == 0) 
         {
             var directory = Path.GetDirectoryName(CurrentProfile.AfterStateFile);
             Directory.Delete(directory, true);
@@ -73,7 +75,7 @@ public class NeuralNetwork
                                 "different profile");
         }
 
-        VocabList = new Vocab(CurrentProfile.Vocab);
+        VocabList = new Vocab(CurrentProfile.Vocab); // Create a vocab object from the stored list
     }
 
     /// <summary>
@@ -81,15 +83,16 @@ public class NeuralNetwork
     /// </summary>
     public void Train(int minEpochs, int maxEpochs, float maxError, int batchesPerEpoch)
     {
+        // Populate the array if it is empty
         if (TrainingData == null)
             PopulateTrainingArray();
 
         // Save before state
         Network.SaveState(CurrentProfile.BeforeStateFile);
-        
-        foreach (var vectorisedFile in TrainingData)
+
+        foreach (var vectorisedFile in TrainingData) // Perform a training loop for each file in the training data
             Network.Train(vectorisedFile, minEpochs, maxEpochs, maxError, batchesPerEpoch, R);
-        
+
         // Save after state
         Network.SaveState(CurrentProfile.AfterStateFile);
     }
@@ -100,15 +103,15 @@ public class NeuralNetwork
     /// <returns>A matrix representing the initial input into the RNN when generating</returns>
     private Matrix CreateGenerationSeed()
     {
-        var rows = new Matrix[Network.BatchSize];
+        var rows = new Matrix[Network.BatchSize]; // Seed must be of size VocabSize x BatchSize
 
-        for (var i = 0; i < rows.Length; i++)
+        for (var i = 0; i < rows.Length; i++) // For each row, select a character at random to be the seed
         {
             var charId = R.Next(VocabList.Size);
             rows[i] = VocabList.CreateOneHot(VocabList[charId]);
         }
 
-        return Matrix.StackArray(rows);
+        return Matrix.StackArray(rows); // Stack the array into one matrix so it can be inputted
     }
 
     /// <summary>
@@ -186,9 +189,10 @@ public class NeuralNetwork
     /// </summary>
     public bool TryRevertTraining()
     {
-        if (!File.Exists(CurrentProfile.BeforeStateFile))
+        if (!File.Exists(CurrentProfile.BeforeStateFile)) // If there is no before state, training cannot be reverted
             return false;
-        
+
+        // Load the before state file and overwrite the after state file
         Network.LoadState(CurrentProfile.BeforeStateFile);
         Network.SaveState(CurrentProfile.AfterStateFile);
 

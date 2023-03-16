@@ -8,10 +8,18 @@ namespace Apollo.IO;
 public static class LogManager // Static class used so it is easily accessible across all libraries in the application
 {
     private const int DAY_THRESHOLD = 2;
-    public static void Init(string logPath) 
+
+    private static string LogPath { get; set; }
+    private static bool Initialised { get; set; }
+
+    /// <summary>
+    ///     Method ran once at the start of the program so that the LogManager can receive the path to the logs folder
+    /// </summary>
+    /// <param name="logPath">The path where the logs will be saved</param>
+    public static void Init(string logPath)
     {
-        Initialised = true; 
-        
+        Initialised = true;
+
         // Read from settings
         LogPath = logPath;
 
@@ -26,9 +34,6 @@ public static class LogManager // Static class used so it is easily accessible a
         DetermineFileName();
     }
 
-    private static string LogPath { get; set; }
-    private static bool Initialised { get; set; }
-
     /// <summary>
     ///     Change log path
     /// </summary>
@@ -39,7 +44,7 @@ public static class LogManager // Static class used so it is easily accessible a
             Init(newPath);
             return;
         }
-        
+
         var logName = Path.GetFileName(LogPath);
         LogPath = Path.Join(newPath, logName);
     }
@@ -52,7 +57,7 @@ public static class LogManager // Static class used so it is easily accessible a
     {
         if (!Initialised)
             return;
-        
+
         // Do not continue if the LogPath is already to a file. 
         if (LogPath.EndsWith(".log")) return;
 
@@ -79,7 +84,7 @@ public static class LogManager // Static class used so it is easily accessible a
     {
         if (!Initialised)
             return;
-        
+
         // Write the data to the console (if there is one) 
         Console.WriteLine(data);
 
@@ -117,7 +122,7 @@ public static class LogManager // Static class used so it is easily accessible a
     {
         if (!Initialised)
             return;
-        
+
         // Get all logs in the directory
         var logFiles = Directory.GetFiles(LogPath).Where(fileName => fileName.EndsWith(".log"));
 

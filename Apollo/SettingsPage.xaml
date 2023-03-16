@@ -176,10 +176,10 @@
                    FontFamily="{StaticResource Roboto}" Foreground="#eaf205" FontSize="25"
                    Content="{Binding ElementName=BpmSlider, Path=Value}" />
         </StackPanel>
-        
-        <!-- Reset button --> 
-        <Button Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" 
-            Width="225" Height="50"
+
+        <!-- Reset button -->
+        <Button Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2"
+                Width="225" Height="50"
                 Background="#eaf205" Foreground="#044bd9"
                 FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="25"
                 Content="Reset to Defaults" Click="OnResetSettingsClicked" />

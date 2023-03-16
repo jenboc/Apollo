@@ -11,6 +11,9 @@ namespace Apollo;
 
 public partial class ListenPage : Page
 {
+    private const string PLAY_IMAGE = "Images/Play.png";
+    private const string PAUSE_IMAGE = "Images/Pause.png";
+
     public ListenPage()
     {
         InitializeComponent();
@@ -23,9 +26,6 @@ public partial class ListenPage : Page
     private Queue<string> Playlist { get; } // Stores songs that are upcoming 
     private string? CurrentlyPlaying { get; set; } // Stores path to media which is currently playing 
     private DispatcherTimer? ProgressUpdateTimer { get; set; }
-
-    private const string PLAY_IMAGE = "Images/Play.png";
-    private const string PAUSE_IMAGE = "Images/Pause.png";
 
     /// <summary>
     ///     Update the UI elements associated with the playlist queue
@@ -130,11 +130,8 @@ public partial class ListenPage : Page
         AddSongToStackPanel(filePath);
 
         // Play if nothing is playing 
-        if (string.IsNullOrEmpty(CurrentlyPlaying))
-        {
-            PlayNextSong();
-        }
-        
+        if (string.IsNullOrEmpty(CurrentlyPlaying)) PlayNextSong();
+
         // Update the UI in case it needs updating
         UpdateQueueUI();
     }
@@ -235,7 +232,6 @@ public partial class ListenPage : Page
             PlayNextSong();
             UpdateQueueUI();
         }
-        
     }
 
     /// <summary>
@@ -293,13 +289,14 @@ public partial class ListenPage : Page
     /// </summary>
     private void UpdateBarEvent(object? sender, EventArgs e)
     {
-        if (CurrentlyPlaying == null)
+        if (CurrentlyPlaying == null) // If nothing is playing then empty the progress bar 
         {
             ProgressUpdateTimer.Stop();
             MediaProgressBar.Value = 0;
             return;
         }
-
+        
+        // Otherwise, make it match the progress in the song
         MediaProgressBar.Value = MusicPlayer.Position.TotalMilliseconds;
     }
 

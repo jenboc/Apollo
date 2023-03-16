@@ -18,14 +18,23 @@ public partial class App : Application
     {
         // Add unhandled exception handler 
         Dispatcher.UnhandledException += OnDispatcherUnhandledException;
-        
+
         R = new Random();
     }
 
-    protected override void OnStartup(StartupEventArgs e) 
+    /// <summary>
+    ///     Objects used across all parts of the application
+    /// </summary>
+    public ProfileManager ProfileManagement { get; private set; }
+
+    public StoredSettings Settings { get; set; }
+    public Random R { get; }
+    public NeuralNetwork Network { get; private set; }
+
+    protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        
+
         // Load settings from settings.json if it exists and is valid 
         try
         {
@@ -51,15 +60,6 @@ public partial class App : Application
 
         Console.WriteLine(Settings.MinEpochs);
     }
-
-    /// <summary>
-    ///     Objects used across all parts of the application
-    /// </summary>
-    public ProfileManager ProfileManagement { get; private set; }
-
-    public StoredSettings Settings { get; set; }
-    public Random R { get; }
-    public NeuralNetwork Network { get; private set; }
 
     /// <summary>
     ///     Handling unhandled exceptions
@@ -89,7 +89,7 @@ public partial class App : Application
         {
             // Save settings
             Settings.Save();
-            
+
             // Delete before states
             ProfileManagement.DeleteBeforeStates();
         }

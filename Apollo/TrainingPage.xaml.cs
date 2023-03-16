@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Apollo.NeuralNet;
 
 namespace Apollo;
 
 public partial class TrainingPage : Page
 {
-    private NeuralNetwork Network { get; }
-    private StoredSettings Settings { get; }
-    
     public TrainingPage()
     {
         Network = (Application.Current as App).Network;
         Settings = (Application.Current as App).Settings;
-        
+
         InitializeComponent();
 
         MinEpochSlider.Value = Settings.MinEpochs;
@@ -23,6 +19,9 @@ public partial class TrainingPage : Page
         MaxErrorSlider.Value = Settings.MaxError;
         BatchesPerEpochSlider.Value = Settings.BatchesPerEpoch;
     }
+
+    private NeuralNetwork Network { get; }
+    private StoredSettings Settings { get; }
 
     /// <summary>
     ///     Collect values from slider and send them to neural network

@@ -9,7 +9,12 @@ public class Profile
     public string AfterStateFile { get; set; }
     public string TrainingDataDirectory { get; set; }
     public string Vocab { get; set; }
-
+    
+    /// <summary>
+    ///     Returns the default profile 
+    /// </summary>
+    /// <param name="pathToFiles">Path to the files associated with the new profile</param>
+    /// <returns>A profile containing default data</returns>
     public static Profile Default(string pathToFiles)
     {
         var profile = new Profile();
@@ -20,7 +25,13 @@ public class Profile
 
         return profile;
     }
-
+    
+    /// <summary>
+    ///     Evaluates whether two profiles are the same
+    /// </summary>
+    /// <param name="a">The first profile</param>
+    /// <param name="b">The second profile</param>
+    /// <returns>A boolean depicting whether the two contain the exact same data or not</returns>
     public static bool operator ==(Profile a, Profile b)
     {
         return a.BeforeStateFile == b.BeforeStateFile
@@ -28,7 +39,13 @@ public class Profile
                && a.TrainingDataDirectory == b.TrainingDataDirectory
                && a.Vocab == b.Vocab;
     }
-
+    
+    /// <summary>
+    ///     Evaluates whether two profiles are different
+    /// </summary>
+    /// <param name="a">The first profile</param>
+    /// <param name="b">The second profile</param>
+    /// <returns>A boolean depicting whether the two contain different data or not</returns>
     public static bool operator !=(Profile a, Profile b)
     {
         return !(a == b);

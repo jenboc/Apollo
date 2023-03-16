@@ -8,8 +8,6 @@ namespace Apollo;
 
 public partial class CreationPage : Page
 {
-    private StoredSettings Settings { get; }
-    
     public CreationPage()
     {
         Settings = (Application.Current as App).Settings;
@@ -19,6 +17,8 @@ public partial class CreationPage : Page
         GenerationLenSlider.Value = Settings.GenerationLength;
         BpmSlider.Value = Settings.Bpm;
     }
+
+    private StoredSettings Settings { get; }
 
     /// <summary>
     ///     Opens a SaveFileDialog for the user

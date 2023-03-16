@@ -53,7 +53,12 @@ public static class TrainingFileManager
 
         return trainingData;
     }
-
+    
+    /// <summary>
+    ///     Calls TrainingFileManager.Read on all training data files in a directory.
+    /// </summary>
+    /// <param name="dirPath">The directory to read from</param>
+    /// <returns>An array of the data retrieved from the directory</returns>
     public static Matrix[][] ReadDir(string dirPath)
     {
         if (!Directory.Exists(dirPath))

@@ -28,20 +28,20 @@ public class ProfileManager
         _profiles = new Dictionary<string, Profile>();
         ProfilesPath = profilesPath;
         LoadFromFileSystem(); // Fill the dictionary with already existing profiles 
-        
-        if (ProfileNames.Length == 0) 
+
+        if (ProfileNames.Length == 0)
             CreateDefaultProfile();
     }
+
+    private string ProfilesPath { get; set; } // The path where all profiles will be found 
+
+    public string[] ProfileNames => _profiles.Keys.ToArray(); // Getter for array of dictionary keys
 
     private void CreateDefaultProfile()
     {
         MessageBox.Show("No training profiles found. Please close this box to create one.");
         CreateProfile("default", true);
     }
-    
-    private string ProfilesPath { get; set; } // The path where all profiles will be found 
-
-    public string[] ProfileNames => _profiles.Keys.ToArray(); // Getter for array of dictionary keys
 
     /// <summary>
     ///     Check if a profile with a name exists
@@ -162,9 +162,9 @@ public class ProfileManager
     private string GetVocabList(Profile profile)
     {
         var vocabList = new Vocab();
-
+        
+        // Retrieve string representations of the training data and pass them to the vocab list 
         var stringReps = MidiManager.ReadDir(profile.TrainingDataDirectory);
-
         Parallel.ForEach(stringReps, rep => { vocabList.AddCharacters(rep.ToCharArray()); });
 
         return vocabList.AsString();
@@ -226,9 +226,7 @@ public class ProfileManager
     public void DeleteBeforeStates()
     {
         foreach (var profile in _profiles.Values)
-        {
-            if (File.Exists(profile.BeforeStateFile)) 
+            if (File.Exists(profile.BeforeStateFile))
                 File.Delete(profile.BeforeStateFile);
-        }
     }
 }

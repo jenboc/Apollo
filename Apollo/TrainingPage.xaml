@@ -91,7 +91,7 @@
                     Background="#eaf205" Foreground="#044bd9"
                     FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
                     Content="Revert Training" Click="RevertButtonClicked" />
-            <Separator Opacity="0" Width="5"></Separator>
+            <Separator Opacity="0" Width="5" />
             <Button HorizontalAlignment="Center" VerticalAlignment="Center"
                     Width="150" Height="75"
                     Background="#eaf205" Foreground="#044bd9"

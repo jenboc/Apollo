@@ -5,6 +5,8 @@ namespace Apollo.NeuralNet;
 
 public class Rnn
 {
+    private const string TEMP_STATE_PATH = "temp_state.state";
+
     /// <param name="profile">Profile object containing state data for the network</param>
     /// <param name="vocabSize">The amount of words in the vocabulary list</param>
     /// <param name="hiddenSize">Size which depicts shape of hidden layer weights</param>
@@ -31,8 +33,6 @@ public class Rnn
         LoadState(stateFileToLoad);
     }
 
-    private const string TEMP_STATE_PATH = "temp_state.state";
-    
     // General Parameters
     private int VocabSize { get; set; }
     public int BatchSize { get; private set; } // Accessed when generating seeds for forward prop

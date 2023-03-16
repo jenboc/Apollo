@@ -28,7 +28,7 @@ internal struct Note
 
     public bool IsIncomplete()
     {
-        // A note is "incomplete" if it doesn't have a data value for all 3 parts of a note
+        // A note is "incomplete" if either the note name or the octave does not have an assigned value 
         return Octave == -1 || NoteName == ' ';
     }
 }

@@ -8,11 +8,11 @@
         Background="#0b2126">
     <StackPanel VerticalAlignment="Center">
         <Label Name="PromptLabel" Content="Hello There" HorizontalAlignment="Center"
-               FontSize="30" FontFamily="{StaticResource Roboto}" FontWeight="Bold" Foreground="#eaf205"/>
-        <TextBox Name="ResponseBox" FontFamily="{StaticResource Roboto}" FontSize="20" Width="450"/>
-        <Separator Opacity="0" Height="2"></Separator>
+               FontSize="30" FontFamily="{StaticResource Roboto}" FontWeight="Bold" Foreground="#eaf205" />
+        <TextBox Name="ResponseBox" FontFamily="{StaticResource Roboto}" FontSize="20" Width="450" />
+        <Separator Opacity="0" Height="2" />
         <Button Content="Submit" Click="OnButtonClicked" HorizontalAlignment="Center"
                 FontFamily="{StaticResource Roboto}" Foreground="#044bd9" Background="#eaf205"
-                FontSize="20" Height="30" Width="75" FontWeight="Bold"/>
+                FontSize="20" Height="30" Width="75" FontWeight="Bold" />
     </StackPanel>
 </Window>

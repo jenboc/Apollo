@@ -1,12 +1,9 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using Apollo.IO;
 using Apollo.NeuralNet;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
 
 namespace Apollo;
 
@@ -28,7 +25,7 @@ public partial class SettingsPage : Page
         // Load the existing profiles as options in the combo box and select the currently selected one 
         AddProfilesToComboBox();
 
-        ShowSavedSettings(); 
+        ShowSavedSettings();
     }
 
     /// <summary>
@@ -37,12 +34,12 @@ public partial class SettingsPage : Page
     private ProfileManager ProfileManagement { get; }
 
     private NeuralNetwork Network { get; }
-    private StoredSettings Settings { get; set; }
+    private StoredSettings Settings { get; }
 
     #region Helper Subroutines
 
     /// <summary>
-    /// Change all labels/sliders to current settings
+    ///     Change all labels/sliders to current settings
     /// </summary>
     private void ShowSavedSettings()
     {
@@ -55,7 +52,7 @@ public partial class SettingsPage : Page
         GenerationLenSlider.Value = Settings.GenerationLength;
         BpmSlider.Value = Settings.Bpm;
     }
-    
+
     /// <summary>
     ///     Procedure which adds profiles already in the ProfileManager to the combo box
     /// </summary>
@@ -119,11 +116,11 @@ public partial class SettingsPage : Page
     /// <param name="newPath">The path to where you wish to move the directory</param>
     private void MoveFolder(string oldPath, string newPath)
     {
-        Directory.CreateDirectory(newPath);
+        Directory.CreateDirectory(newPath); // Create new directory in new location
 
         var files = Directory.GetFiles(oldPath);
 
-        foreach (var file in files)
+        foreach (var file in files) // Move files to new destination one by one 
         {
             var filename = Path.GetFileName(file);
             var newFilePath = Path.Join(newPath, filename);
@@ -137,7 +134,7 @@ public partial class SettingsPage : Page
         {
             var dirname = Path.GetFileName(dir);
             var newDir = Path.Join(newPath, dirname);
-            MoveFolder(dir, newDir);
+            MoveFolder(dir, newDir); // Use recursion to move contents of every directory in the parent directory
         }
     }
 
@@ -181,17 +178,19 @@ public partial class SettingsPage : Page
     /// </summary>
     private void OnDeleteButtonClicked(object sender, RoutedEventArgs e)
     {
-        if (ProfileComboBox.Items.Count == 1)
+        if (ProfileComboBox.Items.Count == 1) // Do not allow the user to delete if there is only 1 profile
         {
             MessageBox.Show("You cannot delete the only profile");
             return;
         }
-
+        
+        // Retrieve the identifier for the profile the user wants to delete
         var selectedIndex = ProfileComboBox.SelectedIndex;
         var selectedName = (string)ProfileComboBox.Items.GetItemAt(selectedIndex);
 
         DeleteProfile(selectedName);
 
+        // Select the profile at the top of the combo box
         ProfileComboBox.SelectedIndex = 0;
     }
 
@@ -212,7 +211,7 @@ public partial class SettingsPage : Page
         // Change the path 
         Settings.LogsPath = path;
         LogManager.ChangeLogPath(Settings.LogsPath);
-        
+
         // Change log path in the UI
         LogPathLabel.Content = path;
     }
@@ -234,7 +233,7 @@ public partial class SettingsPage : Page
         // Change the path
         Settings.ProfilesPath = path;
         ProfileManagement.ChangeProfilesPath(Settings.ProfilesPath);
-        
+
         // Change profile path in the UI 
         LogPathLabel.Content = path;
     }
@@ -249,13 +248,13 @@ public partial class SettingsPage : Page
 
         var newEpochs = (int)MinEpochSlider.Value;
 
-        if (newEpochs >= Settings.MaxEpochs)
+        if (newEpochs >= Settings.MaxEpochs) // Do not allow the user to select a value higher than maximum epochs
         {
             MessageBox.Show("Minimum epochs must be less than maximum epochs");
             MinEpochSlider.Value = Settings.MinEpochs;
-            return; 
+            return;
         }
-        
+
         Settings.MinEpochs = newEpochs;
     }
 
@@ -269,13 +268,13 @@ public partial class SettingsPage : Page
 
         var newEpochs = (int)MaxEpochSlider.Value;
 
-        if (newEpochs <= Settings.MinEpochs)
+        if (newEpochs <= Settings.MinEpochs) // Do not allow the user to select a value lower than minimum epochs
         {
             MessageBox.Show("Maximum epochs must be less than minimum epochs");
             MaxEpochSlider.Value = Settings.MaxEpochs;
             return;
         }
-        
+
         Settings.MaxEpochs = newEpochs;
     }
 
@@ -341,17 +340,18 @@ public partial class SettingsPage : Page
 
         ChangeProfile(selectedName);
     }
-    
+
     /// <summary>
-    /// Event which is called when the Reset to Defaults button is clicked
+    ///     Event which is called when the Reset to Defaults button is clicked
     /// </summary>
     private void OnResetSettingsClicked(object sender, RoutedEventArgs e)
     {
-        var defaultSettings = StoredSettings.Default();
+        var defaultSettings = StoredSettings.Default(); // Create new settings object with default settings
         
-        MoveFolder(Settings.LogsPath, defaultSettings.LogsPath);
+        // Move profiles and logs to default location
+        MoveFolder(Settings.LogsPath, defaultSettings.LogsPath); 
         MoveFolder(Settings.ProfilesPath, defaultSettings.ProfilesPath);
-        
+
         (Application.Current as App).Settings = defaultSettings;
         ShowSavedSettings();
     }

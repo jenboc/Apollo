@@ -23,16 +23,20 @@
         <!-- Column 1 -->
         <Rectangle Grid.Column="1" Fill="#0b2126" />
         <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+            <Button Name="TrainButton" Content="Train" FontSize="46.74" FontFamily="{StaticResource Roboto}"
+                    FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+            <Button Name="CreateButton" Content="Create" FontSize="46.74" FontFamily="{StaticResource Roboto}"
+                    FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+            <Button Name="ListenButton" Content="Listen" FontSize="46.74" FontFamily="{StaticResource Roboto}"
+                    FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
             <Separator Height="50" Opacity="0" />
-            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+            <Button Name="SettingsButton" Content="Settings" FontSize="46.74" FontFamily="{StaticResource Roboto}"
+                    FontWeight="Bold"
                     Foreground="#eaf205" Background="#0476d9" Width="378" Height="116" Click="ButtonClick" />
         </StackPanel>
     </Grid>

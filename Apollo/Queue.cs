@@ -6,12 +6,12 @@ internal class Queue<T>
 {
     private readonly List<T> _contents;
 
-    public int Length => _contents.Count;
-    
     public Queue()
     {
         _contents = new List<T>();
     }
+
+    public int Length => _contents.Count;
 
     public void Enqueue(T item)
     {

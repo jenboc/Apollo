@@ -14,24 +14,29 @@
         <!-- Navigation Bar (Row 0) -->
         <Rectangle Grid.Row="0" Fill="#044bd9" />
 
-        <Label Grid.Row="0" Width="100" Content="A" FontFamily="{StaticResource CinzelDecorative}" FontWeight="Bold" FontSize="75"
+        <Label Grid.Row="0" Width="100" Content="A" FontFamily="{StaticResource CinzelDecorative}" FontWeight="Bold"
+               FontSize="75"
                Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Left"
                HorizontalContentAlignment="Center" />
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button Name="TrainButton" Content="Train" FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
+            <Button Name="TrainButton" Content="Train" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+                    FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="ButtonClick" />
             <Separator Width="50" Opacity="0" />
-            <Button Name="CreateButton" Content="Create" FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
+            <Button Name="CreateButton" Content="Create" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+                    FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="ButtonClick" />
             <Separator Width="50" Opacity="0" />
-            <Button Name="ListenButton" Content="Listen" FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
+            <Button Name="ListenButton" Content="Listen" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+                    FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="ButtonClick" />
             <Separator Width="50" Opacity="0" />
-            <Button Name="SettingsButton" Content="Settings" FontFamily="{StaticResource Roboto}" FontWeight="Bold" FontSize="50"
+            <Button Name="SettingsButton" Content="Settings" FontFamily="{StaticResource Roboto}" FontWeight="Bold"
+                    FontSize="50"
                     Foreground="#eaf205" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="ButtonClick" />
         </StackPanel>
